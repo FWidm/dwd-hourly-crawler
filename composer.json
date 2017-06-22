@@ -1,0 +1,22 @@
+{
+  "name": "fwidm/dwd-hourly-crawler",
+  "description": "Crawls the DWD FTP to retrieve weather data from German weather Stations",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "author's name",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "mjaschen/phpgeo": "^1.3",
+    "nesbot/carbon": "^1.22"
+  },
+  "autoload": {
+    "psr-0": {
+      "FWidm\\DWDHourlyCrawler": "src/"
+    }
+  }
+
+}
