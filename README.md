@@ -5,7 +5,7 @@ This package contains methods to query the DWD FTP by specifying the parameters 
 ## Data Source
 All data is retrieved from the public data set made available by the German Meteorological Service (DWD). 
 
-[Root of the public CDC FTP](ftp://ftp-cdc.dwd.de/pub/CDC/).
+Root of the public CDC FTP: `ftp://ftp-cdc.dwd.de/pub/CDC/`.
 
 ![](doc/img/dwd_logo_258x69.png).
 
