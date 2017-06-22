@@ -48,8 +48,9 @@ class DWDStationsController
     {
         $calculator = new Vincenty();
         $nearestStation = array();
+
         foreach ($stations as $activeStation) {
-            if (is_object($activeStation) && $activeStation instanceof DWDStation) {
+            if (true && is_object($activeStation) && $activeStation instanceof DWDStation) {
 
                 $coordinatesStation = new Coordinate($activeStation->getLatitude(), $activeStation->getLongitude());
                 //distance in meters!
@@ -61,8 +62,9 @@ class DWDStationsController
                 //sort by keys -> lowest distance first.
                 ksort($nearestStation);
             }
-            return $nearestStation;
         }
+        return $nearestStation;
+
     }
 
     public static function getStationFile($stationFtpPath, $outputPath)

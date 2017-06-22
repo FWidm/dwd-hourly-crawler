@@ -50,7 +50,9 @@ class DWDLib
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($variables) && $variables->getVariableCount() > 0) {
+
             $hourlyControllers = $this->getHourlyController($variables);
+
             $crawler=new DWDHourlyCrawler($hourlyControllers);
             $data=$crawler->getDataFailsafe($coordinatesRequest,$dateTime,$timeLimitMinutes);
 

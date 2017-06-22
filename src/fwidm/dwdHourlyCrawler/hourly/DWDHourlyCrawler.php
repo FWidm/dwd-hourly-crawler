@@ -56,10 +56,12 @@ class DWDHourlyCrawler
         foreach ($this->controllers as $var => $hourlyController) {
 
             $stations = $hourlyController->getStations(true);
+
             $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
             foreach ($nearestStations as $nearestStation) {
 
                 $zipFilePath = $hourlyController->retrieveFile($nearestStation);
+
                 $content = isset($zipFilePath)
                     ? DWDUtil::getDataFileFromZip($zipFilePath, DWDConfiguration::getHourlyConfiguration()->zipExtractionPrefix)
                     : null;

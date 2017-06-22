@@ -97,6 +97,7 @@ class DWDHourlyPressureController extends DWDAbstractHourlyController
         $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters->pressure->stations;
         $fileName = DWDUtil::getFileNameFromPath($stationsFTPPath);
         $filePath = $_SERVER['DOCUMENT_ROOT'] . '/in/' . $fileName;
+
         //Retrieve Stations
         $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($filePath)));
         if ($forceDownloadFile || !file_exists($filePath) || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)) {
@@ -110,6 +111,7 @@ class DWDHourlyPressureController extends DWDAbstractHourlyController
                     return $station->isActive();
                 });
         }
+
         return $stations;
     }
 
