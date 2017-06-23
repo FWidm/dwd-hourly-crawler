@@ -1,12 +1,11 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Hourly;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Model\DWDPressure;
-use FWidm\DWDHourlyCrawler\Model\DWDStation;
-use Error;
 use ParseError;
 
 /**
@@ -17,104 +16,10 @@ use ParseError;
  */
 class DWDHourlyPressureController extends DWDAbstractHourlyController
 {
-    /**
-     * Try to get the newest _hourly file. Hourly files are generally 1 day behind, thus we all
-     * @param DWDStation $nearestStation only download one specific file containing data for the station.
-     * @return string - path to the file
-     * @throws Error - Error while logging into the ftp or retrieving the file.
-     */
-    public function retrieveFile(DWDStation $nearestStation, $forceDownloadFile = false): string
+    public function __construct(string $parameter)
     {
-        $config = DWDConfiguration::getConfiguration();
-        $ftpConfig = $config->ftp;
-        $hourlyConfig = $config->dwdHourly;
-        $parameterConf = $config->dwdHourly->parameters;
-
-        $stationID = $nearestStation->getId();
-
-        //example: setting up the url via configuration files.
-        //   |- basePath -|- var -|- recentVauluePath - |- shortcode + '_' -|- stationId -|- fileExtension -|
-        //         |          |             |                  |           |            |->'_akt.zip'
-        //         |          |             |                  |           |->'15444'
-        //         |          |             |                  |-> 'P0_'
-        //         |          |             |-> '/recent/stundenwerte_'
-        //         |          |-> 'pressure'
-        //         |-> '/pub/CDC/observations_germany/climate/_hourly/'
-        //complete: /pub/CDC/observations_germany/climate/_hourly/pressure/recent/stundenwerte_P0_15444
-
-        //todo: simplify
-        $fileName = $parameterConf->pressure->shortCode . '_'
-            . $stationID . $config->dwdHourly->fileExtension;
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->pressure->name
-            . $config->dwdHourly->recentValuePath . $fileName;
-        //echo $ftpPath . "<br>";
-
-
-        //get file.
-        $ftp_connection = ftp_connect($ftpConfig->url);
-        set_time_limit(9000);
-        //ftp_set_option($ftp_connection, FTP_TIMEOUT_SEC, 9000);
-        $files = array();
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $parameterConf->precipitation->localFolder;
-        $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
-        if (file_exists($localFilePath)) {
-            $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($localFilePath)));
-        }
-        //check if the date on the old file is older than 1 day, else return the old path.
-        // download can be forced with the optional parameter.
-        if ($forceDownloadFile || !file_exists($localFilePath)
-            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)) {
-            //echo "<p>Controller::retrieveFile >> load new zip!</p>";
-
-            if (ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword)) {
-                if (!is_dir($localPath)) {
-                    mkdir($localPath, 0755, true);
-                }
-
-                //echo $localFilePath;
-
-                if (ftp_get($ftp_connection, $localFilePath, $ftpPath, FTP_BINARY)) {
-                    $files[] = $localFilePath;
-                } else
-                    return null;
-
-                ftp_close($ftp_connection);
-                return $localFilePath;
-            }
-        }
-
-        return $localFilePath;
+        parent::__construct($parameter);
     }
-
-    /**
-     * Retrieves the correct stations file, can be filtered to only show stations that are flagges as active. Conditions
-     * for this can be
-     * @param bool $activeOnly
-     * @return array
-     */
-    public function getStations(bool $activeOnly = false, bool $forceDownloadFile = false)
-    {
-        $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters->pressure->stations;
-        $fileName = DWDUtil::getFileNameFromPath($stationsFTPPath);
-        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/in/' . $fileName;
-
-        //Retrieve Stations
-        $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($filePath)));
-        if ($forceDownloadFile || !file_exists($filePath) || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)) {
-            DWDStationsController::getStationFile($stationsFTPPath, $filePath);
-        }
-
-        $stations = DWDStationsController::parseStations($filePath);
-        if ($activeOnly) {
-            return array_filter($stations,
-                function (DWDStation $station) {
-                    return $station->isActive();
-                });
-        }
-
-        return $stations;
-    }
-
     /**
      * Parse the textual representation of DWD Data, can be filtered by specifying before and after.
      * This means if you specify after - you will get timestamps after the specified team
@@ -188,5 +93,37 @@ class DWDHourlyPressureController extends DWDAbstractHourlyController
         return $pressureArray;
     }
 
+    public function getFileName(string $stationID)
+    {
+        $config = DWDConfiguration::getConfiguration();
+        $parameterConf = $config->dwdHourly->parameters;
+        $fileName = $parameterConf->pressure->shortCode . '_'
+            . $stationID . $config->dwdHourly->fileExtension;
+        return $fileName;
+    }
+
+    public function getFilePath(string $fileName)
+    {
+        $config = DWDConfiguration::getConfiguration();
+        $hourlyConfig = $config->dwdHourly;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->precipitation->localFolder;
+        $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
+
+        return $localFilePath;
+    }
+
+    public function getFileFTPPath(string $stationID)
+    {
+        $config = DWDConfiguration::getConfiguration();
+        $parameterConf = $config->dwdHourly->parameters;
+
+        $fileName = $parameterConf->pressure->shortCode . '_'
+            . $stationID . $config->dwdHourly->fileExtension;
+
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->pressure->name
+            . $config->dwdHourly->recentValuePath . $fileName;
+
+        return $ftpPath;
+    }
 
 }

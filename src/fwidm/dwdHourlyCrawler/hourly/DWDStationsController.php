@@ -2,6 +2,7 @@
 
 namespace FWidm\DWDHourlyCrawler\Hourly;
 
+use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Error;
@@ -79,7 +80,7 @@ class DWDStationsController
 
             ftp_close($ftp_connection);
 
-            if (!$result) {
+            if (!isset($result)) {
                 throw new Error("Could not retrieve data from ftp location: " . $stationFtpPath);
             }
         }
@@ -116,8 +117,8 @@ class DWDStationsController
                 $name = implode(" ", $nameSlice);
 
 //evtl. array_filter
-                $from = DateTime::createFromFormat($stationConf->dateFormat, $split[1]);
-                $until = DateTime::createFromFormat($stationConf->dateFormat, $split[2]);
+                $from = Carbon::createFromFormat($stationConf->dateFormat, $split[1]);
+                $until = Carbon::createFromFormat($stationConf->dateFormat, $split[2]);
 
                 $station = new DWDStation($split[0], $from, $until,
                     $split[3], $split[4], $split[5], $name, $county,

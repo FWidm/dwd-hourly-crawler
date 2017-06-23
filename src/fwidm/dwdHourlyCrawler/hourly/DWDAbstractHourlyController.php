@@ -1,8 +1,10 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Hourly;
 
-use DateTime;
-use FWidm\DWDHourlyCrawler\Model\DWDStation;
+use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+
 
 /**
  * Created by PhpStorm.
@@ -12,10 +14,34 @@ use FWidm\DWDHourlyCrawler\Model\DWDStation;
  */
 abstract class DWDAbstractHourlyController
 {
-    public abstract function retrieveFile(DWDStation $nearestStation, $forceDownloadFile=false);
+    private $parameter;
 
-    public abstract function getStations(bool $activeOnly=false);
+    /**
+     * DWDAbstractHourlyController constructor.
+     * @param $parameter
+     */
+    public function __construct(string $parameter)
+    {
+        $this->parameter = $parameter;
+    }
 
-    public abstract function parseHourlyData(String $content, DateTime $after = null, DateTime $before = null): array;
+
+    public function getParameter():string
+    {
+        return $this->parameter;
+    }
+
+    public abstract function getFileFTPPath(string $stationID);
+
+    public abstract function getFileName(string $stationID);
+
+    public abstract function getFilePath(string $fileName);
+
+    public function getStationFTPPath(string $ftpPath)
+    {
+        $fileName = DWDUtil::getFileNameFromPath($ftpPath);
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . DWDConfiguration::getConfiguration()->dwdHourly->localBaseFolder . '/' . $fileName;
+        return $filePath;
+    }
 
 }

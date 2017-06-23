@@ -78,16 +78,16 @@ class DWDLib
 
                 switch ($var) {
                     case $conf->pressure->name:
-                        $controllers[$conf->pressure->name] = new DWDHourlyPressureController();
+                        $controllers[$conf->pressure->name] = new DWDHourlyPressureController('pressure');
                         break;
                     case $conf->airTemperature->name:
-                        $controllers[$conf->airTemperature->name] = new DWDHourlyAirTemperatureController();
+                        $controllers[$conf->airTemperature->name] = new DWDHourlyAirTemperatureController('airTemperature');
                         break;
                     case $conf->cloudiness->name:
-                        $controllers[$conf->cloudiness->name] = new DWDHourlyCloudinessController();
+                        $controllers[$conf->cloudiness->name] = new DWDHourlyCloudinessController('cloudiness');
                         break;
                     case $conf->precipitation->name:
-                        $controllers[$conf->precipitation->name] = new DWDHourlyPrecipitationController();
+                        $controllers[$conf->precipitation->name] = new DWDHourlyPrecipitationController('precipitation');
                         break;
                     default:
                         print('Unknown variable: var=' . $var . '<br>');

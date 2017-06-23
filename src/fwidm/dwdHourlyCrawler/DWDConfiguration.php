@@ -21,11 +21,10 @@ class DWDConfiguration
     public static function getConfiguration()
     {
         if (self::$configuration === null) {
-            echo self::$configFilePath;
             $jsonConfig = file_get_contents(DWDConfiguration::$configFilePath);
             self::$configuration = json_decode($jsonConfig);
             if (DWDConfiguration::$configuration === null)
-                throw new ParseError('Error, configuration file could not be found or contains invalid json. Expected path: "config/configuration.json"');
+                throw new ParseError('Error, configuration file could not be found or contains invalid json. Expected path:'.__DIR__.'/../../config/configuration.json  "config/configuration.json"');
         }
         return DWDConfiguration::$configuration;
 

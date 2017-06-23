@@ -20,7 +20,7 @@ $dwdLib=new DWDLib();
 
 $vars=new DWDHourlyParameters();
 $vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation();
-//$vars->addAirTemperature();
+//$vars->addAirTemperature()->addCloudiness();
 //$vars->addPrecipitation();
 
 $out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());

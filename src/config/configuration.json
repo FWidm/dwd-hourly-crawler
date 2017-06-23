@@ -32,7 +32,7 @@
       "cloudiness": {
         "name": "cloudiness",
         "shortCode":"N",
-        "stations":"pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/recent\/TU_Stundenwerte_Beschreibung_Stationen.txt",
+        "stations":"pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/recent\/N_Stundenwerte_Beschreibung_Stationen.txt",
         "localFolder":"\/cloudiness\/recent",
         "variables":{
           "qualityBit":"QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
