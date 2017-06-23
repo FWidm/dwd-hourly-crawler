@@ -184,7 +184,9 @@ class DWDHourlyCrawler
         if (file_exists($filePath)) {
             $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($filePath)));
         }
+        prettyPrint($filePath);
 
+        //todo: if the file exists but the path changed / is wrong this works/is skipped.
         if ($forceDownloadFile || !file_exists($filePath)
             || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)
         ) {
