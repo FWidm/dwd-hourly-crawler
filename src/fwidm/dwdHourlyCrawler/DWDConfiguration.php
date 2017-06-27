@@ -1,4 +1,5 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler;
 
 use ParseError;
@@ -11,7 +12,8 @@ use ParseError;
  */
 class DWDConfiguration
 {
-    public static $configFilePath = __DIR__.'/../../config/configuration.json';
+    public static $configFilePath_depr = __DIR__ . '/../../config/configuration.json';
+    public static $configFilePath = __DIR__ . '/../../config/configuration.php';
     private static $configuration = null;
 
     /**
@@ -20,11 +22,16 @@ class DWDConfiguration
      */
     public static function getConfiguration()
     {
-        if (self::$configuration === null) {
-            $jsonConfig = file_get_contents(DWDConfiguration::$configFilePath);
-            self::$configuration = json_decode($jsonConfig);
+        if (self::$configuration === null && file_exists(self::$configFilePath)) {
+//            $jsonConfig = file_get_contents(self::$configFilePath_depr);
+//            self::$configuration = json_decode($jsonConfig);
+
+            $settings = include __DIR__ . '/../../config/configuration.php';
+
+            self::$configuration = DWDUtil::array_to_object($settings);
+
             if (DWDConfiguration::$configuration === null)
-                throw new ParseError('Error, configuration file could not be found or contains invalid json. Expected path:'.__DIR__.'/../../config/configuration.json  "config/configuration.json"');
+                throw new ParseError('Error, configuration file could not be found or contains invalid json. Expected path:' . __DIR__ . '/../../config/configuration.json  "config/configuration.json"');
         }
         return DWDConfiguration::$configuration;
 
@@ -35,7 +42,8 @@ class DWDConfiguration
      * Returns the _hourly configuration to the callee
      * @return mixed
      */
-    public static function getHourlyConfiguration()
+    public
+    static function getHourlyConfiguration()
     {
         return self::getConfiguration()->dwdHourly;
     }
@@ -44,7 +52,8 @@ class DWDConfiguration
      * Returns the station config to the callee
      * @return mixed
      */
-    public static function getStationConfiguration()
+    public
+    static function getStationConfiguration()
     {
         return self::getConfiguration()->dwdStations;
     }
@@ -53,9 +62,15 @@ class DWDConfiguration
      * Returns the ftp configuration
      * @return mixed
      */
-    public static function getFTPConfiguration()
+    public
+    static function getFTPConfiguration()
     {
         return self::getConfiguration()->ftp;
+    }
+
+    public static function isDebugEnabled()
+    {
+        return self::getConfiguration()->debug;
     }
 
     /*

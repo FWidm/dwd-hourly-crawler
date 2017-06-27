@@ -4,6 +4,7 @@ namespace FWidm\DWDHourlyCrawler\Hourly;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Error;
 use Location\Coordinate;
@@ -18,6 +19,7 @@ use DateTime;
  */
 class DWDStationsController
 {
+    public const kmToMeters = 1000;
 
     public static function getNearestStation($stations, $coordinatesRequest)
     {
@@ -56,7 +58,7 @@ class DWDStationsController
                 $coordinatesStation = new Coordinate($activeStation->getLatitude(), $activeStation->getLongitude());
                 //distance in meters!
                 $diff = $calculator->getDistance($coordinatesRequest, $coordinatesStation);
-                if ($diff <= $radiusKM * 1000) {
+                if ($diff <= $radiusKM * DWDStationsController::kmToMeters) {
                     $nearestStation[intval($diff)] = $activeStation;
 
                 }
@@ -70,18 +72,21 @@ class DWDStationsController
 
     public static function getStationFile($stationFtpPath, $outputPath)
     {
+        prettyPrint("Get station file.");
         $ftpConfig = DWDConfiguration::getFTPConfiguration();
 
         $ftp_connection = ftp_connect($ftpConfig->url);
 
         $login_result = ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword);
-        if ($login_result) {
+        prettyPrint("StationController: ftppath=" . $stationFtpPath);
+        if ($login_result && file_exists($stationFtpPath)) {
             $result = ftp_get($ftp_connection, $outputPath, $stationFtpPath, FTP_BINARY);
+            prettyPrint($result);
 
             ftp_close($ftp_connection);
 
             if (!isset($result)) {
-                throw new Error("Could not retrieve data from ftp location: " . $stationFtpPath);
+                throw new DWDLibException("Could not retrieve data from ftp location: " . $stationFtpPath);
             }
         }
 
@@ -90,47 +95,54 @@ class DWDStationsController
     public static function parseStations($filePath)
     {
 
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
         $stationConf = DWDConfiguration::getStationConfiguration();
-        $handle = fopen($filePath, "r");
         $stations = array();
-        if ($handle) {
-            //skips the first N lines of input, requires the file handle.
-            self::skipDescriptionLines($stationConf->skipLines, $handle);
-            while (($line = fgets($handle)) !== false) {
-                $line = mb_convert_encoding($line, "UTF-8", "iso-8859-1");
 
-                // eliminate multiple spaces, replace by single space
-                $output = preg_replace('!\s+!', ' ', $line);
-                //remove trailing and leading spaces.
-                $output = trim($output, ' ');
+        if (file_exists($filePath)) {
+            $handle = fopen($filePath, "r");
+            if ($handle) {
+                //skips the first N lines of input, requires the file handle.
+                self::skipDescriptionLines($stationConf->skipLines, $handle);
+                while (($line = fgets($handle)) !== false) {
+                    $line = mb_convert_encoding($line, "UTF-8", "iso-8859-1");
 
-                // process the line read - split by spaces
-                // stationId, from, until, stationHeight, lat, long, station name, state
-                // Station name can contain spaces and needs further processing, thus we limit to keep station name + state
-                // in one field
-                $split = explode(" ", $output, 7);
-                $name = explode(" ", $split[count($split) - 1]);
-                //last cell contains the county name.
-                $county = $name[count($name) - 1];
-                // merge all other contents of the name, glue them together with spaces.
-                $nameSlice = array_slice($name, 0, count($name) - 1);
-                $name = implode(" ", $nameSlice);
+                    // eliminate multiple spaces, replace by single space
+                    $output = preg_replace('!\s+!', ' ', $line);
+                    //remove trailing and leading spaces.
+                    $output = trim($output, ' ');
+
+                    // process the line read - split by spaces
+                    // stationId, from, until, stationHeight, lat, long, station name, state
+                    // Station name can contain spaces and needs further processing, thus we limit to keep station name + state
+                    // in one field
+                    $split = explode(" ", $output, 7);
+                    $name = explode(" ", $split[count($split) - 1]);
+                    //last cell contains the county name.
+                    $county = $name[count($name) - 1];
+                    // merge all other contents of the name, glue them together with spaces.
+                    $nameSlice = array_slice($name, 0, count($name) - 1);
+                    $name = implode(" ", $nameSlice);
 
 //evtl. array_filter
-                $from = Carbon::createFromFormat($stationConf->dateFormat, $split[1]);
-                $until = Carbon::createFromFormat($stationConf->dateFormat, $split[2]);
+                    $from = Carbon::createFromFormat($stationConf->dateFormat, $split[1]);
+                    $until = Carbon::createFromFormat($stationConf->dateFormat, $split[2]);
 
-                $station = new DWDStation($split[0], $from, $until,
-                    $split[3], $split[4], $split[5], $name, $county,
-                    $stationConf->activeRequirementDays);
-                $stations[] = $station;
+                    $station = new DWDStation($split[0], $from, $until,
+                        $split[3], $split[4], $split[5], $name, $county,
+                        $stationConf->activeRequirementDays);
+                    $stations[] = $station;
 
+                }
+
+                fclose($handle);
+            } else {
+                print("Error opening the file " . $filePath);
             }
+        } else
+            throw new DWDLibException("File... " . $filePath . " does not exist!");
 
-            fclose($handle);
-        } else {
-            print("Error opening the file " . $stationConf->localFile);
-        }
         return $stations;
     }
 
@@ -144,16 +156,19 @@ class DWDStationsController
         $login_result = ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword);
         $localFile = $_SERVER['DOCUMENT_ROOT'] . $stationConfig->localFile;
 
-        if ($login_result && ftp_get($ftp_connection,
+        if ($login_result && file_exists($stationConfig->ftpFile) && ftp_get($ftp_connection,
                 $localFile,
                 $stationConfig->ftpFile,
                 FTP_BINARY)
+
         ) {
+            ftp_close($ftp_connection);
         } else {
-            throw new Error("An Error occured while trying to get the file: " . print_r(error_get_last()));
+            ftp_close($ftp_connection);
+
+            throw new Error("An Error occurred while trying to get the file: " . print_r(error_get_last()));
         }
-        //todo: close ftp before?
-        ftp_close($ftp_connection);
+
     }
 
     static function retrieveStations()
@@ -204,7 +219,7 @@ class DWDStationsController
 
             fclose($handle);
         } else {
-            print("Error opening the file " . $stationConf->localFile);
+            throw new DWDLibException("Error opening the file " . $stationConf->localFile);
         }
         return $stations;
     }

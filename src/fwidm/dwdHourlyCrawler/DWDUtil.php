@@ -1,6 +1,10 @@
 <?php
 
 namespace FWidm\DWDHourlyCrawler;
+
+use Carbon\Carbon;
+use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
+use stdClass;
 use ZipArchive;
 
 /**
@@ -13,7 +17,7 @@ class DWDUtil
 {
     public static function getFileNameFromPath($path)
     {
-        $split = explode("/", $path);
+        $split = explode(DIRECTORY_SEPARATOR, $path);
         $name = end($split);
         return $name;
     }
@@ -28,8 +32,8 @@ class DWDUtil
     static function getDataFileFromZip($zipFile, $extractionPrefix)
     {
         $zip = new ZipArchive;
-        $res = $zip->open($zipFile);
-        if ($res === TRUE) {
+
+        if ($zip->open($zipFile)) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $stat = $zip->statIndex($i);
 //            print_r(basename($stat['name']) . '<br>');
@@ -42,6 +46,43 @@ class DWDUtil
             $zip->close();
 
         }
+        else
+        {
+            throw new DWDLibException("zip content is empty! zip file count=".$zip->numFiles);
+
+        }
         return null;
     }
+
+    /** Converts an array recursively to obj - taken from Jacob Relkin @ https://stackoverflow.com/a/4790485
+     * @param $array
+     * @return stdClass
+     */
+    static function array_to_object($array)
+    {
+        $obj = new stdClass;
+        foreach ($array as $k => $v) {
+            if (strlen($k)) {
+                if (is_array($v)) {
+                    $obj->{$k} = self::array_to_object($v); //RECURSION
+                } else {
+                    $obj->{$k} = $v;
+                }
+            }
+        }
+        return $obj;
+    }
+
+    static function log($objectType, $content, $htmlOutput=true){
+        if(DWDConfiguration::isDebugEnabled()){
+            $date=new Carbon();
+            if($htmlOutput)echo "<div style=\"white-space: pre-wrap;\">";
+
+            print($date->format(Carbon::ISO8601).'@'.$objectType.' msg=');
+            print_r($content);
+            if($htmlOutput)echo "</div>";
+
+        }
+    }
+
 }

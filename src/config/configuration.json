@@ -4,6 +4,7 @@
     "userName": "anonymous",
     "userPassword": ""
   },
+
   "dwdStations": {
     "ftpFile": "pub\/CDC\/observations_germany\/climate\/hourly\/pressure\/recent\/P0_Stundenwerte_Beschreibung_Stationen.txt",
     "localFile": "\/in\/stations.txt",
@@ -11,6 +12,7 @@
     "activeRequirementDays": 4,
     "dateFormat":"Ymd"
   },
+
   "dwdHourly": {
     "baseFTPPath": "\/pub\/CDC\/observations_germany\/climate\/hourly\/",
     "airTemperature": "\/air_temperature\/recent\/stundenwerte_TU_",

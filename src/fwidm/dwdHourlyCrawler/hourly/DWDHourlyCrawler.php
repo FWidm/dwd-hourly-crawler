@@ -34,7 +34,6 @@ class DWDHourlyCrawler
     {
         $data = array();
         foreach ($this->controllers as $var => $hourlyController) {
-            prettyPrint("GetStations");
             $stations = $this->getStations($hourlyController, true);
             if (isset($stations)) {
                 $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
@@ -47,7 +46,8 @@ class DWDHourlyCrawler
                         : null;
                     //content can only be null if a station is listed as active but is not anymore.
                     if ($content == null) {
-                        print('file for station=' . $nearestStation . ' could not be loaded, trying next station');
+                        DWDUtil::log(self::class, 'file for station=' . $nearestStation . ' could not be loaded, trying next station');
+
                         continue;
                     }
 
@@ -94,7 +94,7 @@ class DWDHourlyCrawler
 
                     //content can only be null if a station is listed as active but is not anymore.
                     if ($content == null) {
-                        print('file for station=' . $nearestStation . ' could not be loaded, trying next station');
+                        DWDUtil::log(self::class, 'file for station=' . $nearestStation . ' could not be loaded, trying next station');
                         continue;
                     }
                     //upper boundary for the time
@@ -123,7 +123,7 @@ class DWDHourlyCrawler
      * @param bool $forceDownloadFile
      * @return string filePath
      */
-    public function retrieveFile(DWDAbstractHourlyController $controller, DWDStation $nearestStation, $forceDownloadFile = false): string
+    public function retrieveFile(DWDAbstractHourlyController $controller, DWDStation $nearestStation, $forceDownloadFile = false)
     {
         $config = DWDConfiguration::getConfiguration();
         $ftpConfig = $config->ftp;
@@ -142,22 +142,23 @@ class DWDHourlyCrawler
         }
         //check if the date on the old file is older than 1 day, else return the old path.
         // download can be forced with the optional parameter.
-        if ($forceDownloadFile || !file_exists($localPath)
+        if (true || $forceDownloadFile || !file_exists($localPath)
             || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)
         ) {
             //echo "<p>Controller::retrieveFile >> load new zip!</p>";
+            $path = pathinfo($localPath);
+            if (!is_dir($path['dirname'])) {
+
+                mkdir($path['dirname'], 0755, true);
+            }
 
             if (ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword)) {
-                if (!is_dir($localPath)) {
-                    mkdir($localPath, 0755, true);
-                }
-
-                //echo $localFilePath;
-
-                if (ftp_get($ftp_connection, $localPath, $ftpPath, FTP_BINARY)) {
+//                DWDUtil::log(self::class, 'File exists on server? '.ftp_size($ftp_connection,$ftpPath));
+                if (ftp_size($ftp_connection,$ftpPath) > -1 && ftp_get($ftp_connection, $localPath, $ftpPath, FTP_BINARY)) {
                     $files[] = $localPath;
-                } else
+                } else {
                     return null;
+                }
 
                 ftp_close($ftp_connection);
                 return $localPath;
@@ -173,7 +174,8 @@ class DWDHourlyCrawler
      * @param bool $activeOnly
      * @return array
      */
-    public function getStations(DWDAbstractHourlyController $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
+    public
+    function getStations(DWDAbstractHourlyController $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
     {
 
         $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;//->airTemperature->stations;
@@ -184,7 +186,6 @@ class DWDHourlyCrawler
         if (file_exists($filePath)) {
             $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($filePath)));
         }
-        prettyPrint($filePath);
 
         //todo: if the file exists but the path changed / is wrong this works/is skipped.
         if ($forceDownloadFile || !file_exists($filePath)
@@ -204,17 +205,20 @@ class DWDHourlyCrawler
     }
 
 
-    public function addController(DWDAbstractHourlyController $controller)
+    public
+    function addController(DWDAbstractHourlyController $controller)
     {
         $this->controllers[] = $controller;
     }
 
-    public function clearControllers()
+    public
+    function clearControllers()
     {
         $this->controllers = array();
     }
 
-    public function addControllers($hourlyControllers)
+    public
+    function addControllers($hourlyControllers)
     {
         $this->controllers = $hourlyControllers;
     }
