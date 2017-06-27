@@ -71,10 +71,11 @@ class DWDHourlyCrawler
      * @param int $timeMinuteLimit
      * @return array|null
      */
-    public function getDataFailsafe($coordinatesRequest, DateTime $dateTime, $timeMinuteLimit = 30)
+    public function getDataFailsafe($coordinatesRequest, DateTime $dateTime, $timeMinuteLimit = 30, $sorted = true)
     {
 
         $data = array();
+        $usedStations = array();
 
         foreach ($this->controllers as $var => $hourlyController) {
 
@@ -82,9 +83,9 @@ class DWDHourlyCrawler
             $stations = $this->getStations($hourlyController, true);
 
             if (isset($stations)) {
-
                 $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
                 foreach ($nearestStations as $nearestStation) {
+                    /* @var $nearestStation DWDStation */
 
                     $zipFilePath = $this->retrieveFile($hourlyController, $nearestStation);
 
@@ -106,13 +107,18 @@ class DWDHourlyCrawler
                     $timeAfter = clone $dateTime;
                     $timeAfter->modify('-' . $timeMinuteLimit . ' minutes');
 
-                    $data[$var] = $hourlyController->parseHourlyData($content, $timeAfter, $timeBefore);
+                    $data['values'][$var] = $hourlyController->parseHourlyData($content, $timeAfter, $timeBefore);
+                    if (!isset($data['station-' . $nearestStation->getId()])) {
+                        $data['values']['station-' . $nearestStation->getId()] = $nearestStation;
+                    }
                     if (isset($data))
                         break;
                 }
             }
         }
         //print_r(json_encode($data));
+        if ($sorted)
+            ksort($data['values']);
         return $data;
     }
 
@@ -142,7 +148,7 @@ class DWDHourlyCrawler
         }
         //check if the date on the old file is older than 1 day, else return the old path.
         // download can be forced with the optional parameter.
-        if (true || $forceDownloadFile || !file_exists($localPath)
+        if ($forceDownloadFile || !file_exists($localPath)
             || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)
         ) {
             //echo "<p>Controller::retrieveFile >> load new zip!</p>";
@@ -154,7 +160,7 @@ class DWDHourlyCrawler
 
             if (ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword)) {
 //                DWDUtil::log(self::class, 'File exists on server? '.ftp_size($ftp_connection,$ftpPath));
-                if (ftp_size($ftp_connection,$ftpPath) > -1 && ftp_get($ftp_connection, $localPath, $ftpPath, FTP_BINARY)) {
+                if (ftp_size($ftp_connection, $ftpPath) > -1 && ftp_get($ftp_connection, $localPath, $ftpPath, FTP_BINARY)) {
                     $files[] = $localPath;
                 } else {
                     return null;

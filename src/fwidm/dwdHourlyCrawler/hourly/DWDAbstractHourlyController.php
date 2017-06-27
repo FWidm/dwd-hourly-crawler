@@ -2,6 +2,7 @@
 
 namespace FWidm\DWDHourlyCrawler\Hourly;
 
+use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 
@@ -30,6 +31,8 @@ abstract class DWDAbstractHourlyController
     {
         return $this->parameter;
     }
+
+    public abstract function parseHourlyData(String $content, DateTime $after = null, DateTime $before = null): array;
 
     public abstract function getFileFTPPath(string $stationID);
 

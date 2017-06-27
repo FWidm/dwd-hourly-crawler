@@ -13,18 +13,12 @@ abstract class  DWDAbstractParameter
 {
 //    protected $id;
     protected $stationId;
+    protected $station;
+
 
     protected $date;
 
-
-//    /**
-//     * @return mixed
-//     */
-//    public function getId()
-//    {
-//        return $this->id;
-//    }
-
+    
     /**
      * @return mixed
      */
@@ -41,5 +35,12 @@ abstract class  DWDAbstractParameter
         return $this->date;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getStation()
+    {
+        return $this->station;
+    }
 
 }
