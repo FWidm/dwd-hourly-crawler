@@ -17,8 +17,10 @@ class DWDUtil
 {
     public static function getFileNameFromPath($path)
     {
-        $split = explode(DIRECTORY_SEPARATOR, $path);
+        $split = explode('/', $path);
         $name = end($split);
+        self::log(self::class,$name);
+
         return $name;
     }
 

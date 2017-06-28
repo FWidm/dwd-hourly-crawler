@@ -198,6 +198,7 @@ class DWDHourlyCrawler
         ) {
             DWDStationsController::getStationFile($stationsFTPPath, $filePath);
         }
+        DWDUtil::log(self::class,$filePath);
 
         $stations = DWDStationsController::parseStations($filePath);
         if ($activeOnly) {

@@ -4,6 +4,7 @@ namespace FWidm\DWDHourlyCrawler\Hourly;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Error;
@@ -110,12 +111,13 @@ class DWDStationsController
      */
     public static function parseStations($filePath)
     {
-
+        if (DIRECTORY_SEPARATOR == '\\')
+            $filePath = str_replace('/', '\\', $filePath);
         ini_set('display_errors', 1);
         error_reporting(E_ALL);
         $stationConf = DWDConfiguration::getStationConfiguration();
         $stations = array();
-
+        DWDUtil::log(self::class, file_exists($filePath));
         if (file_exists($filePath)) {
             $handle = fopen($filePath, "r");
             if ($handle) {
@@ -141,7 +143,7 @@ class DWDStationsController
                     $nameSlice = array_slice($name, 0, count($name) - 1);
                     $name = implode(" ", $nameSlice);
 
-//evtl. array_filter
+                    //evtl. array_filter
                     $from = Carbon::createFromFormat($stationConf->dateFormat, $split[1], 'UTC');
                     $until = Carbon::createFromFormat($stationConf->dateFormat, $split[2], 'UTC');
 
