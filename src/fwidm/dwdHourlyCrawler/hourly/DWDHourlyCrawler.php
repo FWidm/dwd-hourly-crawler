@@ -30,7 +30,7 @@ class DWDHourlyCrawler
     }
 
 
-    public function getDataByDates(Coordinate $coordinatesRequest, Carbon $timeAfter, Carbon $timeBefore)
+    public function getDataByDates(Coordinate $coordinatesRequest, DateTime $timeAfter, DateTime $timeBefore)
     {
         $data = array();
         foreach ($this->controllers as $var => $hourlyController) {
@@ -86,7 +86,6 @@ class DWDHourlyCrawler
                 $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
                 foreach ($nearestStations as $nearestStation) {
                     /* @var $nearestStation DWDStation */
-
                     $zipFilePath = $this->retrieveFile($hourlyController, $nearestStation);
 
                     $content = isset($zipFilePath)

@@ -21,6 +21,12 @@ class DWDStationsController
 {
     public const kmToMeters = 1000;
 
+    /**Return the nearest stations from a stations array.
+     * @param $stations - array of DWDStation
+     * @param $coordinatesRequest
+     * @return DWDStation|null
+     * @throws DWDLibException - if stations is empty
+     */
     public static function getNearestStation($stations, $coordinatesRequest)
     {
         $calculator = new Vincenty();
@@ -36,16 +42,17 @@ class DWDStationsController
                     $nextDist = $diff;
                 }
 
-            }
+            } else
+                throw new DWDLibException("Stations parameter does contain an object that is no instance of DWDStation");
         }
         return $nearestStation;
     }
 
 
     /**Get all stations in an x km radius.
-     * @param $stations
-     * @param int $radiusKM
-     * @return array
+     * @param $stations - array of DWDStation
+     * @param int $radiusKM - default 20km
+     * @return array - of nearest stations in the given radius
      */
     public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 20)
     {
@@ -70,15 +77,18 @@ class DWDStationsController
 
     }
 
+    /**Tries to download the station file from the given path.
+     * @param $stationFtpPath - path/to/the/station_file.txt
+     * @param $outputPath - location of the resulting file
+     * @throws DWDLibException - if result is empty
+     */
     public static function getStationFile($stationFtpPath, $outputPath)
     {
-        prettyPrint("Get station file.");
         $ftpConfig = DWDConfiguration::getFTPConfiguration();
 
         $ftp_connection = ftp_connect($ftpConfig->url);
 
         $login_result = ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword);
-        prettyPrint("StationController: ftppath=" . $stationFtpPath);
         if ($login_result && file_exists($stationFtpPath)) {
             $result = ftp_get($ftp_connection, $outputPath, $stationFtpPath, FTP_BINARY);
             prettyPrint($result);
@@ -92,6 +102,12 @@ class DWDStationsController
 
     }
 
+    /**
+     * Parse the station files into station objects.
+     * @param $filePath - path to the station file
+     * @return array - of stations
+     * @throws DWDLibException - if zip opening fails or  zip does not exist
+     */
     public static function parseStations($filePath)
     {
 
@@ -126,8 +142,8 @@ class DWDStationsController
                     $name = implode(" ", $nameSlice);
 
 //evtl. array_filter
-                    $from = Carbon::createFromFormat($stationConf->dateFormat, $split[1]);
-                    $until = Carbon::createFromFormat($stationConf->dateFormat, $split[2]);
+                    $from = Carbon::createFromFormat($stationConf->dateFormat, $split[1], 'UTC');
+                    $until = Carbon::createFromFormat($stationConf->dateFormat, $split[2], 'UTC');
 
                     $station = new DWDStation($split[0], $from, $until,
                         $split[3], $split[4], $split[5], $name, $county,
@@ -138,10 +154,10 @@ class DWDStationsController
 
                 fclose($handle);
             } else {
-                print("Error opening the file " . $filePath);
+                throw new DWDLibException("Error opening the file: " . $filePath);
             }
         } else
-            throw new DWDLibException("File... " . $filePath . " does not exist!");
+            throw new DWDLibException("File. does not exist - path: " . $filePath);
 
         return $stations;
     }

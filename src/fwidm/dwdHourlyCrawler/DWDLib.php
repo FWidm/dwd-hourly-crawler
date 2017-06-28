@@ -23,43 +23,60 @@ use Location\Coordinate;
 class DWDLib
 {
 
-
-//    public function getHourlyDataByDates(DWDHourlyParameters $variables, DateTime $dateFrom, DateTime $dateUntil, $latitude, $longitude)
-//    {
-//        $coordinatesRequest = new Coordinate($latitude, $longitude);
-//        $hourlyControllers = array();
-//        if (!empty($variables) && $variables->getVariableCount() > 0) {
-//            $hourlyControllers = $this->getHourlyController($variables);
-//        }
-//        $data = array();
-//        foreach ($hourlyControllers as $var => $hourlyController) {
-//            $this->crawler = new DWDHourlyCrawler($hourlyController);
-//
-//            if (isset($hourlyController)) {
-//                $stations = $hourlyController->getStations(true);
-//                $nearestStation = DWDStationsController::getNearestStation($stations, $coordinatesRequest);
-//                //echo "nearest: " . json_encode($nearestStation) . "<br>";
-//                $data[$var] = $this->crawler->getDataByDates($nearestStation, $dateFrom, $dateUntil);
-//            }
-//        }
-//
-//        return $data;
-//    }
-
-    public function getHourlyFailsafe(DWDHourlyParameters $variables, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30)
+    /**
+     * Retrieve all values for the parameters between the interval timeAfter and timeBefore for a specific location.
+     * @param DWDHourlyParameters $hourlyParameters
+     * @param DateTime $dateFrom
+     * @param DateTime $dateUntil
+     * @param $latitude
+     * @param $longitude
+     * @return array
+     */
+    public function getHourlyDataByDates(DWDHourlyParameters $hourlyParameters, DateTime $timeAfter, DateTime $timeBefore, $latitude, $longitude)
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
-        if (!empty($variables) && $variables->getVariableCount() > 0) {
+        $hourlyControllers = array();
+        if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
+            $hourlyControllers = $this->getHourlyController($hourlyParameters);
 
-            $hourlyControllers = $this->getHourlyController($variables);
+            $data = array();
+            foreach ($hourlyControllers as $var => $hourlyController) {
+                $this->crawler = new DWDHourlyCrawler($hourlyController);
 
-            $crawler=new DWDHourlyCrawler($hourlyControllers);
-            $data=$crawler->getDataFailsafe($coordinatesRequest,$dateTime,$timeLimitMinutes);
+
+                $crawler = new DWDHourlyCrawler($hourlyControllers);
+                $data = $crawler->getDataByDates($coordinatesRequest, $timeAfter, $timeBefore);
+                return $data;
+            }
 
             return $data;
-        }
-        else
-            throw new DWDLibException("Parameters are empty. Please create a new 'DWDHourlyParameters' object.");
+        } else
+            throw new DWDLibException("hourlyParameters are empty. Please create a new 'DWDHourlyParameters' object and add the needed variables.");
+    }
+
+    /**
+     * Retrieve values for the parameters in a time frame between detetime +- timeLimitMinutes (default: 30) for the specific location.
+     * @param DWDHourlyParameters $hourlyParameters
+     * @param DateTime $dateTime
+     * @param $latitude
+     * @param $longitude
+     * @param int $timeLimitMinutes - optional parameter that limit
+     * @return array - returns an array that contains measurements and the station information
+     * @throws DWDLibException - if no parameters ar specified
+     */
+    public function getHourlyFailsafe(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
+    {
+        $coordinatesRequest = new Coordinate($latitude, $longitude);
+        if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
+
+            $hourlyControllers = $this->getHourlyController($hourlyParameters);
+
+            $crawler = new DWDHourlyCrawler($hourlyControllers);
+            $data = $crawler->getDataFailsafe($coordinatesRequest, $dateTime, $timeLimitMinutes);
+
+            return $data;
+        } else
+            throw new DWDLibException("hourlyParameters are empty. Please create a new 'DWDHourlyParameters' object and add the needed variables.");
     }
 
 
