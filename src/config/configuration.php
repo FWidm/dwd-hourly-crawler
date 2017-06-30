@@ -27,7 +27,7 @@ return [
     'dwdHourly' => [
 
         'baseFTPPath' => '/pub/CDC/observations_germany/climate/hourly'.DIRECTORY_SEPARATOR,
-        'localBaseFolder' => DIRECTORY_SEPARATOR.'in'.DIRECTORY_SEPARATOR.'hourly',
+        'localBaseFolder' => DIRECTORY_SEPARATOR.'output'.DIRECTORY_SEPARATOR.'hourly',
         'zipExtractionPrefix' => 'produkt',
         'parameters' => [
 

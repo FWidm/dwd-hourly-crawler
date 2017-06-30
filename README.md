@@ -17,9 +17,11 @@ Root of the public CDC FTP: `ftp://ftp-cdc.dwd.de/pub/CDC/`.
 - Parses the Output into different Objects that contain all of the data the file contains plus the short description for 
 all the parameters.
 
-## Todo
+## Fixed
 - Change the config from using OS dependant slashes on Ftp paths - currently the script fails on win due to backslashes in the FTP Path.
-- Cache nearest station for one crawler task
+    - Only local file use the OS dependant slashes.
+## Todo
+- Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 
 ## Example
 ```php

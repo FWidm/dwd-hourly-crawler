@@ -27,6 +27,7 @@ class DWDHourlyCrawler
     public function __construct(array $controllers)
     {
         $this->controllers = $controllers;
+        DWDUtil::initializeOutputFolder(DWDConfiguration::getHourlyConfiguration()->localBaseFolder);
     }
 
 
@@ -143,12 +144,12 @@ class DWDHourlyCrawler
         //ftp_set_option($ftp_connection, FTP_TIMEOUT_SEC, 9000);
         $files = array();
         if (file_exists($localPath)) {
-            $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($localPath)));
+            $lastModifiedStationFile = Carbon::createFromFormat('U', (filemtime($localPath)));
         }
         //check if the date on the old file is older than 1 day, else return the old path.
         // download can be forced with the optional parameter.
         if ($forceDownloadFile || !file_exists($localPath)
-            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)
+            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
         ) {
             //echo "<p>Controller::retrieveFile >> load new zip!</p>";
             $path = pathinfo($localPath);
@@ -196,7 +197,7 @@ class DWDHourlyCrawler
 
         //todo: if the file exists but the path changed / is wrong this works/is skipped.
         if ($forceDownloadFile || !file_exists($filePath)
-            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now())>1)
+            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now())>=1)
         ) {
             DWDUtil::log(self::class,"Get file!");
             DWDStationsController::getStationFile($stationsFTPPath, $filePath);

@@ -15,11 +15,25 @@ use ZipArchive;
  */
 class DWDUtil
 {
-    public static function getFileNameFromPath($path)
+
+    /**
+     * @param string $path path to the output dir.
+     */
+    public static function initializeOutputFolder(string $path){
+        $path = $_SERVER['DOCUMENT_ROOT'] . $path;
+        if (!is_dir($path)) {
+            mkdir($path, 0755, true);
+        }
+    }
+
+    /** Splits (FTP) Paths with forward slashes to get the file name.
+     * @param string $path
+     * @return string
+     */
+    public static function getFileNameFromPath(string $path)
     {
         $split = explode('/', $path);
-        $name = end($split);
-        self::log(self::class,$name);
+        $name = (string)end($split);
 
         return $name;
     }
