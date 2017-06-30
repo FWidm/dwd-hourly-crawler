@@ -5,7 +5,6 @@ namespace FWidm\DWDHourlyCrawler\Hourly;
 use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
-use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Model\DWDCloudiness;
 use ParseError;
 
@@ -59,7 +58,7 @@ class DWDHourlyCloudinessController extends DWDAbstractHourlyController
             $cols[3] = trim($cols[3], ' ');
             $cols[4] = trim($cols[4], ' ');
 
-            $date = Carbon::createFromFormat("YmdH", $cols[1]);
+            $date = Carbon::createFromFormat(DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat, $cols[1],'utc');
             if ($date) {
                 //todo: Schöner...
                 switch (func_num_args()) {

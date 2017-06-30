@@ -10,6 +10,7 @@ use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyCrawler;
 use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyPrecipitationController;
 use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyPressureController;
 use FWidm\DWDHourlyCrawler\Hourly\DWDAbstractHourlyController;
+use FWidm\DWDHourlyCrawler\Hourly\DWDHourlySoilTempController;
 use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyParameters;
 use Error;
 use Location\Coordinate;
@@ -35,7 +36,6 @@ class DWDLib
     public function getHourlyDataByDates(DWDHourlyParameters $hourlyParameters, DateTime $timeAfter, DateTime $timeBefore, $latitude, $longitude)
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
-        $hourlyControllers = array();
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
             $hourlyControllers = $this->getHourlyController($hourlyParameters);
 
@@ -105,6 +105,9 @@ class DWDLib
                         break;
                     case $conf->precipitation->name:
                         $controllers[$conf->precipitation->name] = new DWDHourlyPrecipitationController('precipitation');
+                        break;
+                    case $conf->soilTemperature->name:
+                        $controllers[$conf->soilTemperature->name] = new DWDHourlySoilTempController('soilTemperature');
                         break;
                     default:
                         print('Unknown variable: var=' . $var . '<br>');

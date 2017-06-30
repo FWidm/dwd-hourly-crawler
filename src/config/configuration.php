@@ -17,7 +17,7 @@ return [
     //Configuration for the station controller.
     'dwdStations' => [
         'ftpFile' => 'pub/CDC/observations_germany/climate/hourly/pressure/recent/P0_Stundenwerte_Beschreibung_Stationen.txt',
-        'localFile' => DIRECTORY_SEPARATOR.'in'.DIRECTORY_SEPARATOR.'stations.txt',
+        'localFile' => DIRECTORY_SEPARATOR . 'in' . DIRECTORY_SEPARATOR . 'stations.txt',
         'skipLines' => 2,
         'activeRequirementDays' => 4,
         'dateFormat' => 'Ymd',
@@ -25,9 +25,8 @@ return [
 
     //Configuration for crawling hourly files
     'dwdHourly' => [
-
-        'baseFTPPath' => '/pub/CDC/observations_germany/climate/hourly'.DIRECTORY_SEPARATOR,
-        'localBaseFolder' => DIRECTORY_SEPARATOR.'output'.DIRECTORY_SEPARATOR.'hourly',
+        'baseFTPPath' => '/pub/CDC/observations_germany/climate/hourly/',
+        'localBaseFolder' => DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR . 'hourly',
         'zipExtractionPrefix' => 'produkt',
         'parameters' => [
 
@@ -35,7 +34,7 @@ return [
                 'name' => 'air_temperature',
                 'shortCode' => 'TU',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/air_temperature/recent/TU_Stundenwerte_Beschreibung_Stationen.txt',
-                'localFolder' => DIRECTORY_SEPARATOR.'air_temperature'.DIRECTORY_SEPARATOR.'recent',
+                'localFolder' => DIRECTORY_SEPARATOR . 'air_temperature' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
                     'qualityBit' => 'QN_9: Quality bit refer to ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/air_temperature/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_tu_historical_de.pdf',
                     'temperature2m' => 'TT_TU: temperature in 2m height - in degrees Celsius.',
@@ -44,11 +43,10 @@ return [
             ],
 
             'cloudiness' => [
-
                 'name' => 'cloudiness',
                 'shortCode' => 'N',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/cloudiness/recent/N_Stundenwerte_Beschreibung_Stationen.txt',
-                'localFolder' => DIRECTORY_SEPARATOR.'cloudiness'.DIRECTORY_SEPARATOR.'recent',
+                'localFolder' => DIRECTORY_SEPARATOR . 'cloudiness' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
                     'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf',
                     'indexObservationType' => 'V_N_I: index to differentiate measurements done by observation or a device.',
@@ -58,11 +56,10 @@ return [
             ],
 
             'precipitation' => [
-
                 'name' => 'precipitation',
                 'shortCode' => 'RR',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/precipitation/recent/RR_Stundenwerte_Beschreibung_Stationen.txt',
-                'localFolder' => DIRECTORY_SEPARATOR.'precipitation'.DIRECTORY_SEPARATOR.'recent',
+                'localFolder' => DIRECTORY_SEPARATOR . 'precipitation' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
 
                     'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf',
@@ -74,11 +71,10 @@ return [
             ],
 
             'pressure' => [
-
                 'name' => 'pressure',
                 'shortCode' => 'P0',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/pressure/recent/P0_Stundenwerte_Beschreibung_Stationen.txt',
-                'localFolder' => DIRECTORY_SEPARATOR.'pressure'.DIRECTORY_SEPARATOR.'recent',
+                'localFolder' => DIRECTORY_SEPARATOR . 'pressure' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
 
                     'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/pressure/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf,',
@@ -89,22 +85,29 @@ return [
             ],
 
             'soilTemperature' => [
-
-                'name' => 'soil_temperature'
+                'name' => 'soil_temperature',
+                'shortCode' => 'EB',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/EB_Stundenwerte_Beschreibung_Stationen.txt',
+                'localFolder' => DIRECTORY_SEPARATOR . 'soil_temperature' . DIRECTORY_SEPARATOR . 'recent',
+                'variables' => [
+                    'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/BESCHREIBUNG_obsgermany_climate_hourly_soil_temperature_recent_de.pdf,',
+                    '$soilTemp_2cm_deg' => 'hourly soil temperature at 2cm depth measured in degrees Celsius',
+                    '$soilTemp_5cm_deg' => 'hourly soil temperature at 5cm depth measured in degrees Celsius',
+                    '$soilTemp_10cm_deg' => 'hourly soil temperature at 10cm depth measured in degrees Celsius',
+                    '$soilTemp_20cm_deg' => 'hourly soil temperature at 20cm depth measured in degrees Celsius',
+                    '$soilTemp_50cm_deg' => 'hourly soil temperature at 50cm depth measured in degrees Celsius'
+                ],
             ],
 
             'solar' => [
-
                 'name' => 'solar'
             ],
 
             'sun' => [
-
                 'name' => 'sun'
             ],
 
             'wind' => [
-
                 'name' => 'wind'
             ],
 

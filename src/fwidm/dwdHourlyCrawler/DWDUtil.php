@@ -48,7 +48,7 @@ class DWDUtil
     static function getDataFileFromZip($zipFile, $extractionPrefix)
     {
         $zip = new ZipArchive;
-
+        self::log(self::class,"zip=".$zipFile);
         if ($zip->open($zipFile)) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $stat = $zip->statIndex($i);

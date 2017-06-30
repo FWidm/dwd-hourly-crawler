@@ -33,7 +33,7 @@ class DWDStationsController
         $frac=Fractal::create()
             ->collection($stations)
             ->transformWith(new DWDStationTransformer())->toJson();
-
+        //todo: finish writing the export to json and array.
         DWDUtil::log(self::class,$frac);
     }
 
@@ -107,8 +107,8 @@ class DWDStationsController
         $login_result = ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword);
         if ($login_result && ftp_size($ftp_connection, $stationFtpPath) > -1 ) {
             $result = ftp_get($ftp_connection, $outputPath, $stationFtpPath, FTP_BINARY);
-            DWDUtil::log(self::class, "out=" . $outputPath);
-            DWDUtil::log(self::class, "ftp=" . $stationFtpPath);
+//            DWDUtil::log(self::class, "out=" . $outputPath);
+//            DWDUtil::log(self::class, "ftp=" . $stationFtpPath);
             ftp_close($ftp_connection);
 
             if (!isset($result)) {
@@ -132,7 +132,6 @@ class DWDStationsController
         error_reporting(E_ALL);
         $stationConf = DWDConfiguration::getStationConfiguration();
         $stations = array();
-        DWDUtil::log(self::class, file_exists($filePath));
 
         if (file_exists($filePath)) {
             $handle = fopen($filePath, "r");

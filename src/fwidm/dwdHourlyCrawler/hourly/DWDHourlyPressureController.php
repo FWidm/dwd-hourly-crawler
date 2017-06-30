@@ -2,9 +2,9 @@
 
 namespace FWidm\DWDHourlyCrawler\Hourly;
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
-use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Model\DWDPressure;
 use ParseError;
 
@@ -37,6 +37,7 @@ class DWDHourlyPressureController extends DWDAbstractHourlyController
         $lines = explode('eor', $content);
         $pressureArray = array();
 
+
         for ($i = sizeof($lines) - 1; $i > 0; $i--) {
             /*
              * [0] => STATIONS_ID
@@ -52,7 +53,7 @@ class DWDHourlyPressureController extends DWDAbstractHourlyController
             if (sizeof($cols) < 5)
                 continue;
 
-            $date = DateTime::createFromFormat("YmdH", $cols[1]);
+            $date = Carbon::createFromFormat(DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat, $cols[1],'utc');
             if ($date) {
                 //todo: Schöner...
                 switch (func_num_args()) {

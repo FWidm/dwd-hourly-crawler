@@ -82,4 +82,12 @@ class DWDHourlyParameters
         return $this;
     }
 
+    public function addSoilTemperature()
+    {
+        $soilTemperature = DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->name;
+        if (!in_array($soilTemperature, $this->variables))
+            $this->variables[] = $soilTemperature;
+        return $this;
+    }
+
 }

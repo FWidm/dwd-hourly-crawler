@@ -5,7 +5,6 @@ namespace FWidm\DWDHourlyCrawler\Hourly;
 use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
-use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Model\DWDAirTemperature;
 use ParseError;
 
@@ -57,7 +56,7 @@ class DWDHourlyAirTemperatureController extends DWDAbstractHourlyController
             if (sizeof($cols) < 5)
                 continue;
 
-            $date = Carbon::createFromFormat("YmdH", $cols[1]);
+            $date = Carbon::createFromFormat(DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat, $cols[1],'utc');
             if ($date) {
                 //todo: Schöner...
                 switch (func_num_args()) {

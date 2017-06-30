@@ -19,9 +19,9 @@ prettyPrint("Checking for Coordinates: ".$coordinatesUlm->format(new GeoJSON()).
 $dwdLib=new DWDLib();
 
 $vars=new DWDHourlyParameters();
-$vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation();
+$vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation()->addSoilTemperature();
 //$vars->addAirTemperature()->addCloudiness();
-//$vars->addPrecipitation();
+//$vars->addSoilTemperature();
 
 $out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
 
