@@ -61,7 +61,7 @@ class DWDStationsController
         $nearestStation = array();
 
         foreach ($stations as $activeStation) {
-            if (true && is_object($activeStation) && $activeStation instanceof DWDStation) {
+            if (is_object($activeStation) && $activeStation instanceof DWDStation) {
 
                 $coordinatesStation = new Coordinate($activeStation->getLatitude(), $activeStation->getLongitude());
                 //distance in meters!
@@ -90,10 +90,10 @@ class DWDStationsController
         $ftp_connection = ftp_connect($ftpConfig->url);
 
         $login_result = ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword);
-        if ($login_result && file_exists($stationFtpPath)) {
+        if ($login_result && ftp_size($ftp_connection, $stationFtpPath) > -1 ) {
             $result = ftp_get($ftp_connection, $outputPath, $stationFtpPath, FTP_BINARY);
-            prettyPrint($result);
-
+            DWDUtil::log(self::class, "out=" . $outputPath);
+            DWDUtil::log(self::class, "ftp=" . $stationFtpPath);
             ftp_close($ftp_connection);
 
             if (!isset($result)) {
@@ -118,6 +118,7 @@ class DWDStationsController
         $stationConf = DWDConfiguration::getStationConfiguration();
         $stations = array();
         DWDUtil::log(self::class, file_exists($filePath));
+
         if (file_exists($filePath)) {
             $handle = fopen($filePath, "r");
             if ($handle) {
@@ -189,6 +190,11 @@ class DWDStationsController
 
     }
 
+    /**Method was used to retrieve the generic stations file.
+     * @deprecated this method is no longer used. It was replaced by 'getStationFile'.
+     * @return array of stations
+     * @throws DWDLibException
+     */
     static function retrieveStations()
     {
 

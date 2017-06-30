@@ -1,7 +1,9 @@
 <?php
 namespace FWidm\DWDHourlyCrawler\Model;
 
+use Carbon\Carbon;
 use DateTime;
+use FWidm\DWDHourlyCrawler\DWDUtil;
 
 
 /**
@@ -45,17 +47,16 @@ class DWDStation implements \JsonSerializable
         $this->name = $name;
         $this->state = $state;
         $this->setActive($activeDayThreshold);
+
     }
 
     public function setActive($activeDayThreshold){
-        $now=new DateTime('now');
-//        print('<hr>');
-//        print(gettype($this->until));
-//        print_r($this->until);
-//        print('<hr>');
-        $difference=$now->diff($this->until);
-//        print_r( $difference->y);
-        if($difference->y==0&&$difference->m==0 && $difference->d < $activeDayThreshold)
+        $now=new Carbon('now','utc');
+        $until = new Carbon($this->until);
+
+        $diffDays=$now->diffInDays($until);
+
+        if($diffDays<$activeDayThreshold)
             $this->active=true;
         else $this->active=false;
 //        $elapsed = $difference->format('%y years %m months %a days %h hours %i minutes %s seconds');

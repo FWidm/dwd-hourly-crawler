@@ -75,11 +75,9 @@ class DWDHourlyCrawler
     {
 
         $data = array();
-        $usedStations = array();
+        $nearestStations  = array();
 
         foreach ($this->controllers as $var => $hourlyController) {
-
-
             $stations = $this->getStations($hourlyController, true);
 
             if (isset($stations)) {
@@ -107,8 +105,10 @@ class DWDHourlyCrawler
                     $timeAfter->modify('-' . $timeMinuteLimit . ' minutes');
 
                     $data['values'][$var] = $hourlyController->parseHourlyData($content, $timeAfter, $timeBefore);
+
                     if (!isset($data['station-' . $nearestStation->getId()])) {
                         $data['values']['station-' . $nearestStation->getId()] = $nearestStation;
+
                     }
                     if (isset($data))
                         break;
@@ -116,7 +116,7 @@ class DWDHourlyCrawler
             }
         }
         //print_r(json_encode($data));
-        if ($sorted)
+        if ($sorted && isset($data['values']))
             ksort($data['values']);
         return $data;
     }
@@ -189,24 +189,30 @@ class DWDHourlyCrawler
         $filePath = $controller->getStationFTPPath($stationsFTPPath);
         //Retrieve Stations
         if (file_exists($filePath)) {
-            $lastModifiedStationFile = DateTime::createFromFormat('U', (filemtime($filePath)));
+            $lastModifiedStationFile = Carbon::createFromFormat('U', (filemtime($filePath)));
+            DWDUtil::log(self::class,"last modified? ".$lastModifiedStationFile);
+
         }
 
         //todo: if the file exists but the path changed / is wrong this works/is skipped.
         if ($forceDownloadFile || !file_exists($filePath)
-            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diff(new DateTime())->d >= 1)
+            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now())>1)
         ) {
+            DWDUtil::log(self::class,"Get file!");
             DWDStationsController::getStationFile($stationsFTPPath, $filePath);
         }
-        DWDUtil::log(self::class,$filePath);
 
         $stations = DWDStationsController::parseStations($filePath);
+        DWDUtil::log(self::class,"Got stations... ".count($stations));
+
         if ($activeOnly) {
-            return array_filter($stations,
+            $stations= array_filter($stations,
                 function (DWDStation $station) {
                     return $station->isActive();
                 });
         }
+        DWDUtil::log(self::class,"Got stations after filtering... ".count($stations));
+
         return $stations;
     }
 
