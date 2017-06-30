@@ -38,8 +38,8 @@ class DWDHourlyCrawler
             $stations = $this->getStations($hourlyController, true);
             if (isset($stations)) {
                 $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
-                foreach ($nearestStations as $nearestStation) {
 
+                foreach ($nearestStations as $nearestStation) {
                     $zipFilePath = $this->retrieveFile($hourlyController, $nearestStation);
 
                     $content = isset($zipFilePath)
@@ -83,6 +83,8 @@ class DWDHourlyCrawler
 
             if (isset($stations)) {
                 $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+//                DWDStationsController::exportStations($nearestStations);
+
                 foreach ($nearestStations as $nearestStation) {
                     /* @var $nearestStation DWDStation */
                     $zipFilePath = $this->retrieveFile($hourlyController, $nearestStation);

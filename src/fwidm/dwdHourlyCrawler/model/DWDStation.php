@@ -4,6 +4,7 @@ namespace FWidm\DWDHourlyCrawler\Model;
 use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDUtil;
+use Spatie\Fractalistic\Fractal;
 
 
 /**
@@ -118,5 +119,55 @@ class DWDStation implements \JsonSerializable
     {
         return $this->id;
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getFrom(): DateTime
+    {
+        return $this->from;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getUntil(): DateTime
+    {
+        return $this->until;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHeight()
+    {
+        return $this->height;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+
 
 }

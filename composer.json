@@ -11,7 +11,8 @@
   ],
   "require": {
     "mjaschen/phpgeo": "^1.3",
-    "nesbot/carbon": "^1.22"
+    "nesbot/carbon": "^1.22",
+    "spatie/fractalistic": "^2.2"
   },
   "autoload": {
     "psr-0": {

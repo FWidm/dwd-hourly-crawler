@@ -6,11 +6,14 @@ use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
+use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyExportType;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Error;
+use FWidm\DWDHourlyCrawler\Model\Transformers\DWDStationTransformer;
 use Location\Coordinate;
 use Location\Distance\Vincenty;
 use DateTime;
+use Spatie\Fractalistic\Fractal;
 
 /**
  * Created by PhpStorm.
@@ -21,6 +24,18 @@ use DateTime;
 class DWDStationsController
 {
     public const kmToMeters = 1000;
+
+    /**
+     * Exports stations as
+     * @param $stations
+     */
+    public static function exportStations($stations, DWDHourlyExportType $type=null){
+        $frac=Fractal::create()
+            ->collection($stations)
+            ->transformWith(new DWDStationTransformer())->toJson();
+
+        DWDUtil::log(self::class,$frac);
+    }
 
     /**Return the nearest stations from a stations array.
      * @param $stations - array of DWDStation
