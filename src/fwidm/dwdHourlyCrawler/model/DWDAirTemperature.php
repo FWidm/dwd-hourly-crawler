@@ -12,14 +12,11 @@ use FWidm\DWDHourlyCrawler\DWDConfiguration;
  */
 class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializable
 {
-    //QN_9
-    private $quality_qn9;
+
     //°C
     private $temperature2m_degC;
     //%
     private $relativeHumidity_percent;
-
-    private $paramDescription;
 
     /**
      * DWDPressure constructor.
@@ -33,10 +30,10 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
     {
         $this->stationId = $stationId;
         $this->date = $date;
-        $this->quality_qn9 = $quality;
+        $this->quality = $quality;
         $this->temperature2m_degC = $temperature2m;
         $this->relativeHumidity_percent = $relativeHumidity;
-        $this->paramDescription=DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->variables;
+        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->variables;
     }
 
     function __toString()

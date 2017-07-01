@@ -53,7 +53,7 @@ class DWDHourlySoilTempController extends DWDAbstractHourlyController
 
             $date = Carbon::createFromFormat(DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat, $cols[1],'utc');
             if ($date) {
-                $soilTemp = new DWDSoilTemp($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5], $cols[6], $cols[7]);
+                $soilTemp = new DWDSoilTemp($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5], $cols[6], $cols[7], $cols[8]);
                 switch (func_num_args()) {
                     //After is set
                     case 2: {

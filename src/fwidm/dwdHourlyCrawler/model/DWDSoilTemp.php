@@ -14,16 +14,12 @@ use FWidm\DWDHourlyCrawler\DWDConfiguration;
 class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
 {
 
-    //QN_8
-    private $quality;
-
     private $soilTemp_2cm_deg;
     private $soilTemp_5cm_deg;
     private $soilTemp_10cm_deg;
     private $soilTemp_20cm_deg;
     private $soilTemp_50cm_deg;
-
-    private $paramDescription;
+    private $soilTemp_100cm_deg;
 
     /**
      * DWDPressure constructor.
@@ -34,7 +30,7 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
      * @param $soilTemp_20cm_deg
      * @param $soilTemp_50cm_deg
      */
-    public function __construct(int $stationId, DateTime $date, $quality, $soilTemp_2cm_deg, $soilTemp_5cm_deg, $soilTemp_10cm_deg, $soilTemp_20cm_deg, $soilTemp_50cm_deg)
+    public function __construct(int $stationId, DateTime $date, $quality, $soilTemp_2cm_deg, $soilTemp_5cm_deg, $soilTemp_10cm_deg, $soilTemp_20cm_deg, $soilTemp_50cm_deg, $soilTemp_100cm_deg)
     {
         $this->stationId = $stationId;
         $this->date = $date;
@@ -44,7 +40,8 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
         $this->soilTemp_10cm_deg = $soilTemp_10cm_deg;
         $this->soilTemp_20cm_deg = $soilTemp_20cm_deg;
         $this->soilTemp_50cm_deg = $soilTemp_50cm_deg;
-        $this->paramDescription = DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->variables;
+        $this->soilTemp_100cm_deg = $soilTemp_100cm_deg;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->variables;
 
     }
 

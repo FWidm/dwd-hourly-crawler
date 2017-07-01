@@ -12,14 +12,12 @@ use FWidm\DWDHourlyCrawler\DWDConfiguration;
  */
 class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
 {
-    //QN_9
-    private $quality_qn8;
+
     //whether a human or a machine made the observation?
     private $indexObservationType;
     //n/8 as a means to measure cloudiness
     private $cloudiness_eights;
 
-    private $paramDescription;
 
     /**
      * DWDPressure constructor.
@@ -33,10 +31,10 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     {
         $this->stationId = $stationId;
         $this->date = $date;
-        $this->quality_qn8 = $quality;
+        $this->quality = $quality;
         $this->indexObservationType = $indexObservationType;
         $this->cloudiness_eights = $cloudiness_eights;
-        $this->paramDescription=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->variables;
+        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->variables;
     }
 
     function __toString()

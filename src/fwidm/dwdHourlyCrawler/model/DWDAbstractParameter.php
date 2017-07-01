@@ -14,10 +14,12 @@ abstract class  DWDAbstractParameter
 //    protected $id;
     protected $stationId;
 
-
     protected $date;
 
-    
+    protected $description;
+
+    protected $quality;
+
     /**
      * @return mixed
      */

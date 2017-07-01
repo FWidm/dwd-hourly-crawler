@@ -13,8 +13,7 @@ use FWidm\DWDHourlyCrawler\DWDConfiguration;
 class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
 {
 
-    //QN_8
-    private $quality;
+
     //mm
     private $precipitationHeight_mm;
 
@@ -22,7 +21,6 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
 
     private $preciptionWRType;
 
-    private $paramDescription;
 
     /**
      * DWDPressure constructor.
@@ -40,7 +38,7 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
         $this->precipitationHeight_mm = $pressureSeaLevel;
         $this->precipitationIndex = $pressureStationLevel;
         $this->preciptionWRType=$preciptionWRType;
-        $this->paramDescription=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->variables;
+        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->variables;
 
     }
 

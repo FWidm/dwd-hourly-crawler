@@ -13,14 +13,12 @@ use FWidm\DWDHourlyCrawler\DWDConfiguration;
 class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
 {
 
-    //QN_8
-    private $quality;
     //Pascal / p
     private $pressureSeaLevel_hPA;
     //Pascal / p0
     private $pressureStationLevel_hPA;
 
-    private $paramDescription;
+    private $description;
 
     /**
      * DWDPressure constructor.
@@ -38,7 +36,7 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
         $this->pressureSeaLevel_hPA = $pressureSeaLevel;
         $this->pressureStationLevel_hPA = $pressureStationLevel;
 
-        $this->paramDescription=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->variables;
+        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->variables;
 
     }
 

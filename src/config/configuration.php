@@ -90,25 +90,52 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/EB_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'soil_temperature' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/BESCHREIBUNG_obsgermany_climate_hourly_soil_temperature_recent_de.pdf,',
-                    '$soilTemp_2cm_deg' => 'hourly soil temperature at 2cm depth measured in degrees Celsius',
-                    '$soilTemp_5cm_deg' => 'hourly soil temperature at 5cm depth measured in degrees Celsius',
-                    '$soilTemp_10cm_deg' => 'hourly soil temperature at 10cm depth measured in degrees Celsius',
-                    '$soilTemp_20cm_deg' => 'hourly soil temperature at 20cm depth measured in degrees Celsius',
-                    '$soilTemp_50cm_deg' => 'hourly soil temperature at 50cm depth measured in degrees Celsius'
+                    'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/DESCRIPTION_obsgermany_climate_hourly_soil_temperature_recent_en.pdf,',
+                    '$soilTemp_2cm_deg' => 'V_TE002: Hurly soil temperature in 2cm depth measured in degrees Celsius.',
+                    '$soilTemp_5cm_deg' => 'V_TE005: Hourly soil temperature in 5cm depth measured in degrees Celsius.',
+                    '$soilTemp_10cm_deg' => 'V_TE010: Hourly soil temperature in 10cm depth measured in degrees Celsius.',
+                    '$soilTemp_20cm_deg' => 'V_TE020: Hourly soil temperature in 20cm depth measured in degrees Celsius.',
+                    '$soilTemp_50cm_deg' => 'V_TE050: Hourly soil temperature in 50cm depth measured in degrees Celsius.',
+                    '$soilTemp_100cm_deg' => 'V_TE100: Hourly soil temperature in 50cm depth measured in degrees Celsius.'
                 ],
             ],
 
             'solar' => [
-                'name' => 'solar'
+                'name' => 'solar',
+                'shortCode' => 'ST',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/ST_Stundenwerte_Beschreibung_Stationen.txt',
+                'localFolder' => DIRECTORY_SEPARATOR . 'solar' . DIRECTORY_SEPARATOR . 'recent',
+                'variables' => [
+                    'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/solar/recent/DESCRIPTION_obsgermany_climate_hourly_solar_recent_en.pdf,',
+                    '$sumLongwaveRadiation' => 'ATMO_STRAHL: Hourly sum of longwave downward radiation in J/cm^2.',
+                    '$sumDiffuseRadiation' => 'FD_STRAHL: Hourly sum of diffuse solar radiation in J/cm^2.',
+                    '$sumIncomingRadiation' => 'FG_STRAHL: Hourly sum of solar incoming radiation in J/cm^2.',
+                    '$sumSunshineDuration' => 'SD_STRAHL: Hourly sum of sunshine duration in minutes.',
+                    '$zenith' => 'ZENITH: Solar zenith angle at mid interval in degrees.'
+                ],
             ],
 
             'sun' => [
-                'name' => 'sun'
+                'name' => 'sun',
+                'shortCode' => 'SD',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/SD_Stundenwerte_Beschreibung_Stationen.txt',
+                'localFolder' => DIRECTORY_SEPARATOR . 'sun' . DIRECTORY_SEPARATOR . 'recent',
+                'variables' => [
+                    'qualityBit' => 'QN_7: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/sun/recent/DESCRIPTION_obsgermany_climate_hourly_sun_recent_en.pdf,',
+                    '$sunshineDuration' => 'SD_SO: hourly sunshine duration in minutes..',
+                ],
             ],
 
             'wind' => [
-                'name' => 'wind'
+                'name' => 'wind',
+                'shortCode' => 'FF',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/FF_Stundenwerte_Beschreibung_Stationen.txt',
+                'localFolder' => DIRECTORY_SEPARATOR . 'wind' . DIRECTORY_SEPARATOR . 'recent',
+                'variables' => [
+                    'qualityBit' => 'QN_3: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/wind/sun/recent/DESCRIPTION_obsgermany_climate_hourly_wind_recent_en.pdf,',
+                    '$meanWindSpeed' => 'F: mean wind speed in m/s.',
+                    '$meanWindDirection' => 'D: mean wind direction in degrees.',
+                ],
             ],
 
         ],
