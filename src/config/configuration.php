@@ -113,8 +113,11 @@ return [
                     '$sumSunshineDuration' => 'SD_STRAHL: Hourly sum of sunshine duration in minutes.',
                     '$zenith' => 'ZENITH: Solar zenith angle at mid interval in degrees.'
                 ],
+                //File extension for solar file was changed, no idea why
                 'fileExtension' => '_row.zip',
+                //Other folder structure - no /recent/stundenwerte_...
                 'recentValuePath' => '/stundenwerte_',
+                //other dateformat including the hours after a colon.
                 'dateFormat' => 'YmdH:i'
             ],
 
