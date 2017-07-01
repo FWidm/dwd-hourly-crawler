@@ -117,7 +117,7 @@ return [
                 'fileExtension' => '_row.zip',
                 //Other folder structure - no /recent/stundenwerte_...
                 'recentValuePath' => '/stundenwerte_',
-                //other dateformat including the hours after a colon.
+                //other dateformat including the minutes after a colon.
                 'dateFormat' => 'YmdH:i'
             ],
 
