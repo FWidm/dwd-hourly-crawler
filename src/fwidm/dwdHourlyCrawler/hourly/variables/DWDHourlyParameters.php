@@ -90,4 +90,27 @@ class DWDHourlyParameters
         return $this;
     }
 
+    public function addSolar()
+    {
+        $solar = DWDConfiguration::getHourlyConfiguration()->parameters->solar->name;
+        if (!in_array($solar, $this->variables))
+            $this->variables[] = $solar;
+        return $this;
+    }
+
+    public function addSun()
+    {
+        $sun = DWDConfiguration::getHourlyConfiguration()->parameters->sun->name;
+        if (!in_array($sun, $this->variables))
+            $this->variables[] = $sun;
+        return $this;
+    }
+
+    public function addWind()
+    {
+        $wind = DWDConfiguration::getHourlyConfiguration()->parameters->wind->name;
+        if (!in_array($wind, $this->variables))
+            $this->variables[] = $wind;
+        return $this;
+    }
 }

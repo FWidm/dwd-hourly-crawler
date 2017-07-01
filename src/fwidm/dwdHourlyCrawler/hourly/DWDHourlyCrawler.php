@@ -42,6 +42,7 @@ class DWDHourlyCrawler
 
                 foreach ($nearestStations as $nearestStation) {
                     $zipFilePath = $this->retrieveFile($hourlyController, $nearestStation);
+                    DWDUtil::log(self::class, 'filepath=' . $zipFilePath);
 
                     $content = isset($zipFilePath)
                         ? DWDUtil::getDataFileFromZip($zipFilePath, DWDConfiguration::getHourlyConfiguration()->zipExtractionPrefix)
@@ -99,10 +100,11 @@ class DWDHourlyCrawler
                     }
 
                     $data['values'][$var] = $this->retrieveData($content, $hourlyController, $dateTime, $timeMinuteLimit);
+                    //DWDUtil::log(self::class, $data );
 
 
                     //addStation
-                    if (!isset($data['station-' . $nearestStation->getId()])) {
+                    if (count($data['values'][$var])>0 && !isset($data['station-' . $nearestStation->getId()])) {
                         $data['values']['station-' . $nearestStation->getId()] = $nearestStation;
 
                     }
@@ -147,11 +149,11 @@ class DWDHourlyCrawler
         if (count($data) == 0 && $timeMinuteLimit < 210) {
             $data = $this->retrieveData($content, $hourlyController, $dateTime, 210);
         }
-        // throw an error if no data could be retrieved at all.
-        if (count($data) == 0) {
-            throw new DWDLibException("The parameter could not be retrieved for intervals of: " . $timeMinuteLimit .
-                " min, 90min and 210min. Either the current date is not in the data set, or the data set has a bigger interval than 1,3 or 7hours.");
-        }
+//        // throw an error if no data could be retrieved at all.
+//        if (count($data) == 0) {
+//            throw new DWDLibException("The parameter could not be retrieved for intervals of: " . $timeMinuteLimit .
+//                " min, 90min and 210min. Either the current date is not in the data set, or the data set has a bigger interval than 1,3 or 7hours.");
+//        }
 
         return $data;
     }
@@ -171,6 +173,9 @@ class DWDHourlyCrawler
         $fileName = $controller->getFileName($nearestStation->getId());
         $ftpPath = $controller->getFileFTPPath($nearestStation->getId());
         $localPath = $controller->getFilePath($fileName);
+        DWDUtil::log(self::class, '$fileName=' . $fileName);
+        DWDUtil::log(self::class, '$ftpPath=' . $ftpPath);
+        DWDUtil::log(self::class, '$localPath=' . $localPath);
 
         //get file.
         $ftp_connection = ftp_connect($ftpConfig->url);
@@ -239,7 +244,8 @@ class DWDHourlyCrawler
         $stations = DWDStationsController::parseStations($filePath);
         DWDUtil::log(self::class, "Got stations... " . count($stations));
 
-        if ($activeOnly) {
+        //todo: remove the false .
+        if (false && $activeOnly) {
             $stations = array_filter($stations,
                 function (DWDStation $station) {
                     return $station->isActive();

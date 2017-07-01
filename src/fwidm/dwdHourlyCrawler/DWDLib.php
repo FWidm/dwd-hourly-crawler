@@ -11,6 +11,7 @@ use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyPrecipitationController;
 use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyPressureController;
 use FWidm\DWDHourlyCrawler\Hourly\DWDAbstractHourlyController;
 use FWidm\DWDHourlyCrawler\Hourly\DWDHourlySoilTempController;
+use FWidm\DWDHourlyCrawler\Hourly\DWDHourlySolarController;
 use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyParameters;
 use Error;
 use Location\Coordinate;
@@ -109,6 +110,15 @@ class DWDLib
                     case $conf->soilTemperature->name:
                         $controllers[$conf->soilTemperature->name] = new DWDHourlySoilTempController('soilTemperature');
                         break;
+                    case $conf->solar->name:
+                        $controllers[$conf->solar->name] = new DWDHourlySolarController('solar');
+                        break;
+//                    case $conf->sun->name:
+//                        $controllers[$conf->sun->name] = new DWDHourlySoilTempController('sun');
+//                        break;
+//                    case $conf->wind->name:
+//                        $controllers[$conf->wind->name] = new DWDHourlySoilTempController('wind');
+//                        break;
                     default:
                         print('Unknown variable: var=' . $var . '<br>');
                 }

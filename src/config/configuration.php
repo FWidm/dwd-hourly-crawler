@@ -103,7 +103,7 @@ return [
             'solar' => [
                 'name' => 'solar',
                 'shortCode' => 'ST',
-                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/ST_Stundenwerte_Beschreibung_Stationen.txt',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/solar/ST_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'solar' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
                     'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/solar/recent/DESCRIPTION_obsgermany_climate_hourly_solar_recent_en.pdf,',
@@ -113,6 +113,9 @@ return [
                     '$sumSunshineDuration' => 'SD_STRAHL: Hourly sum of sunshine duration in minutes.',
                     '$zenith' => 'ZENITH: Solar zenith angle at mid interval in degrees.'
                 ],
+                'fileExtension' => '_row.zip',
+                'recentValuePath' => '/stundenwerte_',
+                'dateFormat' => 'YmdH:i'
             ],
 
             'sun' => [
@@ -150,4 +153,5 @@ return [
         'recentValuePath' => '/recent/stundenwerte_',
         'filePrefix' => 'stundenwerte_',
         'fileExtension' => '_akt.zip'
+
     ]];

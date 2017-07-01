@@ -70,7 +70,7 @@ class DWDStationsController
      * @param int $radiusKM - default 20km
      * @return array - of nearest stations in the given radius
      */
-    public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 20)
+    public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 200)
     {
         $calculator = new Vincenty();
         $nearestStation = array();
