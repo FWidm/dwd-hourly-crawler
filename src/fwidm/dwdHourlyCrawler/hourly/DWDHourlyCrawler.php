@@ -13,7 +13,6 @@ use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
-use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Location\Coordinate;
 
@@ -32,33 +31,44 @@ class DWDHourlyCrawler
     }
 
 
-    public function getDataByDates(Coordinate $coordinatesRequest, DateTime $timeAfter, DateTime $timeBefore)
+    /**Get all data for the given day. The parameter day is converted to UTC!
+     * @param Coordinate $coordinatesRequest
+     * @param DateTime $day
+     * @return array
+     */
+    public function getDataByDay(Coordinate $coordinatesRequest, DateTime $day)
     {
         $data = array();
+        $day=Carbon::instance($day)->setTimezone('utc');
         foreach ($this->controllers as $var => $hourlyController) {
             $stations = $this->getStations($hourlyController, true);
             if (isset($stations)) {
                 $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
 
                 foreach ($nearestStations as $nearestStation) {
+                    /* @var $nearestStation DWDStation */
                     $zipFilePath = $this->retrieveFile($hourlyController, $nearestStation);
-                    DWDUtil::log(self::class, 'filepath=' . $zipFilePath);
-
                     $content = isset($zipFilePath)
                         ? DWDUtil::getDataFileFromZip($zipFilePath, DWDConfiguration::getHourlyConfiguration()->zipExtractionPrefix)
                         : null;
+
                     //content can only be null if a station is listed as active but is not anymore.
                     if ($content == null) {
                         DWDUtil::log(self::class, 'file for station=' . $nearestStation . ' could not be loaded, trying next station');
-
                         continue;
                     }
 
+                    $start=Carbon::instance($day)->startOfDay();
+                    $end=Carbon::instance($day)->endOfDay();
+                    $data['values'][$var] = $this->retrieveData2($content, $hourlyController, $start, $end);
 
-                    $data[$var] = $hourlyController->parseHourlyData($content, $timeAfter, $timeBefore);
+                    //addStation
+                    if (count($data['values'][$var])>0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
+                        $data['stations']['station-' . $nearestStation->getId()] = $nearestStation;
+
+                    }
                     if (isset($data))
                         break;
-
                 }
             }
         }
@@ -74,7 +84,7 @@ class DWDHourlyCrawler
      * @param int $timeMinuteLimit
      * @return array|null
      */
-    public function getDataFailsafe($coordinatesRequest, DateTime $dateTime, $timeMinuteLimit = 30, $sorted = true)
+    public function getDataInInverval($coordinatesRequest, DateTime $dateTime, $timeMinuteLimit = 30, $sorted = true)
     {
 
         $data = array();
@@ -124,12 +134,12 @@ class DWDHourlyCrawler
      * DWD Hourly data is not really hourly, as such first try to query with the specified limit, then, if the limit is smaller than +-1.5h or +-3.5h
      * Query those values and return them.
      * @param $content - of the zip
-     * @param DWDAbstractHourlyController $hourlyController - the controller that should parse the data
+     * @param AbstractHourlyService $hourlyController - the controller that should parse the data
      * @param DateTime $dateTime - the data for which we want to query
      * @param $timeMinuteLimit - limit in minutes that defines the range: currentDate+-limit = search range.
      * @return array of DWDAbstractParameter
      */
-    private function retrieveData($content, DWDAbstractHourlyController $hourlyController, DateTime $dateTime, $timeMinuteLimit)
+    private function retrieveData($content, AbstractHourlyService $hourlyController, DateTime $dateTime, $timeMinuteLimit)
     {
         //custom time limit
         $timeBefore = Carbon::instance($dateTime);
@@ -158,13 +168,33 @@ class DWDHourlyCrawler
         return $data;
     }
 
+    /**
+     * DWD Hourly data is not really hourly, as such first try to query with the specified limit, then, if the limit is smaller than +-1.5h or +-3.5h
+     * Query those values and return them.
+     * @param $content - of the zip
+     * @param AbstractHourlyService $hourlyController - the controller that should parse the data
+     * @param DateTime $dateTime - the data for which we want to query
+     * @param $timeMinuteLimit - limit in minutes that defines the range: currentDate+-limit = search range.
+     * @return array of DWDAbstractParameter
+     */
+    private function retrieveData2($content, AbstractHourlyService $hourlyController, DateTime $start, DateTime $end)
+    {
+        $data = $hourlyController->parseHourlyData($content, $start, $end);
+//        // throw an error if no data could be retrieved at all.
+//        if (count($data) == 0) {
+//            throw new DWDLibException("The parameter could not be retrieved for intervals of: " . $timeMinuteLimit .
+//                " min, 90min and 210min. Either the current date is not in the data set, or the data set has a bigger interval than 1,3 or 7hours.");
+//        }
+
+        return $data;
+    }
     /** Retrieves a file for the controller by querying the nearest station.
-     * @param DWDAbstractHourlyController $controller
+     * @param AbstractHourlyService $controller
      * @param DWDStation $nearestStation
      * @param bool $forceDownloadFile
      * @return string filePath
      */
-    public function retrieveFile(DWDAbstractHourlyController $controller, DWDStation $nearestStation, $forceDownloadFile = false)
+    public function retrieveFile(AbstractHourlyService $controller, DWDStation $nearestStation, $forceDownloadFile = false)
     {
         $config = DWDConfiguration::getConfiguration();
         $ftpConfig = $config->ftp;
@@ -219,10 +249,10 @@ class DWDHourlyCrawler
      * @return array
      */
     public
-    function getStations(DWDAbstractHourlyController $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
+    function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
     {
 
-        $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;//->airTemperature->stations;
+        $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;
         $stationsFTPPath = get_object_vars($stationsFTPPath)[$controller->getParameter()]->stations;
 
         $filePath = $controller->getStationFTPPath($stationsFTPPath);
@@ -258,7 +288,7 @@ class DWDHourlyCrawler
 
 
     public
-    function addController(DWDAbstractHourlyController $controller)
+    function addController(AbstractHourlyService $controller)
     {
         $this->controllers[] = $controller;
     }
