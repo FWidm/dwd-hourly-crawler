@@ -1,11 +1,11 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
-use FWidm\DWDHourlyCrawler\Model\DWDSoilTemp;
+use FWidm\DWDHourlyCrawler\Model\DWDPressure;
 
 /**
  * Created by PhpStorm.
@@ -13,7 +13,7 @@ use FWidm\DWDHourlyCrawler\Model\DWDSoilTemp;
  * Date: 12.06.2017
  * Time: 15:21
  */
-class HourlySoilTempService extends AbstractHourlyService
+class HourlyPressureService extends AbstractHourlyService
 {
     public function __construct(string $parameter)
     {
@@ -24,7 +24,7 @@ class HourlySoilTempService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
-        $fileName = $parameterConf->soilTemperature->shortCode . '_'
+        $fileName = $parameterConf->pressure->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
         return $fileName;
     }
@@ -33,7 +33,7 @@ class HourlySoilTempService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->soilTemperature->localFolder;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->pressure->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -44,10 +44,10 @@ class HourlySoilTempService extends AbstractHourlyService
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
 
-        $fileName = $parameterConf->soilTemperature->shortCode . '_'
+        $fileName = $parameterConf->pressure->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
 
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->soilTemperature->name
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->pressure->name
             . $config->dwdHourly->recentValuePath . $fileName;
 
         return $ftpPath;
@@ -55,6 +55,7 @@ class HourlySoilTempService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
     {
-        return new DWDSoilTemp($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5], $cols[6], $cols[7], $cols[8]);
+        return new DWDPressure($cols[0], $date, $cols[2], $cols[3], $cols[4]);
+
     }
 }

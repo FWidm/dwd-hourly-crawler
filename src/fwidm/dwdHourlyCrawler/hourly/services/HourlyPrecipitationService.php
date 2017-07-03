@@ -1,11 +1,11 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
-use FWidm\DWDHourlyCrawler\Model\DWDSolar;
+use FWidm\DWDHourlyCrawler\Model\DWDPrecipitation;
 
 /**
  * Created by PhpStorm.
@@ -13,24 +13,19 @@ use FWidm\DWDHourlyCrawler\Model\DWDSolar;
  * Date: 12.06.2017
  * Time: 15:21
  */
-class HourlySolarService extends AbstractHourlyService
+class HourlyPrecipitationService extends AbstractHourlyService
 {
     public function __construct(string $parameter)
     {
         parent::__construct($parameter);
     }
 
-    public function getTimeFormat(): string
-    {
-        return DWDConfiguration::getHourlyConfiguration()->parameters->solar->dateFormat;
-    }
-
     public function getFileName(string $stationID)
     {
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
-        $fileName = $parameterConf->solar->shortCode . '_'
-            . $stationID . $parameterConf->solar->fileExtension;
+        $fileName = $parameterConf->precipitation->shortCode . '_'
+            . $stationID . $config->dwdHourly->fileExtension;
         return $fileName;
     }
 
@@ -38,7 +33,7 @@ class HourlySolarService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->solar->localFolder;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->precipitation->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -49,17 +44,17 @@ class HourlySolarService extends AbstractHourlyService
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
 
-        $fileName = $parameterConf->solar->shortCode . '_'
-            . $stationID . $parameterConf->solar->fileExtension;
+        $fileName = $parameterConf->precipitation->shortCode . '_'
+            . $stationID . $config->dwdHourly->fileExtension;
 
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->solar->name
-            . $parameterConf->solar->recentValuePath . $fileName;
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->precipitation->name
+            . $config->dwdHourly->recentValuePath . $fileName;
 
         return $ftpPath;
     }
 
     public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
     {
-        return new DWDSolar($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5], $cols[6], $cols[7]);
+        return new DWDPrecipitation($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5]);
     }
 }

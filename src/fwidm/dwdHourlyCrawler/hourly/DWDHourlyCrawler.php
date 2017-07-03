@@ -14,6 +14,7 @@ use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
+use FWidm\DWDHourlyCrawler\Hourly\Services\AbstractHourlyService;
 use Location\Coordinate;
 
 class DWDHourlyCrawler

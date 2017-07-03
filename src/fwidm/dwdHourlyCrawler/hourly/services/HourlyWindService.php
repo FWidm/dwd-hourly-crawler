@@ -1,11 +1,11 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
-use FWidm\DWDHourlyCrawler\Model\DWDPrecipitation;
+use FWidm\DWDHourlyCrawler\Model\DWDWind;
 
 /**
  * Created by PhpStorm.
@@ -13,7 +13,7 @@ use FWidm\DWDHourlyCrawler\Model\DWDPrecipitation;
  * Date: 12.06.2017
  * Time: 15:21
  */
-class HourlyPrecipitationService extends AbstractHourlyService
+class HourlyWindService extends AbstractHourlyService
 {
     public function __construct(string $parameter)
     {
@@ -24,7 +24,7 @@ class HourlyPrecipitationService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
-        $fileName = $parameterConf->precipitation->shortCode . '_'
+        $fileName = $parameterConf->wind->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
         return $fileName;
     }
@@ -33,7 +33,7 @@ class HourlyPrecipitationService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->precipitation->localFolder;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->wind->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -44,10 +44,10 @@ class HourlyPrecipitationService extends AbstractHourlyService
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
 
-        $fileName = $parameterConf->precipitation->shortCode . '_'
+        $fileName = $parameterConf->wind->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
 
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->precipitation->name
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->wind->name
             . $config->dwdHourly->recentValuePath . $fileName;
 
         return $ftpPath;
@@ -55,6 +55,6 @@ class HourlyPrecipitationService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
     {
-        return new DWDPrecipitation($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5]);
+       return new DWDWind($cols[0], $date, $cols[2], $cols[3], $cols[4]);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
-use FWidm\DWDHourlyCrawler\Model\DWDPressure;
+use FWidm\DWDHourlyCrawler\Model\DWDCloudiness;
 
 /**
  * Created by PhpStorm.
@@ -13,8 +13,9 @@ use FWidm\DWDHourlyCrawler\Model\DWDPressure;
  * Date: 12.06.2017
  * Time: 15:21
  */
-class HourlyPressureService extends AbstractHourlyService
+class HourlyCloudinessService extends AbstractHourlyService
 {
+
     public function __construct(string $parameter)
     {
         parent::__construct($parameter);
@@ -24,7 +25,7 @@ class HourlyPressureService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
-        $fileName = $parameterConf->pressure->shortCode . '_'
+        $fileName = $parameterConf->cloudiness->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
         return $fileName;
     }
@@ -33,7 +34,7 @@ class HourlyPressureService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->pressure->localFolder;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->cloudiness->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -44,10 +45,10 @@ class HourlyPressureService extends AbstractHourlyService
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
 
-        $fileName = $parameterConf->pressure->shortCode . '_'
+        $fileName = $parameterConf->cloudiness->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
 
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->pressure->name
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->cloudiness->name
             . $config->dwdHourly->recentValuePath . $fileName;
 
         return $ftpPath;
@@ -55,7 +56,8 @@ class HourlyPressureService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
     {
-        return new DWDPressure($cols[0], $date, $cols[2], $cols[3], $cols[4]);
-
+        //station id, date, data vals
+        $lineData = new DWDCloudiness($cols[0], $date, $cols[2], $cols[3], $cols[4]);
+        return $lineData;
     }
 }

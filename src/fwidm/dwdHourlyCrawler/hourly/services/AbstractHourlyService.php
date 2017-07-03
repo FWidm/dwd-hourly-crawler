@@ -1,6 +1,6 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use Carbon\Carbon;
 use DateTime;

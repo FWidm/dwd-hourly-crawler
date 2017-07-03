@@ -1,11 +1,11 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
-use FWidm\DWDHourlyCrawler\Model\DWDCloudiness;
+use FWidm\DWDHourlyCrawler\Model\DWDsun;
 
 /**
  * Created by PhpStorm.
@@ -13,9 +13,8 @@ use FWidm\DWDHourlyCrawler\Model\DWDCloudiness;
  * Date: 12.06.2017
  * Time: 15:21
  */
-class HourlyCloudinessService extends AbstractHourlyService
+class HourlySunService extends AbstractHourlyService
 {
-
     public function __construct(string $parameter)
     {
         parent::__construct($parameter);
@@ -25,7 +24,7 @@ class HourlyCloudinessService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
-        $fileName = $parameterConf->cloudiness->shortCode . '_'
+        $fileName = $parameterConf->sun->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
         return $fileName;
     }
@@ -34,7 +33,7 @@ class HourlyCloudinessService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->cloudiness->localFolder;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->sun->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -45,10 +44,10 @@ class HourlyCloudinessService extends AbstractHourlyService
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
 
-        $fileName = $parameterConf->cloudiness->shortCode . '_'
+        $fileName = $parameterConf->sun->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
 
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->cloudiness->name
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->sun->name
             . $config->dwdHourly->recentValuePath . $fileName;
 
         return $ftpPath;
@@ -56,8 +55,6 @@ class HourlyCloudinessService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
     {
-        //station id, date, data vals
-        $lineData = new DWDCloudiness($cols[0], $date, $cols[2], $cols[3], $cols[4]);
-        return $lineData;
+        return new DWDSun($cols[0], $date, $cols[2], $cols[3]);
     }
 }

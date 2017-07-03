@@ -1,11 +1,11 @@
 <?php
 
-namespace FWidm\DWDHourlyCrawler\Hourly;
+namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
-use FWidm\DWDHourlyCrawler\Model\DWDsun;
+use FWidm\DWDHourlyCrawler\Model\DWDAirTemperature;
 
 /**
  * Created by PhpStorm.
@@ -13,8 +13,11 @@ use FWidm\DWDHourlyCrawler\Model\DWDsun;
  * Date: 12.06.2017
  * Time: 15:21
  */
-class HourlySunService extends AbstractHourlyService
+class HourlyAirTemperatureService extends AbstractHourlyService
 {
+    /**
+     * HourlyAirTemperatureService constructor.
+     */
     public function __construct(string $parameter)
     {
         parent::__construct($parameter);
@@ -24,7 +27,7 @@ class HourlySunService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
-        $fileName = $parameterConf->sun->shortCode . '_'
+        $fileName = $parameterConf->airTemperature->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
         return $fileName;
     }
@@ -33,7 +36,7 @@ class HourlySunService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->sun->localFolder;
+        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->airTemperature->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -44,10 +47,10 @@ class HourlySunService extends AbstractHourlyService
         $config = DWDConfiguration::getConfiguration();
         $parameterConf = $config->dwdHourly->parameters;
 
-        $fileName = $parameterConf->sun->shortCode . '_'
+        $fileName = $parameterConf->airTemperature->shortCode . '_'
             . $stationID . $config->dwdHourly->fileExtension;
 
-        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->sun->name
+        $ftpPath = $config->dwdHourly->baseFTPPath . $parameterConf->airTemperature->name
             . $config->dwdHourly->recentValuePath . $fileName;
 
         return $ftpPath;
@@ -55,6 +58,6 @@ class HourlySunService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
     {
-        return new DWDSun($cols[0], $date, $cols[2], $cols[3]);
+        return new DWDAirTemperature($cols[0], $date, $cols[2], $cols[3], $cols[4]);
     }
 }
