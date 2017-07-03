@@ -1,47 +1,43 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: fabianwidmann
+ * Date: 03.07.17
+ * Time: 10:31
+ */
+
 namespace FWidm\DWDHourlyCrawler\Model;
+
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 
-/**
- * Created by PhpStorm.
- * User: fabianwidmann
- * Date: 12.06.17
- * Time: 10:23
- */
-class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
+class DWDSun extends DWDAbstractParameter implements \JsonSerializable
 {
+    private $sunshineDuration;
 
-    //Pascal / p
-    private $pressureSeaLevel_hPA;
-    //Pascal / p0
-    private $pressureStationLevel_hPA;
 
     /**
-     * DWDPressure constructor.
+     * constructor.
      * @param $stationId
      * @param $date
      * @param $quality
-     * @param $pressureSeaLevel
-     * @param $pressureStationLevel
+     * @param $sunshineDuration
      */
-    public function __construct(int $stationId,DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel)
+    public function __construct(int $stationId, DateTime $date, int $quality, $sunshineDuration)
     {
         $this->stationId = $stationId;
         $this->date = $date;
         $this->quality = $quality;
-        $this->pressureSeaLevel_hPA = $pressureSeaLevel;
-        $this->pressureStationLevel_hPA = $pressureStationLevel;
-
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->variables;
+        $this->sunshineDuration = $sunshineDuration;
+        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->sun->variables;
 
     }
 
     function __toString()
     {
 
-        return 'DWDPressure [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
+        return get_class($this).' [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
     }
 
 

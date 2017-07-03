@@ -41,7 +41,7 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         $this->sumSunshineDuration = $sumSunshineDuration;
         $this->zenith = $zenith;
         $this->quality=$quality;
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->variables;
+        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->solar->variables;
 
     }
 

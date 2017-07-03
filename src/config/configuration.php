@@ -124,7 +124,7 @@ return [
             'sun' => [
                 'name' => 'sun',
                 'shortCode' => 'SD',
-                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/SD_Stundenwerte_Beschreibung_Stationen.txt',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/sun/recent/SD_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'sun' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
                     'qualityBit' => 'QN_7: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/sun/recent/DESCRIPTION_obsgermany_climate_hourly_sun_recent_en.pdf,',
@@ -135,7 +135,7 @@ return [
             'wind' => [
                 'name' => 'wind',
                 'shortCode' => 'FF',
-                'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/FF_Stundenwerte_Beschreibung_Stationen.txt',
+                'stations' => 'pub/CDC/observations_germany/climate/hourly/wind/recent/FF_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'wind' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
                     'qualityBit' => 'QN_3: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/wind/sun/recent/DESCRIPTION_obsgermany_climate_hourly_wind_recent_en.pdf,',

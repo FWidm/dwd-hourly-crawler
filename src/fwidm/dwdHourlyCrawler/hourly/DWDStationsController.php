@@ -174,7 +174,7 @@ class DWDStationsController
                 throw new DWDLibException("Error opening the file: " . $filePath);
             }
         } else
-            throw new DWDLibException("File. does not exist - path: " . $filePath);
+            throw new DWDLibException("File does not exist - path: " . $filePath);
 
         return $stations;
     }

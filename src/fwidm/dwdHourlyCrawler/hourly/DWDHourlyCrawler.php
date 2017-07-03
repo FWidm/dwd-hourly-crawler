@@ -78,13 +78,14 @@ class DWDHourlyCrawler
     {
 
         $data = array();
-
         foreach ($this->controllers as $var => $hourlyController) {
             $stations = $this->getStations($hourlyController, true);
 
             if (isset($stations)) {
-                $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
 //                DWDStationsController::exportStations($nearestStations);
+
 
                 foreach ($nearestStations as $nearestStation) {
                     /* @var $nearestStation DWDStation */
@@ -100,12 +101,10 @@ class DWDHourlyCrawler
                     }
 
                     $data['values'][$var] = $this->retrieveData($content, $hourlyController, $dateTime, $timeMinuteLimit);
-                    //DWDUtil::log(self::class, $data );
-
 
                     //addStation
-                    if (count($data['values'][$var])>0 && !isset($data['station-' . $nearestStation->getId()])) {
-                        $data['values']['station-' . $nearestStation->getId()] = $nearestStation;
+                    if (count($data['values'][$var])>0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
+                        $data['stations']['station-' . $nearestStation->getId()] = $nearestStation;
 
                     }
                     if (isset($data))
@@ -113,6 +112,7 @@ class DWDHourlyCrawler
                 }
             }
         }
+
         //print_r(json_encode($data));
         if ($sorted && isset($data['values']))
             ksort($data['values']);
@@ -142,11 +142,11 @@ class DWDHourlyCrawler
 
         // 3 hour interval -> +- 90min if custom failed.
         if (count($data) == 0 && $timeMinuteLimit < 90) {
+            DWDUtil::log(self::class, "retrieving data for a +-90min time limit...");
             $data = $this->retrieveData($content, $hourlyController, $dateTime, 90);
-        }
-
-        // 7 hour interval -> +-210min if custom and 3h limit failed.
+        }else      // 7 hour interval -> +-210min if custom and 3h limit failed.
         if (count($data) == 0 && $timeMinuteLimit < 210) {
+            DWDUtil::log(self::class, "retrieving data for a +-210min time limit...");
             $data = $this->retrieveData($content, $hourlyController, $dateTime, 210);
         }
 //        // throw an error if no data could be retrieved at all.

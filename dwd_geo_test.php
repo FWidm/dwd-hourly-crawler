@@ -19,9 +19,9 @@ prettyPrint("Checking for Coordinates: ".$coordinatesUlm->format(new GeoJSON()).
 $dwdLib=new DWDLib();
 
 $vars=new DWDHourlyParameters();
-//$vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation()->addSoilTemperature();
+//$vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation()->addSoilTemperature()->addSun();
 //$vars->addAirTemperature()->addCloudiness();
-$vars->addSolar();
+$vars->addWind();
 
 $out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
 
@@ -50,15 +50,3 @@ $date=DateTime::createFromFormat('YmdH:i','2013073121:00');
 prettyPrint("Checking Solar for Coordinates: ".$coordinatesSolarTest->format(new GeoJSON()).", @ ".$date->format(DateTime::ATOM));
 $out=$dwdLib->getHourlyFailsafe($vars,$date,$coordinatesSolarTest->getLat(),$coordinatesSolarTest->getLng());
 prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
-
-//$vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation()->addSoilTemperature();
-//$vars->addAirTemperature()->addCloudiness();
-
-$out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
-//$date1=new DateTime();
-//$date1->modify("-4 days");
-//$date=new DateTime();
-//$date->modify("+4 days");
-//$out=$dwdLib->getHourlyDataByDates($vars,$date,$date1,$coordinatesDellmensingen->getLat(),$coordinatesDellmensingen->getLng());
-//prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
-//prettyPrint(count($out[0])+count($out[1])+count($out[2]));
