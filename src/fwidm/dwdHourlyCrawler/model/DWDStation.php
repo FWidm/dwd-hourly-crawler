@@ -3,8 +3,6 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
 use DateTime;
-use FWidm\DWDHourlyCrawler\DWDUtil;
-use Spatie\Fractalistic\Fractal;
 
 
 /**

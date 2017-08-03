@@ -7,8 +7,11 @@ All data is retrieved from the public data set made available by the German Mete
 
 Root of the public CDC FTP: `ftp://ftp-cdc.dwd.de/pub/CDC/`.
 
-![](doc/img/dwd_logo_258x69.png).
+![](doc/img/dwd_logo_258x69.png)
 
+## Explanation
+The current implementaton revieces a request with the needed variables, the user's location at a specific point in time. Afterwards the DWDLib objects initializes the requested variable's services that contain all the paths and the method to parse the data into a corresponding class that extends `DWDAbstractParameter`. Afterwards the Crawler combines the data for all requested variables and returns them as an array to the callee. 
+![](doc/img/description.png)
 ## Features
 
 - Queries recent hourly data on the public DWD FTP for all of Germany
@@ -23,8 +26,7 @@ all the parameters.
 ## Todo
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
-- Implement a way to receive data for one whole day currently
-
+- Add distance from station to the queried point
 ## Example
 ```php
 <?php

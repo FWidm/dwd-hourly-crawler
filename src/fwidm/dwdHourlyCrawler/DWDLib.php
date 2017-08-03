@@ -3,19 +3,19 @@
 namespace FWidm\DWDHourlyCrawler;
 
 use DateTime;
-use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyCloudinessController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyAirTemperatureController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyCrawler;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyPrecipitationController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyPressureController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDAbstractHourlyController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlySoilTempController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlySolarController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlySunController;
-use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyWindController;
-use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyParameters;
 use Error;
+use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
+use FWidm\DWDHourlyCrawler\Hourly\Services\AbstractHourlyService;
+use FWidm\DWDHourlyCrawler\Hourly\DWDHourlyCrawler;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlyAirTemperatureService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlyCloudinessService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlyPrecipitationService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlyPressureService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlySoilTempService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlySolarService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlySunService;
+use FWidm\DWDHourlyCrawler\Hourly\Services\HourlyWindService;
+use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyParameters;
 use Location\Coordinate;
 
 /**
@@ -36,21 +36,15 @@ class DWDLib
      * @param $longitude
      * @return array
      */
-    public function getHourlyDataByDates(DWDHourlyParameters $hourlyParameters, DateTime $timeAfter, DateTime $timeBefore, $latitude, $longitude)
+    public function getHourlyDataByDay(DWDHourlyParameters $hourlyParameters, DateTime $day, $latitude, $longitude)
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
-            $hourlyControllers = $this->getHourlyController($hourlyParameters);
 
-            $data = array();
-            foreach ($hourlyControllers as $var => $hourlyController) {
-                $this->crawler = new DWDHourlyCrawler($hourlyController);
+            $services = $this->createServices($hourlyParameters);
 
-
-                $crawler = new DWDHourlyCrawler($hourlyControllers);
-                $data = $crawler->getDataByDates($coordinatesRequest, $timeAfter, $timeBefore);
-                return $data;
-            }
+            $crawler = new DWDHourlyCrawler($services);
+            $data = $crawler->getDataByDay($coordinatesRequest,$day);
 
             return $data;
         } else
@@ -67,15 +61,15 @@ class DWDLib
      * @return array - returns an array that contains measurements and the station information
      * @throws DWDLibException - if no parameters ar specified
      */
-    public function getHourlyFailsafe(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
+    public function getHourlyByInterval(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
 
-            $hourlyControllers = $this->getHourlyController($hourlyParameters);
+            $services = $this->createServices($hourlyParameters);
 
-            $crawler = new DWDHourlyCrawler($hourlyControllers);
-            $data = $crawler->getDataFailsafe($coordinatesRequest, $dateTime, $timeLimitMinutes);
+            $crawler = new DWDHourlyCrawler($services);
+            $data = $crawler->getDataInInterval($coordinatesRequest, $dateTime, $timeLimitMinutes);
 
             return $data;
         } else
@@ -85,11 +79,11 @@ class DWDLib
 
     /** Create a new instance of the appropriate controller.
      * @param DWDHourlyParameters $variables
-     * @return DWDAbstractHourlyController
+     * @return AbstractHourlyService
      * @throws Error
      * @internal param $var
      */
-    private function getHourlyController(DWDHourlyParameters $variables): array
+    private function createServices(DWDHourlyParameters $variables): array
     {
         $conf = DWDConfiguration::getHourlyConfiguration()->parameters;
         $controllers = array();
@@ -98,28 +92,28 @@ class DWDLib
 
                 switch ($var) {
                     case $conf->pressure->name:
-                        $controllers[$conf->pressure->name] = new DWDHourlyPressureController('pressure');
+                        $controllers[$conf->pressure->name] = new HourlyPressureService('pressure');
                         break;
                     case $conf->airTemperature->name:
-                        $controllers[$conf->airTemperature->name] = new DWDHourlyAirTemperatureController('airTemperature');
+                        $controllers[$conf->airTemperature->name] = new HourlyAirTemperatureService('airTemperature');
                         break;
                     case $conf->cloudiness->name:
-                        $controllers[$conf->cloudiness->name] = new DWDHourlyCloudinessController('cloudiness');
+                        $controllers[$conf->cloudiness->name] = new HourlyCloudinessService('cloudiness');
                         break;
                     case $conf->precipitation->name:
-                        $controllers[$conf->precipitation->name] = new DWDHourlyPrecipitationController('precipitation');
+                        $controllers[$conf->precipitation->name] = new HourlyPrecipitationService('precipitation');
                         break;
                     case $conf->soilTemperature->name:
-                        $controllers[$conf->soilTemperature->name] = new DWDHourlySoilTempController('soilTemperature');
+                        $controllers[$conf->soilTemperature->name] = new HourlySoilTempService('soilTemperature');
                         break;
                     case $conf->solar->name:
-                        $controllers[$conf->solar->name] = new DWDHourlySolarController('solar');
+                        $controllers[$conf->solar->name] = new HourlySolarService('solar');
                         break;
                     case $conf->sun->name:
-                        $controllers[$conf->sun->name] = new DWDHourlySunController('sun');
+                        $controllers[$conf->sun->name] = new HourlySunService('sun');
                         break;
                     case $conf->wind->name:
-                        $controllers[$conf->wind->name] = new DWDHourlyWindController('wind');
+                        $controllers[$conf->wind->name] = new HourlyWindService('wind');
                         break;
                     default:
                         print('Unknown variable: var=' . $var . '<br>');

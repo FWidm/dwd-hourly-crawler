@@ -20,6 +20,9 @@ abstract class  DWDAbstractParameter
 
     protected $quality;
 
+    //todo: encode clsas name from the specific subclass
+    protected $class;
+
     /**
      * @return mixed
      */

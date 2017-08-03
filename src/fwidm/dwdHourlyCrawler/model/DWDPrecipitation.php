@@ -19,7 +19,7 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
 
     private $precipitationIndex;
 
-    private $preciptionWRType;
+    private $precipitationWRType;
 
 
     /**
@@ -30,14 +30,14 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
      * @param $pressureSeaLevel
      * @param $pressureStationLevel
      */
-    public function __construct(int $stationId,DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel, $preciptionWRType)
+    public function __construct(int $stationId,DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel, $precipitationWRType)
     {
         $this->stationId = $stationId;
         $this->date = $date;
         $this->quality = $quality;
         $this->precipitationHeight_mm = $pressureSeaLevel;
         $this->precipitationIndex = $pressureStationLevel;
-        $this->preciptionWRType=$preciptionWRType;
+        $this->precipitationWRType=$precipitationWRType;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->variables;
 
     }
