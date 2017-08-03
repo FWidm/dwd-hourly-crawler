@@ -17,8 +17,7 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
 {
     private $meanWindSpeed;
     private $meanWindDirection;
-    private $u;
-    private $v;
+
 
 
     /**
