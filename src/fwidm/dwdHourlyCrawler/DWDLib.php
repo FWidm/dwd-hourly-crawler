@@ -41,9 +41,9 @@ class DWDLib
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
 
-            $hourlyControllers = $this->getHourlyController($hourlyParameters);
+            $services = $this->createServices($hourlyParameters);
 
-            $crawler = new DWDHourlyCrawler($hourlyControllers);
+            $crawler = new DWDHourlyCrawler($services);
             $data = $crawler->getDataByDay($coordinatesRequest,$day);
 
             return $data;
@@ -66,10 +66,10 @@ class DWDLib
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
 
-            $hourlyControllers = $this->getHourlyController($hourlyParameters);
+            $services = $this->createServices($hourlyParameters);
 
-            $crawler = new DWDHourlyCrawler($hourlyControllers);
-            $data = $crawler->getDataInInverval($coordinatesRequest, $dateTime, $timeLimitMinutes);
+            $crawler = new DWDHourlyCrawler($services);
+            $data = $crawler->getDataInInterval($coordinatesRequest, $dateTime, $timeLimitMinutes);
 
             return $data;
         } else
@@ -83,7 +83,7 @@ class DWDLib
      * @throws Error
      * @internal param $var
      */
-    private function getHourlyController(DWDHourlyParameters $variables): array
+    private function createServices(DWDHourlyParameters $variables): array
     {
         $conf = DWDConfiguration::getHourlyConfiguration()->parameters;
         $controllers = array();

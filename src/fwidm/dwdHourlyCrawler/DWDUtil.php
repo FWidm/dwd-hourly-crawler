@@ -45,7 +45,7 @@ class DWDUtil
      * @param $extractionPrefix - part of the file's prefix we want to match
      * @return null|string
      */
-    static function getDataFileFromZip($zipFile, $extractionPrefix)
+    static function getDataFromZip($zipFile, $extractionPrefix)
     {
         $zip = new ZipArchive;
         self::log(self::class,"zip=".$zipFile);

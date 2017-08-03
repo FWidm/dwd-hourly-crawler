@@ -11,11 +11,14 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
 
 class DWDWind extends DWDAbstractParameter implements \JsonSerializable
 {
     private $meanWindSpeed;
     private $meanWindDirection;
+    private $u;
+    private $v;
 
 
     /**
@@ -33,7 +36,17 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
         $this->meanWindDirection = $meanWindDirection;
         $this->meanWindSpeed = $meanWindSpeed;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->wind->variables;
+    }
 
+    private function calculateU($speed, $directionDeg)
+    {
+        return -1*$speed*sin(deg2rad($directionDeg));
+    }
+
+    private function calculateV($speed, $directionDeg)
+    {
+
+        return -1*$speed*cos(deg2rad($directionDeg));
     }
 
     function __toString()
@@ -63,7 +76,8 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
         $vars['date']=$this->date->format(DateTime::ATOM);
-
+        $vars['u']= $this->calculateU($this->meanWindSpeed,$this->meanWindDirection);
+        $vars['v']= $this->calculateV($this->meanWindSpeed,$this->meanWindDirection);
 
         return $vars;
     }

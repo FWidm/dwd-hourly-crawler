@@ -26,6 +26,7 @@ all the parameters.
 ## Todo
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
+- Add distance from station to the queried point
 ## Example
 ```php
 <?php

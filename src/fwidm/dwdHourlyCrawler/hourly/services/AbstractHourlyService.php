@@ -62,12 +62,13 @@ abstract class AbstractHourlyService
                 continue;
             $date = Carbon::createFromFormat($this->getTimeFormat(), $cols[1],'utc');
             if ($date) {
-                $temp = $this->createParameter($cols,$date);
-
+            //todo: optimize search for values - currently i only parse from new to old values, find the window and add to the return list - something akin to a binary search might work.
                 switch (func_num_args()) {
                     //After is set
                     case 2: {
                         if ($date >= $start) {
+                            $temp = $this->createParameter($cols,$date);
+
                             $data[] = $temp;
                         } else
                             //break from loop and switch
@@ -78,6 +79,7 @@ abstract class AbstractHourlyService
                     //After & Before are set
                     case 3: {
                         if ($date <= $end && $date >= $start) {
+                            $temp = $this->createParameter($cols,$date);
 
                             $data[] = $temp;
                         } else
@@ -89,6 +91,8 @@ abstract class AbstractHourlyService
                         break;
                     }
                     default: {
+                        $temp = $this->createParameter($cols,$date);
+
                         $data[] = $temp;
                     }
                 }

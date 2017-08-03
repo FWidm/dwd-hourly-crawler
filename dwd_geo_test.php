@@ -25,9 +25,9 @@ $vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation()->
 
 //$out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
 $start=Carbon::createFromFormat("Y-m-d H","2017-06-12 00");
-$out=$dwdLib->getHourlyDataByDay($vars,$start,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
-prettyPrint("Got n=".count($out['values']['cloudiness'])." results!");
-prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
+//$out=$dwdLib->getHourlyDataByDay($vars,$start,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
+//prettyPrint("Got n=".count($out['values']['cloudiness'])." results!");
+//prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
 
 
 $coordinatesDellmensingen=new Coordinate(48.301669,9.900532);
