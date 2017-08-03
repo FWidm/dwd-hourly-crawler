@@ -39,12 +39,13 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
 
     private function calculateU($speed, $directionDeg)
     {
+        // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
         return -1*$speed*sin(deg2rad($directionDeg));
     }
 
     private function calculateV($speed, $directionDeg)
     {
-
+        // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
         return -1*$speed*cos(deg2rad($directionDeg));
     }
 
