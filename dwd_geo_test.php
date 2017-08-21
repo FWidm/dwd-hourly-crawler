@@ -32,7 +32,7 @@ $start=Carbon::createFromFormat("Y-m-d H","2017-06-12 00");
 
 $coordinatesDellmensingen=new Coordinate(48.301669,9.900532);
 echo '<hr>';
-$date=DateTime::createFromFormat("Y-m-d H","2017-06-12 12");
+$date=DateTime::createFromFormat("Y-m-d H","2016-06-19 12");
 prettyPrint("Checking for Coordinates: ".$coordinatesDellmensingen->format(new GeoJSON()).", @ ".$date->format(DateTime::ATOM));
 $out=$dwdLib->getHourlyByInterval($vars,$date,$coordinatesDellmensingen->getLat(),$coordinatesDellmensingen->getLng());
 prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
