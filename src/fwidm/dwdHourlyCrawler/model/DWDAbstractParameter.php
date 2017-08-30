@@ -20,7 +20,7 @@ abstract class  DWDAbstractParameter
 
     protected $quality;
 
-    //todo: encode clsas name from the specific subclass
+    //todo: encode class name from the specific subclass
     protected $classification;
 
     /**
