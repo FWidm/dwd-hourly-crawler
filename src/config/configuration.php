@@ -6,7 +6,7 @@
  * Time: 11:56
  */
 return [
-    'debug' => true,
+    'debug' => false,
 
     'ftp' => [
 

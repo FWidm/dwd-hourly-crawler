@@ -12,7 +12,6 @@ use ParseError;
  */
 class DWDConfiguration
 {
-    public static $configFilePath_depr = __DIR__ . '/../../config/configuration.json';
     public static $configFilePath = __DIR__ . '/../../config/configuration.php';
     private static $configuration = null;
 
@@ -31,7 +30,7 @@ class DWDConfiguration
             self::$configuration = DWDUtil::array_to_object($settings);
 
             if (DWDConfiguration::$configuration === null)
-                throw new ParseError('Error, configuration file could not be found or contains invalid json. Expected path:' . __DIR__ . '/../../config/configuration.json  "config/configuration.json"');
+                throw new ParseError('Error, configuration file could not be found or contains invalid lines.');
         }
         return DWDConfiguration::$configuration;
 
