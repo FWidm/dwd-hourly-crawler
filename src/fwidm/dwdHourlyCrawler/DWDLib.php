@@ -26,6 +26,14 @@ use Location\Coordinate;
  */
 class DWDLib
 {
+    /**
+     * DWDLib constructor.
+     */
+    public function __construct($baseDirectory=null)
+    {
+        DWDConfiguration::setBaseDir($baseDirectory);
+    }
+
 
     /**
      * Retrieve all values for the parameters between the interval timeAfter and timeBefore for a specific location.

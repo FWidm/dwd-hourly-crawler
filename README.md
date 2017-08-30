@@ -27,17 +27,23 @@ all the parameters.
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
 - Add distance from station to the queried point
+- Allow the user to modify the baseDirectory of the output via the constructor flag.
+- Allow the user to split queried variables from the predefined groups by the dwd to single variables.
+
 ## Example
 ```php
 <?php
 $coordinatesUlm=new Coordinate(48.4391,9.9823);
 $dwdLib=new DWDLib();
 
-//add variables
-$vars=new DWDHourlyParameters();
-$vars->addPrecipitation()/*->add...*/;
 
-$out=$dwdLib->getHourlyExperimental($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
+//add variables
+$vars = new DWDHourlyParameters();
+$vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
+$date=new Carbon();
+$date->modify("-4 days");
+$out=$dwdLib->getHourlyByInterval($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
+
 /*
  * json_encode($out)={
            "precipitation": [

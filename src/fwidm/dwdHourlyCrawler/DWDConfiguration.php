@@ -2,6 +2,7 @@
 
 namespace FWidm\DWDHourlyCrawler;
 
+use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use ParseError;
 
 /**
@@ -34,6 +35,22 @@ class DWDConfiguration
         }
         return DWDConfiguration::$configuration;
 
+    }
+
+    public static function editConfiguration($keyValPairs)
+    {
+        $settings = include __DIR__ . '/../../config/configuration.php';
+
+        foreach ($keyValPairs as $key => $val) {
+            if (isset($settings[$key])) {
+                DWDUtil::log(self::class,$settings[$key]);
+                if (is_array($settings[$key])) {
+                    DWDUtil::log(self::class,"is arr, set val=".var_dump($val));
+
+                }
+
+            } else throw new \Exception("Unkown key (k=" . $key . ").");
+        }
     }
 
 
@@ -70,6 +87,15 @@ class DWDConfiguration
     public static function isDebugEnabled()
     {
         return self::getConfiguration()->debug;
+    }
+
+    public static function setBaseDir(string $baseDirectory)
+    {
+        DWDUtil::log(self::class,"basedir=".$baseDirectory);
+        if (isset($baseDirectory) && is_dir($baseDirectory)){
+            self::getConfiguration()->baseDirectory=$baseDirectory;
+        }
+        else throw new DWDLibException("The specified directory (baseDirectory=".$baseDirectory." is not set or is not a directory");
     }
 
     /*

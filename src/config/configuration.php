@@ -6,10 +6,10 @@
  * Time: 11:56
  */
 return [
-    'debug' => false,
+    'debug' => true,
+    'baseDirectory' => $_SERVER['DOCUMENT_ROOT'],
 
     'ftp' => [
-
         'url' => 'ftp-cdc.dwd.de',
         'userName' => 'anonymous',
         'userPassword' => ''
