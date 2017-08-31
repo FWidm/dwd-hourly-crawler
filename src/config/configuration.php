@@ -6,9 +6,11 @@
  * Time: 11:56
  */
 return [
-    'debug' => true,
+    'debug' => false,
+    //Base directory of all downloaded files - per default it's the doc root - mostly you want to point it to 'storage' or other dirs.
     'baseDirectory' => $_SERVER['DOCUMENT_ROOT'],
 
+    //FTP Settings for the DWD FTP
     'ftp' => [
         'url' => 'ftp-cdc.dwd.de',
         'userName' => 'anonymous',
@@ -16,9 +18,9 @@ return [
     ],
     //Configuration for the station controller.
     'dwdStations' => [
-        'ftpFile' => 'pub/CDC/observations_germany/climate/hourly/pressure/recent/P0_Stundenwerte_Beschreibung_Stationen.txt',
-        'localFile' => DIRECTORY_SEPARATOR . 'in' . DIRECTORY_SEPARATOR . 'stations.txt',
+        //skip the first few lines of input. In this case the header col + table formatting '----'
         'skipLines' => 2,
+        //Set the threshhold for active stations - integer in days.
         'activeRequirementDays' => 4,
         'dateFormat' => 'Ymd',
     ],
@@ -27,9 +29,22 @@ return [
     'dwdHourly' => [
         'baseFTPPath' => '/pub/CDC/observations_germany/climate/hourly/',
         'localBaseFolder' => DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR . 'hourly',
+        //The prefix of the searched file that contains all the weather data e.g. 'produkt_sd_stunde_20160218_20170820_15444'
         'zipExtractionPrefix' => 'produkt',
-        'parameters' => [
 
+        'recentValuePath' => '/recent/stundenwerte_',
+        'filePrefix' => 'stundenwerte_',
+        'fileExtension' => '_akt.zip',
+
+
+        'parserSettings' => [
+            'dateFormat' => 'YmdH',
+            'lineDelimiter' => 'eor',
+            'colDelimiter' => ';'
+        ],
+
+
+        'parameters' => [
             'airTemperature' => [
                 'name' => 'air_temperature',
                 'shortCode' => 'TU',
@@ -61,7 +76,6 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/precipitation/recent/RR_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'precipitation' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-
                     'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf',
                     'hourlyPrecipitation' => 'R1: Hourly precipitation in mm.',
                     'precipitationIndex' => 'RS_IND: Index - 0 no precipitation, 1 precipitation.',
@@ -145,16 +159,4 @@ return [
             ],
 
         ],
-
-        'parserSettings' => [
-
-            'dateFormat' => 'YmdH',
-            'lineDelimiter' => 'eor',
-            'colDelimiter' => ';'
-        ],
-
-        'recentValuePath' => '/recent/stundenwerte_',
-        'filePrefix' => 'stundenwerte_',
-        'fileExtension' => '_akt.zip'
-
     ]];

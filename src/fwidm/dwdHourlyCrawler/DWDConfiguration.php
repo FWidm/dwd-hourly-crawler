@@ -43,9 +43,9 @@ class DWDConfiguration
 
         foreach ($keyValPairs as $key => $val) {
             if (isset($settings[$key])) {
-                DWDUtil::log(self::class,$settings[$key]);
+                DWDUtil::log(self::class, $settings[$key]);
                 if (is_array($settings[$key])) {
-                    DWDUtil::log(self::class,"is arr, set val=".var_dump($val));
+                    DWDUtil::log(self::class, "is arr, set val=" . var_dump($val));
 
                 }
 
@@ -89,13 +89,13 @@ class DWDConfiguration
         return self::getConfiguration()->debug;
     }
 
-    public static function setBaseDir(string $baseDirectory)
+    public static function setBaseDir($baseDirectory)
     {
-        DWDUtil::log(self::class,"basedir=".$baseDirectory);
-        if (isset($baseDirectory) && is_dir($baseDirectory)){
-            self::getConfiguration()->baseDirectory=$baseDirectory;
+        DWDUtil::log(self::class, "basedir=" . $baseDirectory);
+        if (isset($baseDirectory) && is_string($baseDirectory) && is_dir($baseDirectory)) {
+            self::getConfiguration()->baseDirectory = $baseDirectory;
         }
-        else throw new DWDLibException("The specified directory (baseDirectory=".$baseDirectory." is not set or is not a directory");
+
     }
 
     /*

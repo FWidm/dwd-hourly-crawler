@@ -36,7 +36,7 @@ class HourlyAirTemperatureService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $_SERVER['DOCUMENT_ROOT'] . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->airTemperature->localFolder;
+        $localPath = $config->baseDirectory . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->airTemperature->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
