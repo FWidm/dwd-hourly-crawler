@@ -64,4 +64,68 @@ $out=$dwdLib->getHourlyByInterval($vars,$date ,$coordinatesUlm->getLat(),$coordi
            ]
        }
  */
+
+//retrieve the variable as single-value type output:
+foreach($out['values'] as $key =>  $obj) {
+    print "obj=$key<br>";
+    foreach ($obj as $value){
+        /* @var $value \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
+        prettyPrint(json_encode($value->exportSingleVariables(),JSON_PRETTY_PRINT));
+    }
+
+}
+/*
+ * obj=precipitation
+   [
+       {
+           "stationID": 15444,
+           "description": {
+               "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+               "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
+               "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
+               "precipitationWRType": "WRTR: WR precipitation coding."
+           },
+           "classification": "Precipitation",
+           "distance": 4.501092,
+           "longitude": "9.9216",
+           "latitude": "48.4418",
+           "date": "2017-08-27T15:00:00+02:00",
+           "value": 0,
+           "type": "precipitation height"
+       },
+       {
+           "stationID": 15444,
+           "description": {
+               "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+               "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
+               "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
+               "precipitationWRType": "WRTR: WR precipitation coding."
+           },
+           "classification": "Precipitation",
+           "distance": 4.501092,
+           "longitude": "9.9216",
+           "latitude": "48.4418",
+           "date": "2017-08-27T15:00:00+02:00",
+           "value": 0,
+           "type": "precipitation index"
+       },
+       {
+           "stationID": 15444,
+           "description": {
+               "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+               "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
+               "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
+               "precipitationWRType": "WRTR: WR precipitation coding."
+           },
+           "classification": "Precipitation",
+           "distance": 4.501092,
+           "longitude": "9.9216",
+           "latitude": "48.4418",
+           "date": "2017-08-27T15:00:00+02:00",
+           "value": -999,
+           "type": "precipitation wr type"
+       }
+   ]
+ */
 ```
+
