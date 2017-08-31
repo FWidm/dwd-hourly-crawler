@@ -7,6 +7,8 @@ use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
+use FWidm\DWDHourlyCrawler\Model\DWDStation;
+use Location\Coordinate;
 use ParseError;
 
 
@@ -32,7 +34,7 @@ abstract class AbstractHourlyService
     /**get the parameter
      * @return string
      */
-    public function getParameter():string
+    public function getParameter(): string
     {
         return $this->parameter;
     }
@@ -48,7 +50,7 @@ abstract class AbstractHourlyService
      * @return array of parameters
      * @throws ParseError
      */
-    public function parseHourlyData(String $content, DateTime $start = null, DateTime $end = null): array
+    public function parseHourlyData(String $content, DWDStation $nearestStation, Coordinate $coordinate, DateTime $start = null, DateTime $end = null): array
     {
         $lines = explode('eor', $content);
         $data = array();
@@ -60,14 +62,14 @@ abstract class AbstractHourlyService
             //skip empty lines
             if (sizeof($cols) < 3)
                 continue;
-            $date = Carbon::createFromFormat($this->getTimeFormat(), $cols[1],'utc');
+            $date = Carbon::createFromFormat($this->getTimeFormat(), $cols[1], 'utc');
             if ($date) {
-            //todo: optimize search for values - currently i only parse from new to old values, find the window and add to the return list - something akin to a binary search might work.
+                //todo: optimize search for values - currently i only parse from new to old values, find the window and add to the return list - something akin to a binary search might work.
                 switch (func_num_args()) {
                     //After is set
-                    case 2: {
+                    case 24: {
                         if ($date >= $start) {
-                            $temp = $this->createParameter($cols,$date);
+                            $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
 
                             $data[] = $temp;
                         } else
@@ -77,9 +79,9 @@ abstract class AbstractHourlyService
                         break;
                     }
                     //After & Before are set
-                    case 3: {
+                    case 5: {
                         if ($date <= $end && $date >= $start) {
-                            $temp = $this->createParameter($cols,$date);
+                            $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
 
                             $data[] = $temp;
                         } else
@@ -91,14 +93,14 @@ abstract class AbstractHourlyService
                         break;
                     }
                     default: {
-                        $temp = $this->createParameter($cols,$date);
+                        $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
 
                         $data[] = $temp;
                     }
                 }
 
             } else
-                throw new ParseError(self::class." - Error while parsing date: col=" . $cols[1] . " | date=" . $date);
+                throw new ParseError(self::class . " - Error while parsing date: col=" . $cols[1] . " | date=" . $date);
         }
 
         return $data;
@@ -108,15 +110,18 @@ abstract class AbstractHourlyService
      * Instantiate one parameter by the columns and date
      * @param array $cols
      * @param DateTime $date
+     * @param DWDStation $station
+     * @param Coordinate $coordinate
      * @return DWDAbstractParameter - concrete object of the needed type
      */
-    public abstract function  createParameter(array $cols, DateTime $date) : DWDAbstractParameter;
+    public abstract function createParameter(array $cols, DateTime $date, DWDStation $station, Coordinate $coordinate): DWDAbstractParameter;
 
     /**
      * Get the dateformat. default is in dwdHourly->parserSettings->dateFormat. Override as needed (ex. solar).
      * @return string
      */
-    public function  getTimeFormat() : string {
+    public function getTimeFormat(): string
+    {
         return DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat;
     }
 

@@ -1,8 +1,11 @@
 <?php
 namespace FWidm\DWDHourlyCrawler\Model;
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -30,7 +33,7 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
      * @param $pressureSeaLevel
      * @param $pressureStationLevel
      */
-    public function __construct(int $stationId,DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel, $precipitationWRType)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId,DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel, $precipitationWRType)
     {
         $this->stationId = $stationId;
         $this->date = $date;
@@ -40,7 +43,9 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
         $this->precipitationWRType=$precipitationWRType;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->variables;
         $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->classification;
-
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
     function __toString()
@@ -86,6 +91,15 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
-    }
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->precipitationHeight_mm, "precipitation height"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->precipitationIndex, "precipitation index"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->precipitationWRType, "precipitation wr type"),
+        ];    }
 }

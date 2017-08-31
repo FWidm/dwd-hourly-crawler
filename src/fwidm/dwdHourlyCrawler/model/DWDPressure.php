@@ -1,8 +1,12 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Model;
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -26,7 +30,7 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
      * @param $pressureSeaLevel
      * @param $pressureStationLevel
      */
-    public function __construct(int $stationId,DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, int $quality, $pressureSeaLevel, $pressureStationLevel)
     {
         $this->stationId = $stationId;
         $this->date = $date;
@@ -34,15 +38,18 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
         $this->pressureSeaLevel_hPA = $pressureSeaLevel;
         $this->pressureStationLevel_hPA = $pressureStationLevel;
 
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->classification;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->pressure->variables;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->pressure->classification;
 
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
     function __toString()
     {
 
-        return 'DWDPressure [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
+        return 'DWDPressure [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
     }
 
 
@@ -65,7 +72,7 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
     {
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date']=$this->date->format(DateTime::ATOM);
+        $vars['date'] = $this->date->format(DateTime::ATOM);
 
 
         return $vars;
@@ -82,6 +89,13 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->pressureSeaLevel_hPA, "mean sea level pressure"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->pressureStationLevel_hPA, "station level pressure"),
+        ];
     }
 }

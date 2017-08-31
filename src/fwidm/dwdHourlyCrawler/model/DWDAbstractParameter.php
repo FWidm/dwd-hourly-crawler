@@ -20,6 +20,12 @@ abstract class  DWDAbstractParameter
 
     protected $quality;
 
+    protected $latitude;
+
+    protected $longitude;
+
+    protected $distance;
+
     //todo: encode class name from the specific subclass
     protected $classification;
 

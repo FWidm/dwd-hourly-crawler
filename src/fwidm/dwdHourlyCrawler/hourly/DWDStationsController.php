@@ -3,10 +3,7 @@
 namespace FWidm\DWDHourlyCrawler\Hourly;
 
 use Carbon\Carbon;
-use DateTime;
-use Error;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
-use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 

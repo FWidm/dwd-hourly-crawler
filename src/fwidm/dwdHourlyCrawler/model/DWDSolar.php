@@ -9,8 +9,11 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
 {
@@ -31,7 +34,7 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
      * @param $sumSunshineDuration
      * @param $zenith
      */
-    public function __construct(int $stationId, DateTime $date, $quality, $sumLongwaveRadiation, $sumDiffuseRadiation, $sumIncomingRadiation, $sumSunshineDuration, $zenith)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, $quality, $sumLongwaveRadiation, $sumDiffuseRadiation, $sumIncomingRadiation, $sumSunshineDuration, $zenith)
     {
         $this->stationId = $stationId;
         $this->date = $date;
@@ -40,10 +43,13 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         $this->sumIncomingRadiation = $sumIncomingRadiation;
         $this->sumSunshineDuration = $sumSunshineDuration;
         $this->zenith = $zenith;
-        $this->quality=$quality;
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->solar->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->solar->classification;
+        $this->quality = $quality;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->solar->variables;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->solar->classification;
 
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
 
@@ -63,6 +69,7 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
 
         return $vars;
     }
+
     function __toString()
     {
         return 'DWDSolar [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
@@ -87,6 +94,19 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->sumDiffuseRadiation, "sum of diffuse radiation"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->sumIncomingRadiation, "sum of incoming radiation"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->sumLongwaveRadiation, "sum of longwave radiation"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->zenith, "zenith"),
+        ];
     }
 }

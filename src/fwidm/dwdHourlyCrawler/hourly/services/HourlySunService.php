@@ -5,7 +5,9 @@ namespace FWidm\DWDHourlyCrawler\Hourly\Services;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
+use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use FWidm\DWDHourlyCrawler\Model\DWDsun;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -53,8 +55,8 @@ class HourlySunService extends AbstractHourlyService
         return $ftpPath;
     }
 
-    public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
+    public function createParameter(array $cols, DateTime $date, DWDStation $nearestStation, Coordinate $coordinate): DWDAbstractParameter
     {
-        return new DWDSun($cols[0], $date, $cols[2], $cols[3]);
+        return new DWDSun($nearestStation, $coordinate, $cols[0], $date, $cols[2], $cols[3]);
     }
 }

@@ -2,8 +2,11 @@
 
 namespace FWidm\DWDHourlyCrawler\Model;
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -21,16 +24,8 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     private $soilTemp_50cm_deg;
     private $soilTemp_100cm_deg;
 
-    /**
-     * DWDPressure constructor.
-     * @param $quality
-     * @param $soilTemp_2cm_deg
-     * @param $soilTemp_5cm_deg
-     * @param $soilTemp_10cm_deg
-     * @param $soilTemp_20cm_deg
-     * @param $soilTemp_50cm_deg
-     */
-    public function __construct(int $stationId, DateTime $date, $quality, $soilTemp_2cm_deg, $soilTemp_5cm_deg, $soilTemp_10cm_deg, $soilTemp_20cm_deg, $soilTemp_50cm_deg, $soilTemp_100cm_deg)
+
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, $quality, $soilTemp_2cm_deg, $soilTemp_5cm_deg, $soilTemp_10cm_deg, $soilTemp_20cm_deg, $soilTemp_50cm_deg, $soilTemp_100cm_deg)
     {
         $this->stationId = $stationId;
         $this->date = $date;
@@ -42,9 +37,11 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
         $this->soilTemp_50cm_deg = $soilTemp_50cm_deg;
         $this->soilTemp_100cm_deg = $soilTemp_100cm_deg;
         $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->classification;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->classification;
 
-
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
 
@@ -90,6 +87,25 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->soilTemp_2cm_deg, "soil temperature in 2cm"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->soilTemp_5cm_deg, "soil temperature in 5cm"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->soilTemp_10cm_deg, "soil temperature in 10cm"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->soilTemp_20cm_deg, "soil temperature in 20cm"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->soilTemp_50cm_deg, "soil temperature in 50cm"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->soilTemp_100cm_deg, "soil temperature in 100cm"),
+        ];
     }
 }

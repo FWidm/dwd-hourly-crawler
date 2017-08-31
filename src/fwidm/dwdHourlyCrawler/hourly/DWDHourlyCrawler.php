@@ -13,7 +13,6 @@ use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
-use FWidm\DWDHourlyCrawler\Model\DWDPrecipitation;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use FWidm\DWDHourlyCrawler\Hourly\Services\AbstractHourlyService;
 use Location\Coordinate;
@@ -41,7 +40,7 @@ class DWDHourlyCrawler
     public function getDataByDay(Coordinate $coordinatesRequest, DateTime $day)
     {
         $data = array();
-        $day=Carbon::instance($day)->setTimezone('utc');
+        $day = Carbon::instance($day)->setTimezone('utc');
         foreach ($this->services as $var => $hourlyService) {
             /* @var AbstractHourlyService $hourlyService */
 
@@ -62,12 +61,12 @@ class DWDHourlyCrawler
                         continue;
                     }
 
-                    $start=Carbon::instance($day)->startOfDay();
-                    $end=Carbon::instance($day)->endOfDay();
-                    $data['values'][$var] = $hourlyService->parseHourlyData($content, $start, $end);//$this->retrieveData2($content, $hourlyService, $start, $end);
+                    $start = Carbon::instance($day)->startOfDay();
+                    $end = Carbon::instance($day)->endOfDay();
+                    $data['values'][$var] = $hourlyService->parseHourlyData($content, $nearestStation, $coordinatesRequest, $start, $end);//$this->retrieveData2($content, $hourlyService, $start, $end);
 
                     //addStation
-                    if (count($data['values'][$var])>0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
+                    if (count($data['values'][$var]) > 0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
                         $data['stations']['station-' . $nearestStation->getId()] = $nearestStation;
 
                     }
@@ -97,7 +96,7 @@ class DWDHourlyCrawler
 
             if (isset($stations)) {
 
-                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
 //                DWDStationsController::exportStations($nearestStations);
 
 
@@ -114,10 +113,10 @@ class DWDHourlyCrawler
                         continue;
                     }
 
-                    $data['values'][$var] = $this->retrieveData($content, $hourlyService, $dateTime, $timeMinuteLimit);
+                    $data['values'][$var] = $this->retrieveData($content, $nearestStation, $coordinatesRequest, $hourlyService, $dateTime, $timeMinuteLimit);
 
                     //addStation
-                    if (count($data['values'][$var])>0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
+                    if (count($data['values'][$var]) > 0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
                         $data['stations']['station-' . $nearestStation->getId()] = $nearestStation;
 
                     }
@@ -143,7 +142,7 @@ class DWDHourlyCrawler
      * @param $timeMinuteLimit - limit in minutes that defines the range: currentDate+-limit = search range.
      * @return array of DWDAbstractParameter
      */
-    private function retrieveData($content, AbstractHourlyService $hourlyController, DateTime $dateTime, $timeMinuteLimit)
+    private function retrieveData($content, DWDStation $nearestStation, Coordinate $coordinate, AbstractHourlyService $hourlyController, DateTime $dateTime, $timeMinuteLimit)
     {
         //custom time limit
         $timeBefore = Carbon::instance($dateTime);
@@ -152,25 +151,21 @@ class DWDHourlyCrawler
         $timeBefore->addMinute($timeMinuteLimit);
         $timeAfter->addMinute(-$timeMinuteLimit);
 
-        $data = $hourlyController->parseHourlyData($content, $timeAfter, $timeBefore);
+        $data = $hourlyController->parseHourlyData($content, $nearestStation, $coordinate, $timeAfter, $timeBefore);
 
         // 3 hour interval -> +- 90min if custom failed.
         if (count($data) == 0 && $timeMinuteLimit < 90) {
             DWDUtil::log(self::class, "retrieving data for a +-90min time limit...");
-            $data = $this->retrieveData($content, $hourlyController, $dateTime, 90);
-        }else      // 7 hour interval -> +-210min if custom and 3h limit failed.
-        if (count($data) == 0 && $timeMinuteLimit < 210) {
-            DWDUtil::log(self::class, "retrieving data for a +-210min time limit...");
-            $data = $this->retrieveData($content, $hourlyController, $dateTime, 210);
-        }
-//        // throw an error if no data could be retrieved at all.
-//        if (count($data) == 0) {
-//            throw new DWDLibException("The parameter could not be retrieved for intervals of: " . $timeMinuteLimit .
-//                " min, 90min and 210min. Either the current date is not in the data set, or the data set has a bigger interval than 1,3 or 7hours.");
-//        }
+            $data = $this->retrieveData($content, $nearestStation, $coordinate, $hourlyController, $dateTime, 90);
+        } else      // 7 hour interval -> +-210min if custom and 3h limit failed.
+            if (count($data) == 0 && $timeMinuteLimit < 210) {
+                DWDUtil::log(self::class, "retrieving data for a +-210min time limit...");
+                $data = $this->retrieveData($content, $nearestStation, $coordinate, $hourlyController, $dateTime, 210);
+            }
 
         return $data;
     }
+
     /** Retrieves a file for the controller by querying the nearest station.
      * @param AbstractHourlyService $controller
      * @param DWDStation $nearestStation
@@ -282,7 +277,7 @@ class DWDHourlyCrawler
     }
 
     public
-    function addControllers($hourlyControllers)
+    function replaceControllers(array $hourlyControllers)
     {
         $this->services = $hourlyControllers;
     }

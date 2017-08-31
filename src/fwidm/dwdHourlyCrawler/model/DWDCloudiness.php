@@ -1,8 +1,11 @@
 <?php
 namespace FWidm\DWDHourlyCrawler\Model;
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -27,7 +30,7 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
      * @param $indexObservationType
      * @param $cloudiness_eights
      */
-    public function __construct(int $stationId, DateTime $date, int $quality, $indexObservationType, $cloudiness_eights)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, int $quality, $indexObservationType, $cloudiness_eights)
     {
         $this->stationId = $stationId;
         $this->date = $date;
@@ -36,7 +39,9 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
         $this->cloudiness_eights = $cloudiness_eights;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->variables;
         $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->classification;
-
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
     function __toString()
@@ -66,8 +71,6 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
         $vars['date']=$this->date->format(DateTime::ATOM);
-
-
         return $vars;
     }
 
@@ -82,6 +85,9 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->cloudiness_eights, "cloudiness in eights");
     }
 }

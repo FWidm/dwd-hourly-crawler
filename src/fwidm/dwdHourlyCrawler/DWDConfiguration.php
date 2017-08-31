@@ -2,7 +2,6 @@
 
 namespace FWidm\DWDHourlyCrawler;
 
-use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use ParseError;
 
 /**

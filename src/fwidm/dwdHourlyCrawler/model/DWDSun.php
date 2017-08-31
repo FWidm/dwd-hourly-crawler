@@ -9,8 +9,11 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 class DWDSun extends DWDAbstractParameter implements \JsonSerializable
 {
@@ -24,21 +27,24 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
      * @param $quality
      * @param $sunshineDuration
      */
-    public function __construct(int $stationId, DateTime $date, int $quality, $sunshineDuration)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, int $quality, $sunshineDuration)
     {
         $this->stationId = $stationId;
         $this->date = $date;
         $this->quality = $quality;
         $this->sunshineDuration = $sunshineDuration;
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->sun->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->sun->classification;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->sun->variables;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->sun->classification;
 
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
     function __toString()
     {
 
-        return get_class($this).' [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
+        return get_class($this) . ' [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
     }
 
 
@@ -61,7 +67,7 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
     {
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date']=$this->date->format(DateTime::ATOM);
+        $vars['date'] = $this->date->format(DateTime::ATOM);
 
 
         return $vars;
@@ -78,6 +84,10 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->sunshineDuration, "sunshine duration"),
+        ];
     }
 }

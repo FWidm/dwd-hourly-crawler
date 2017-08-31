@@ -4,6 +4,9 @@ namespace FWidm\DWDHourlyCrawler;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
+use FWidm\DWDHourlyCrawler\Model\DWDStation;
+use Location\Coordinate;
+use Location\Distance\Vincenty;
 use stdClass;
 use ZipArchive;
 
@@ -19,7 +22,8 @@ class DWDUtil
     /**
      * @param string $path path to the output dir.
      */
-    public static function initializeOutputFolder(string $path){
+    public static function initializeOutputFolder(string $path)
+    {
         $path = $_SERVER['DOCUMENT_ROOT'] . $path;
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
@@ -48,7 +52,7 @@ class DWDUtil
     static function getDataFromZip($zipFile, $extractionPrefix)
     {
         $zip = new ZipArchive;
-        self::log(self::class,"zip=".$zipFile);
+        self::log(self::class, "zip=" . $zipFile);
         if ($zip->open($zipFile)) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $stat = $zip->statIndex($i);
@@ -61,10 +65,8 @@ class DWDUtil
             }
             $zip->close();
 
-        }
-        else
-        {
-            throw new DWDLibException("zip content is empty! zip file count=".$zip->numFiles);
+        } else {
+            throw new DWDLibException("zip content is empty! zip file count=" . $zip->numFiles);
 
         }
         return null;
@@ -89,16 +91,37 @@ class DWDUtil
         return $obj;
     }
 
-    static function log($objectType, $content, $htmlOutput=true){
-        if(DWDConfiguration::isDebugEnabled()){
-            $date=new Carbon();
-            if($htmlOutput)echo "<div style=\"white-space: pre-wrap;\">";
+    static function log($objectType, $content, $htmlOutput = true)
+    {
+        if (DWDConfiguration::isDebugEnabled()) {
+            $date = new Carbon();
+            if ($htmlOutput) echo "<div style=\"white-space: pre-wrap;\">";
 
-            print($date->format(Carbon::ISO8601).'@'.$objectType.' msg=');
+            print($date->format(Carbon::ISO8601) . '@' . $objectType . ' msg=');
             print_r($content);
-            if($htmlOutput)echo "</div>";
+            if ($htmlOutput) echo "</div>";
 
         }
+    }
+
+    /**
+     * Calculates the distance from coordinate to station in either meters (default) or km
+     * @param Coordinate $coordinate
+     * @param DWDStation $station
+     * @param string $unit - default is "m" for meters, can be set to "km" for km.
+     * @return float - distance in meters or km
+     */
+    public static function calculateDistanceToStation(Coordinate $coordinate,DWDStation $station, $unit="m")
+    {
+        $coordinateStation = new Coordinate($station->getLatitude(), $station->getLongitude()); // Mauna Kea Summit
+
+        $calculator = new Vincenty();
+        $distance_meters = $calculator->getDistance($coordinate, $coordinateStation); // in meters
+        if ($unit=="km"){
+            return $distance_meters/1000.0;
+        }
+        else
+            return $distance_meters;
     }
 
 }

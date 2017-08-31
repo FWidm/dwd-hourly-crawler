@@ -1,8 +1,12 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Model;
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -26,21 +30,25 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
      * @param $temperature2m
      * @param $relativeHumidity
      */
-    public function __construct(int $stationId, DateTime $date, int $quality, $temperature2m, $relativeHumidity)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, int $quality, $temperature2m, $relativeHumidity)
     {
         $this->stationId = $stationId;
         $this->date = $date;
         $this->quality = $quality;
         $this->temperature2m_degC = $temperature2m;
         $this->relativeHumidity_percent = $relativeHumidity;
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->classification;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->variables;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->classification;
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
+
     }
 
     function __toString()
     {
 
-        return get_class($this).' [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
+        return get_class($this) . ' [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
     }
 
 
@@ -63,7 +71,7 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
     {
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date']=$this->date->format(DateTime::ATOM);
+        $vars['date'] = $this->date->format(DateTime::ATOM);
 
 
         return $vars;
@@ -80,6 +88,13 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->temperature2m_degC, "2 metre temperature"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->relativeHumidity_percent, "relative humidity in percent"),
+        ];
     }
 }

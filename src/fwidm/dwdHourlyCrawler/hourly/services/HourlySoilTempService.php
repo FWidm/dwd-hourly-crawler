@@ -6,6 +6,8 @@ use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter;
 use FWidm\DWDHourlyCrawler\Model\DWDSoilTemp;
+use FWidm\DWDHourlyCrawler\Model\DWDStation;
+use Location\Coordinate;
 
 /**
  * Created by PhpStorm.
@@ -53,8 +55,8 @@ class HourlySoilTempService extends AbstractHourlyService
         return $ftpPath;
     }
 
-    public function createParameter(array $cols, DateTime $date): DWDAbstractParameter
+    public function createParameter(array $cols, DateTime $date, DWDStation $nearestStation, Coordinate $coordinate): DWDAbstractParameter
     {
-        return new DWDSoilTemp($cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5], $cols[6], $cols[7], $cols[8]);
+        return new DWDSoilTemp($nearestStation, $coordinate, $cols[0], $date, $cols[2], $cols[3], $cols[4], $cols[5], $cols[6], $cols[7], $cols[8]);
     }
 }

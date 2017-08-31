@@ -9,15 +9,16 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 
+use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
+use Location\Coordinate;
 
 class DWDWind extends DWDAbstractParameter implements \JsonSerializable
 {
     private $meanWindSpeed;
     private $meanWindDirection;
-
 
 
     /**
@@ -27,34 +28,37 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
      * @param $quality
      * @param $sunshineDuration
      */
-    public function __construct(int $stationId, DateTime $date, int $quality, $meanWindSpeed, $meanWindDirection)
+    public function __construct(DWDStation $station, Coordinate $coordinate, int $stationId, DateTime $date, int $quality, $meanWindSpeed, $meanWindDirection)
     {
         $this->stationId = $stationId;
         $this->date = $date;
         $this->quality = $quality;
         $this->meanWindDirection = $meanWindDirection;
         $this->meanWindSpeed = $meanWindSpeed;
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->wind->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->wind->classification;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->wind->variables;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->wind->classification;
 
+        $this->latitude = $station->getLatitude();
+        $this->longitude = $station->getLongitude();
+        $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
     private function calculateU($speed, $directionDeg)
     {
         // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
-        return -1*$speed*sin(deg2rad($directionDeg));
+        return -1 * $speed * sin(deg2rad($directionDeg));
     }
 
     private function calculateV($speed, $directionDeg)
     {
         // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
-        return -1*$speed*cos(deg2rad($directionDeg));
+        return -1 * $speed * cos(deg2rad($directionDeg));
     }
 
     function __toString()
     {
 
-        return get_class($this).' [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
+        return get_class($this) . ' [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
     }
 
 
@@ -77,9 +81,9 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
     {
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date']=$this->date->format(DateTime::ATOM);
-        $vars['u']= $this->calculateU($this->meanWindSpeed,$this->meanWindDirection);
-        $vars['v']= $this->calculateV($this->meanWindSpeed,$this->meanWindDirection);
+        $vars['date'] = $this->date->format(DateTime::ATOM);
+        $vars['u'] = $this->calculateU($this->meanWindSpeed, $this->meanWindDirection);
+        $vars['v'] = $this->calculateV($this->meanWindSpeed, $this->meanWindDirection);
 
         return $vars;
     }
@@ -95,6 +99,19 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
 
     public function exportSingleVariables()
     {
-        // TODO: Implement exportSingleVariables() method.
+        return [
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->meanWindSpeed, "mean wind speed"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->meanWindDirection, "mean wind direction"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->calculateU($this->meanWindSpeed, $this->meanWindDirection), "mean calculated wind U vector"),
+            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+                $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
+                $this->calculateV($this->meanWindSpeed, $this->meanWindDirection), "mean calculated wind V vector"),
+        ];
     }
 }
