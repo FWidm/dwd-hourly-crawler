@@ -31,6 +31,7 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
         $this->quality = $quality;
         $this->sunshineDuration = $sunshineDuration;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->sun->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->sun->classification;
 
     }
 
@@ -75,4 +76,8 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

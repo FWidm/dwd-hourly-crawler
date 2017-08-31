@@ -39,6 +39,7 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
         $this->precipitationIndex = $pressureStationLevel;
         $this->precipitationWRType=$precipitationWRType;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->precipitation->classification;
 
     }
 
@@ -83,4 +84,8 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

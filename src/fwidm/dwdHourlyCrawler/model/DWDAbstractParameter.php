@@ -39,5 +39,6 @@ abstract class  DWDAbstractParameter
         return $this->date;
     }
 
+    public abstract function exportSingleVariables();
 
 }

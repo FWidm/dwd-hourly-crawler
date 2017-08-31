@@ -42,6 +42,7 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         $this->zenith = $zenith;
         $this->quality=$quality;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->solar->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->solar->classification;
 
     }
 
@@ -82,5 +83,10 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
     public function getDate(): DateTime
     {
         return $this->date;
+    }
+
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
     }
 }

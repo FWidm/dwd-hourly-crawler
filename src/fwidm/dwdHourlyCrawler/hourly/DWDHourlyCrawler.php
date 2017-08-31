@@ -246,7 +246,6 @@ class DWDHourlyCrawler
 
         }
 
-        //todo: if the file exists but the path changed / is wrong this works/is skipped.
         if ($forceDownloadFile || !file_exists($filePath)
             || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
         ) {
@@ -257,8 +256,8 @@ class DWDHourlyCrawler
         $stations = DWDStationsController::parseStations($filePath);
         DWDUtil::log(self::class, "Got stations... " . count($stations));
 
-        //todo: remove the false .
-        if (false && $activeOnly) {
+        //todo 31.8.2017: check if this filtering works, had it disabled for a while now. Remove todo after safe usage
+        if ($activeOnly) {
             $stations = array_filter($stations,
                 function (DWDStation $station) {
                     return $station->isActive();

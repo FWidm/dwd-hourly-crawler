@@ -35,6 +35,8 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
         $this->indexObservationType = $indexObservationType;
         $this->cloudiness_eights = $cloudiness_eights;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->classification;
+
     }
 
     function __toString()
@@ -78,4 +80,8 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

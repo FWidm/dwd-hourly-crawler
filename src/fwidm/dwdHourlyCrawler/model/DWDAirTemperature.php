@@ -34,6 +34,7 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
         $this->temperature2m_degC = $temperature2m;
         $this->relativeHumidity_percent = $relativeHumidity;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->airTemperature->classification;
     }
 
     function __toString()
@@ -77,4 +78,8 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

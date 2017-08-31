@@ -35,6 +35,8 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
         $this->meanWindDirection = $meanWindDirection;
         $this->meanWindSpeed = $meanWindSpeed;
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->wind->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->wind->classification;
+
     }
 
     private function calculateU($speed, $directionDeg)
@@ -91,4 +93,8 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

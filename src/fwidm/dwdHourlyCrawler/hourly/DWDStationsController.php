@@ -8,7 +8,6 @@ use Error;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
-use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyExportType;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 
 use Location\Coordinate;

@@ -42,6 +42,8 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
         $this->soilTemp_50cm_deg = $soilTemp_50cm_deg;
         $this->soilTemp_100cm_deg = $soilTemp_100cm_deg;
         $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->soilTemperature->classification;
+
 
     }
 
@@ -86,4 +88,8 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

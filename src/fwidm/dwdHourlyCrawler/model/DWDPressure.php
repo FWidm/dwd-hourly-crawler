@@ -35,6 +35,7 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
         $this->pressureStationLevel_hPA = $pressureStationLevel;
 
         $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->variables;
+        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->pressure->classification;
 
     }
 
@@ -79,4 +80,8 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
+    public function exportSingleVariables()
+    {
+        // TODO: Implement exportSingleVariables() method.
+    }
 }

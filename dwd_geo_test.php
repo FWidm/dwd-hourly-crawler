@@ -7,6 +7,12 @@ use Location\Formatter\Coordinate\GeoJSON;
 use Carbon\Carbon;
 require 'vendor/autoload.php';
 
+function prettyPrint($obj)
+{
+    echo "<pre>";
+    print_r($obj);
+    echo "</pre>";
+}
 
 $coordinatesUlm=new Coordinate(48.4391,9.9823);
 
@@ -26,7 +32,7 @@ $vars->addPressure()->addAirTemperature()->addCloudiness()->addPrecipitation()->
 //$out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
 $out=$dwdLib->getHourlyDataByDay($vars,$date,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
 prettyPrint("Got n=".count($out['values']['cloudiness'])." results!");
-prettyPrint(var_dump($out));
+prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
 
 //
 //$coordinatesDellmensingen=new Coordinate(48.301669,9.900532);
@@ -35,13 +41,8 @@ prettyPrint(var_dump($out));
 //prettyPrint("Checking for Coordinates: ".$coordinatesDellmensingen->format(new GeoJSON()).", @ ".$date->format(DateTime::ATOM));
 //$out=$dwdLib->getHourlyByInterval($vars,$date,$coordinatesDellmensingen->getLat(),$coordinatesDellmensingen->getLng());
 //prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
+//
 
-function prettyPrint($obj)
-{
-    echo "<pre>";
-    print_r($obj);
-    echo "</pre>";
-}
 //
 //
 //echo '<hr>';

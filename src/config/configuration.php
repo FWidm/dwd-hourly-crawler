@@ -48,6 +48,7 @@ return [
             'airTemperature' => [
                 'name' => 'air_temperature',
                 'shortCode' => 'TU',
+                'classification' => 'Temperature',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/air_temperature/recent/TU_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'air_temperature' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
@@ -60,6 +61,7 @@ return [
             'cloudiness' => [
                 'name' => 'cloudiness',
                 'shortCode' => 'N',
+                'classification' => 'Cloudiness',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/cloudiness/recent/N_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'cloudiness' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
@@ -73,6 +75,7 @@ return [
             'precipitation' => [
                 'name' => 'precipitation',
                 'shortCode' => 'RR',
+                'classification' => 'Precipitation',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/precipitation/recent/RR_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'precipitation' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
@@ -87,10 +90,10 @@ return [
             'pressure' => [
                 'name' => 'pressure',
                 'shortCode' => 'P0',
+                'classification' => 'Atmosphere',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/pressure/recent/P0_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'pressure' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-
                     'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/pressure/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf,',
                     'pressureSeaLevel' => 'P: Air pressure at sea level NN in hPA.',
                     'pressureStationLevel' => 'p0: Air pressure at station level in hPA.',
@@ -101,6 +104,7 @@ return [
             'soilTemperature' => [
                 'name' => 'soil_temperature',
                 'shortCode' => 'EB',
+                'classification' => 'Temperature',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/EB_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'soil_temperature' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
@@ -117,6 +121,7 @@ return [
             'solar' => [
                 'name' => 'solar',
                 'shortCode' => 'ST',
+                'classification' => 'Atmosphere',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/solar/ST_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'solar' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
@@ -138,6 +143,7 @@ return [
             'sun' => [
                 'name' => 'sun',
                 'shortCode' => 'SD',
+                'classification' => 'Atmosphere',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/sun/recent/SD_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'sun' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
@@ -149,12 +155,15 @@ return [
             'wind' => [
                 'name' => 'wind',
                 'shortCode' => 'FF',
+                'classification' => 'Wind',
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/wind/recent/FF_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'wind' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
                     'qualityBit' => 'QN_3: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/wind/sun/recent/DESCRIPTION_obsgermany_climate_hourly_wind_recent_en.pdf,',
                     '$meanWindSpeed' => 'F: mean wind speed in m/s.',
                     '$meanWindDirection' => 'D: mean wind direction in degrees.',
+                    '$u' => 'Calculated U wind vector component from the given speed and direction.',
+                    '$v' => 'Calculated V wind vector component from the given speed and direction.',
                 ],
             ],
 
