@@ -23,13 +23,16 @@ all the parameters.
 ## Fixed
 - Change the config from using OS dependant slashes on Ftp paths - currently the script fails on win due to backslashes in the FTP Path.
     - Only local file use the OS dependant slashes.
+- Allow the user to modify the baseDirectory of the output via the constructor flag.
+    - Can be done by specifying a param when creating the DWDLib instance.
+- Allow the user to split queried variables from the predefined groups by the dwd to single variables.
+- Add distance from station to the queried point
+
 ## Todo
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
-- Add distance from station to the queried point
-- Allow the user to modify the baseDirectory of the output via the constructor flag.
 - Allow the user to split queried variables from the predefined groups by the dwd to single variables.
-
+    - add quality?
 ## Example
 ```php
 <?php
