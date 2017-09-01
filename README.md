@@ -31,8 +31,9 @@ all the parameters.
 ## Todo
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
-- Allow the user to split queried variables from the predefined groups by the dwd to single variables.
-    - add quality?
+- If older data is queried maybe disable the check if a station is active this is extremely important for Solar stuff
+    - maybe rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
+ 
 ## Example
 ```php
 <?php
@@ -56,7 +57,7 @@ $out=$dwdLib->getHourlyByInterval($vars,$date ,$coordinatesUlm->getLat(),$coordi
                    "precipitationIndex": "0",
                    "preciptionWRType": "-999",
                    "paramDescription": {
-                       "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+                       "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
                        "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
                        "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
                        "precipitationWRType": "WRTR: WR precipitation coding."
@@ -83,7 +84,7 @@ foreach($out['values'] as $key =>  $obj) {
        {
            "stationID": 15444,
            "description": {
-               "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+               "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
                "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
                "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
                "precipitationWRType": "WRTR: WR precipitation coding."
@@ -99,7 +100,7 @@ foreach($out['values'] as $key =>  $obj) {
        {
            "stationID": 15444,
            "description": {
-               "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+               "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
                "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
                "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
                "precipitationWRType": "WRTR: WR precipitation coding."
@@ -115,7 +116,7 @@ foreach($out['values'] as $key =>  $obj) {
        {
            "stationID": 15444,
            "description": {
-               "qualityBit": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
+               "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
                "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
                "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
                "precipitationWRType": "WRTR: WR precipitation coding."

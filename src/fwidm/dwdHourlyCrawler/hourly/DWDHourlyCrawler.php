@@ -251,7 +251,7 @@ class DWDHourlyCrawler
         $stations = DWDStationsController::parseStations($filePath);
         DWDUtil::log(self::class, "Got stations... " . count($stations));
 
-        //todo 31.8.2017: check if this filtering works, had it disabled for a while now. Remove todo after safe usage
+        //todo 31.8.2017:  rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
         if ($activeOnly) {
             $stations = array_filter($stations,
                 function (DWDStation $station) {

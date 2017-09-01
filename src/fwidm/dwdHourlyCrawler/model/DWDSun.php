@@ -85,7 +85,14 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
     public function exportSingleVariables()
     {
         return [
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->sunshineDuration,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->sunshineDurationUnit,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->sunshineDuration, "sunshine duration"),
         ];

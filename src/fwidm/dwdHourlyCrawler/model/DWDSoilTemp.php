@@ -88,22 +88,63 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     public function exportSingleVariables()
     {
         return [
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->soilTemp_2cm_deg,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->soilTemp_unit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->soilTemp_2cm_deg, "soil temperature in 2cm"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->soilTemp_5cm_deg,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->soilTemp_unit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->soilTemp_5cm_deg, "soil temperature in 5cm"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->soilTemp_10cm_deg,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->soilTemp_unit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->soilTemp_10cm_deg, "soil temperature in 10cm"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->soilTemp_20cm_deg,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->soilTemp_unit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->soilTemp_20cm_deg, "soil temperature in 20cm"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->soilTemp_50cm_deg,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->soilTemp_unit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->soilTemp_50cm_deg, "soil temperature in 50cm"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->soilTemp_100cm_deg,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->soilTemp_unit,
+                ], $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->soilTemp_100cm_deg, "soil temperature in 100cm"),
         ];

@@ -42,15 +42,26 @@ foreach($out['values'] as $key =>  $obj) {
     }
 
 }
-//echo '<hr>';
-//$vars=new DWDHourlyParameters();
-//$vars->addSolar();
-//
-//$coordinatesSolarTest=new Coordinate(48.6657,9.8646);
-//$date=DateTime::createFromFormat('YmdH:i','2013073121:00');
-//prettyPrint("Checking Solar for Coordinates: ".$coordinatesSolarTest->format(new GeoJSON()).", @ ".$date->format(DateTime::ATOM));
-//$out=$dwdLib->getHourlyByInterval($vars,$date,$coordinatesSolarTest->getLat(),$coordinatesSolarTest->getLng());
-//prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
+echo '<hr>';
+$vars=new DWDHourlyParameters();
+$vars->addSolar();
+
+$coordinatesSolarTest=new Coordinate(48.6657,9.8646);
+$date=DateTime::createFromFormat('YmdH:i','2013073111:00');
+prettyPrint("Checking Solar for Coordinates: ".$coordinatesSolarTest->format(new GeoJSON()).", @ ".$date->format(DateTime::ATOM));
+$out=$dwdLib->getHourlyByInterval($vars,$date,$coordinatesSolarTest->getLat(),$coordinatesSolarTest->getLng());
+prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
+if($out) {
+    foreach ($out['values'] as $key => $obj) {
+        print "obj=$key<br>";
+        foreach ($obj as $value) {
+            /* @var $value \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
+
+            prettyPrint(json_encode($value->exportSingleVariables(), JSON_PRETTY_PRINT));
+        }
+
+    }
+}
 print "<hr>";
 $dwdCompact = new DWDCompactParameter(1,["a"=>"b"],"none",100.3,10,20,Carbon::now(),2030.45,"x");
 var_dump($dwdCompact);

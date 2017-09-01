@@ -86,8 +86,17 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     public function exportSingleVariables()
     {
         return
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->cloudinessEights,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->cloudinessEightsUnit,
+                    "observationType" => $this->indexObservationType,
+                    "observationTypeUnit" => $this->description->indexObservationType,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
-                $this->cloudiness_eights, "cloudiness in eights");
+                $this->cloudiness_eights, "cloudiness eights");
     }
 }

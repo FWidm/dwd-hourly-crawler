@@ -52,9 +52,11 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/air_temperature/recent/TU_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'air_temperature' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_9: Quality bit refer to ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/air_temperature/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_tu_historical_de.pdf',
+                    'qualityLevel' => 'QN_9: quality level - refer to ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/air_temperature/recent/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf',
                     'temperature2m' => 'TT_TU: temperature in 2m height - in degrees Celsius.',
-                    'relativeHumidity' => 'RF_TU: relative humidity in percent.'
+                    'relativeHumidity' => 'RF_TU: relative humidity in percent.',
+                    'temperature2mUnit' => 'C',
+                    'relativeHumidityUnit' => '%',
                 ]
             ],
 
@@ -65,9 +67,10 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/cloudiness/recent/N_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'cloudiness' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf',
-                    'indexObservationType' => 'V_N_I: index to differentiate measurements done by observation or a device.',
-                    'cloudiness_eights' => 'V_N: Cloudiness differentiation in eights - n/8. -1 is the error value.',
+                    'qualityLevel' => 'QN_8: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/recent/DESCRIPTION_obsgermany_climate_hourly_cloudiness_recent_en.pdf',
+                    'indexObservationType' => 'V_N_I: index to differentiate measurements done by human observation (H) or a device (I).',
+                    'cloudinessEights' => 'V_N: Cloudiness differentiation in eights - n/8. -1 is the error value.',
+                    'cloudinessEightsUnit' => '% (n/8 where -1 means error)'
                 ]
 
             ],
@@ -79,10 +82,13 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/precipitation/recent/RR_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'precipitation' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/cloudiness/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf',
+                    'qualityLevel' => 'QN_8: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/precipitation/recent/DESCRIPTION_obsgermany_climate_hourly_precipitation_recent_en.pdf',
                     'hourlyPrecipitation' => 'R1: Hourly precipitation in mm.',
+                    'hourlyPrecipitationUnit' => 'mm',
                     'precipitationIndex' => 'RS_IND: Index - 0 no precipitation, 1 precipitation.',
-                    'precipitationWRType' => 'WRTR: WR precipitation coding.',
+                    'precipitationIndexUnit' => 'bool (0 no precipitation, 1 precipitation)',
+                    'precipitationWRType' => 'WRTR: WR precipitation coding. W_R definition (see Table 55, VUB 2 Band D, 2013) is used: 0- no fallen precipitation or too little deposition (e.g., dew or frost) to form a precipitation height larger than 0.0; 1 - precipitation height only due to deposition (dew or frost) or if it cannot decided how large the part from deposition is; 2 - precipitation height only due to liquid deposition; 3 -precipitation height only due to solid precipitation; 6 - precipitation height due to fallen liquid precipitation, may also include deposition of any kind; 7 - precipitation height due to fallen solid precipitation, may also include deposition of any kind; 8 - fallen precipitation in liquid and solid form; 9 - no precipitation measurement, form of precipitation cannot be determined.',
+                    'precipitationWRTypeUnit' => 'integer (0-9)',
                 ],
 
             ],
@@ -94,9 +100,11 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/pressure/recent/P0_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'pressure' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_8: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/pressure/historical/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf,',
+                    'qualityLevel' => 'QN_8: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/pressure/recent/DESCRIPTION_obsgermany_climate_hourly_pressure_recent_en.pdf',
                     'pressureSeaLevel' => 'P: Air pressure at sea level NN in hPA.',
+                    'pressureSeaLevelUnit' => 'hPA',
                     'pressureStationLevel' => 'p0: Air pressure at station level in hPA.',
+                    'pressureStationLevelUnit' => 'hPA',
                 ],
 
             ],
@@ -108,13 +116,14 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/EB_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'soil_temperature' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/DESCRIPTION_obsgermany_climate_hourly_soil_temperature_recent_en.pdf,',
-                    '$soilTemp_2cm_deg' => 'V_TE002: Hurly soil temperature in 2cm depth measured in degrees Celsius.',
-                    '$soilTemp_5cm_deg' => 'V_TE005: Hourly soil temperature in 5cm depth measured in degrees Celsius.',
-                    '$soilTemp_10cm_deg' => 'V_TE010: Hourly soil temperature in 10cm depth measured in degrees Celsius.',
-                    '$soilTemp_20cm_deg' => 'V_TE020: Hourly soil temperature in 20cm depth measured in degrees Celsius.',
-                    '$soilTemp_50cm_deg' => 'V_TE050: Hourly soil temperature in 50cm depth measured in degrees Celsius.',
-                    '$soilTemp_100cm_deg' => 'V_TE100: Hourly soil temperature in 50cm depth measured in degrees Celsius.'
+                    'soilTemp_unit' => 'C',
+                    'qualityLevel' => 'QN_2: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/soil_temperature/recent/DESCRIPTION_obsgermany_climate_hourly_soil_temperature_recent_en.pdf',
+                    'soilTemp_2cm_deg' => 'V_TE002: Hurly soil temperature in 2cm depth measured in degrees Celsius.',
+                    'soilTemp_5cm_deg' => 'V_TE005: Hourly soil temperature in 5cm depth measured in degrees Celsius.',
+                    'soilTemp_10cm_deg' => 'V_TE010: Hourly soil temperature in 10cm depth measured in degrees Celsius.',
+                    'soilTemp_20cm_deg' => 'V_TE020: Hourly soil temperature in 20cm depth measured in degrees Celsius.',
+                    'soilTemp_50cm_deg' => 'V_TE050: Hourly soil temperature in 50cm depth measured in degrees Celsius.',
+                    'soilTemp_100cm_deg' => 'V_TE100: Hourly soil temperature in 50cm depth measured in degrees Celsius.'
                 ],
             ],
 
@@ -125,14 +134,17 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/solar/ST_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'solar' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_2: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/solar/recent/DESCRIPTION_obsgermany_climate_hourly_solar_recent_en.pdf,',
-                    '$sumLongwaveRadiation' => 'ATMO_STRAHL: Hourly sum of longwave downward radiation in J/cm^2.',
-                    '$sumDiffuseRadiation' => 'FD_STRAHL: Hourly sum of diffuse solar radiation in J/cm^2.',
-                    '$sumIncomingRadiation' => 'FG_STRAHL: Hourly sum of solar incoming radiation in J/cm^2.',
-                    '$sumSunshineDuration' => 'SD_STRAHL: Hourly sum of sunshine duration in minutes.',
-                    '$zenith' => 'ZENITH: Solar zenith angle at mid interval in degrees.'
+                    'qualityLevel' => 'QN_2: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/solar/recent/DESCRIPTION_obsgermany_climate_hourly_solar_recent_en.pdf',
+                    'radiationUnit' => 'J cm**-2.',
+                    'sumLongWaveRadiation' => 'ATMO_STRAHL: Hourly sum of longwave downward radiation in J/cm^2.',
+                    'sumDiffuseRadiation' => 'FD_STRAHL: Hourly sum of diffuse solar radiation in J/cm^2.',
+                    'sumIncomingRadiation' => 'FG_STRAHL: Hourly sum of solar incoming radiation in J/cm^2.',
+                    'sumSunshineDuration' => 'SD_STRAHL: Hourly sum of sunshine duration in minutes.',
+                    'sumSunshineDurationUnit' => 'min',
+                    'zenith' => 'ZENITH: Solar zenith angle at mid interval in degrees.',
+                    'zenithUnit' => 'deg',
                 ],
-                //File extension for solar file was changed, no idea why
+                //File ending for solar file was changed, no idea why
                 'fileExtension' => '_row.zip',
                 //Other folder structure - no /recent/stundenwerte_...
                 'recentValuePath' => '/stundenwerte_',
@@ -147,8 +159,9 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/sun/recent/SD_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'sun' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_7: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/sun/recent/DESCRIPTION_obsgermany_climate_hourly_sun_recent_en.pdf,',
-                    '$sunshineDuration' => 'SD_SO: hourly sunshine duration in minutes..',
+                    'qualityLevel' => 'QN_7: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/sun/recent/DESCRIPTION_obsgermany_climate_hourly_sun_recent_en.pdf,',
+                    'sunshineDuration' => 'SD_SO: hourly sunshine duration in minutes.',
+                    'sunshineDurationUnit' => 'min',
                 ],
             ],
 
@@ -159,11 +172,14 @@ return [
                 'stations' => 'pub/CDC/observations_germany/climate/hourly/wind/recent/FF_Stundenwerte_Beschreibung_Stationen.txt',
                 'localFolder' => DIRECTORY_SEPARATOR . 'wind' . DIRECTORY_SEPARATOR . 'recent',
                 'variables' => [
-                    'qualityBit' => 'QN_3: Quality bit, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/wind/sun/recent/DESCRIPTION_obsgermany_climate_hourly_wind_recent_en.pdf,',
-                    '$meanWindSpeed' => 'F: mean wind speed in m/s.',
-                    '$meanWindDirection' => 'D: mean wind direction in degrees.',
-                    '$u' => 'Calculated U wind vector component from the given speed and direction.',
-                    '$v' => 'Calculated V wind vector component from the given speed and direction.',
+                    'qualityLevel' => 'QN_3: quality level, see @ ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/wind/sun/recent/DESCRIPTION_obsgermany_climate_hourly_wind_recent_en.pdf,',
+                    'meanWindSpeed' => 'F: mean wind speed in m/s.',
+                    'meanWindSpeedUnit' => 'm s**-1',
+                    'meanWindDirection' => 'D: mean wind direction in degrees.',
+                    'meanWindDirectionUnit' => 'deg',
+                    'uvUnit' => 'm s**-1',
+                    'u' => 'Calculated U wind vector component from the given speed and direction. U component is positive for a west to east flow.',
+                    'v' => 'Calculated V wind vector component from the given speed and direction. V component is positive for south to north flow (northward wind).',
                 ],
             ],
 

@@ -100,16 +100,44 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
     public function exportSingleVariables()
     {
         return [
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->meanWindSpeed,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->meanWindSpeedUnit,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->meanWindSpeed, "mean wind speed"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->meanWindDirection,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->meanWindDirectionUnit,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->meanWindDirection, "mean wind direction"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->u,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->uvUnit,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->calculateU($this->meanWindSpeed, $this->meanWindDirection), "mean calculated wind U vector"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->v,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->uvUnit,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->calculateV($this->meanWindSpeed, $this->meanWindDirection), "mean calculated wind V vector"),
         ];

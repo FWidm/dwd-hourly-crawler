@@ -89,10 +89,24 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
     public function exportSingleVariables()
     {
         return [
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->temperature2m,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->temperature2mUnit,
+                ],
+                $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->temperature2m_degC, "2 metre temperature"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->relativeHumidity,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->relativeHumidityUnit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->relativeHumidity_percent, "relative humidity in percent"),
         ];

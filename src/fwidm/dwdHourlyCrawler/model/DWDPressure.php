@@ -90,10 +90,24 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
     public function exportSingleVariables()
     {
         return [
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->pressureSeaLevel,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->pressureSeaLevelUnit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->pressureSeaLevel_hPA, "mean sea level pressure"),
-            new DWDCompactParameter($this->stationId, $this->description, $this->classification,
+            new DWDCompactParameter($this->stationId,
+                [
+                    "name" => $this->description->pressureStationLevel,
+                    "quality" => $this->quality,
+                    "qualityType" => $this->description->qualityLevel,
+                    "units" => $this->description->pressureStationLevelUnit,
+                ]
+                , $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
                 $this->pressureStationLevel_hPA, "station level pressure"),
         ];
