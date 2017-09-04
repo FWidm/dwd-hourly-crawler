@@ -55,7 +55,7 @@ class DWDCompactParameter implements \JsonSerializable
      * @param float $value
      * @param string $type
      */
-    public function __construct($stationID, $description, $classification, $distance, $longitude, $latitude, Carbon $date, float $value,string $type)
+    public function __construct($stationID, $description, $classification, $distance, $longitude, $latitude, Carbon $date, float $value, string $type)
     {
         $this->stationID = $stationID;
         $this->description = $description;
@@ -83,4 +83,83 @@ class DWDCompactParameter implements \JsonSerializable
         $vars['date'] = $this->date->toIso8601String();
         return $vars;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getStationID()
+    {
+        return $this->stationID;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getClassification()
+    {
+        return $this->classification;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * @return Carbon
+     */
+    public function getDate(): Carbon
+    {
+        return $this->date;
+    }
+
+    /**
+     * @return float
+     */
+    public function getValue(): float
+    {
+        return $this->value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function __toString()
+    {
+        return "DWDCompactParameter: [type=".$this->type."; description=".$this->description."; value=".$this->value."]";
+    }
+
+
 }
