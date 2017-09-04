@@ -92,7 +92,7 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         return $this->date;
     }
 
-    public function exportSingleVariables()
+    public function exportSingleVariables():array
     {
         return [
             new DWDCompactParameter($this->stationId,

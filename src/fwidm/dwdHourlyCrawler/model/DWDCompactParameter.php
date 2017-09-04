@@ -20,7 +20,7 @@ use Carbon\Carbon;
  *  "stationId": $id
  *  "descrpiton": {}
  *  "classification: $classification -> name, date, step, unit, shortname, convertedunit
- *  "distance": todo: dist from pt to station
+ *  "distance":
  *  "longitude": float
  *  "latitude": float
  *  "date": ISO

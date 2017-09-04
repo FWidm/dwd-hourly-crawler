@@ -26,7 +26,6 @@ abstract class  DWDAbstractParameter
 
     protected $distance;
 
-    //todo: encode class name from the specific subclass
     protected $classification;
 
     /**
@@ -45,6 +44,11 @@ abstract class  DWDAbstractParameter
         return $this->date;
     }
 
-    public abstract function exportSingleVariables();
+    /**
+     * Encode the current parameter into a standardized 1 parameter per object type. This method thus encodes all DWD
+     * params from their multi param per object variant to an array of single objects per parameter
+     * @return array
+     */
+    public abstract function exportSingleVariables():array;
 
 }

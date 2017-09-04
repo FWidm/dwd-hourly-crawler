@@ -37,8 +37,9 @@ foreach($out['values'] as $key =>  $obj) {
     print "obj=$key<br>";
     foreach ($obj as $value){
         /* @var $value \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
+        prettyPrint($value->exportSingleVariables()[0]);
 
-        prettyPrint(json_encode($value->exportSingleVariables(),JSON_PRETTY_PRINT));
+//        prettyPrint(json_encode($value->exportSingleVariables(),JSON_PRETTY_PRINT));
     }
 
 }

@@ -86,7 +86,7 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
     }
 
 
-    public function exportSingleVariables()
+    public function exportSingleVariables():array
     {
         return [
             new DWDCompactParameter($this->stationId,

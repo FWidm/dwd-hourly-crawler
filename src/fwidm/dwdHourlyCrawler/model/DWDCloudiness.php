@@ -1,4 +1,5 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
@@ -37,8 +38,8 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
         $this->quality = $quality;
         $this->indexObservationType = $indexObservationType;
         $this->cloudiness_eights = $cloudiness_eights;
-        $this->description=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->variables;
-        $this->classification=DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->classification;
+        $this->description = DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->variables;
+        $this->classification = DWDConfiguration::getHourlyConfiguration()->parameters->cloudiness->classification;
         $this->latitude = $station->getLatitude();
         $this->longitude = $station->getLongitude();
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
@@ -47,7 +48,7 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     function __toString()
     {
 
-        return get_class($this).' [stationId='.$this->stationId.', date='.$this->date->format('Y-m-d').']';
+        return get_class($this) . ' [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
     }
 
 
@@ -70,7 +71,7 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     {
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date']=$this->date->format(DateTime::ATOM);
+        $vars['date'] = $this->date->format(DateTime::ATOM);
         return $vars;
     }
 
@@ -83,9 +84,9 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-    public function exportSingleVariables()
+    public function exportSingleVariables():array
     {
-        return
+        return [
             new DWDCompactParameter($this->stationId,
                 [
                     "name" => $this->description->cloudinessEights,
@@ -97,6 +98,6 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
                 ],
                 $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
-                $this->cloudiness_eights, "cloudiness eights");
+                $this->cloudiness_eights, "cloudiness eights")];
     }
 }
