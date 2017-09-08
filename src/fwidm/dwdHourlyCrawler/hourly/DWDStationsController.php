@@ -4,6 +4,7 @@ namespace FWidm\DWDHourlyCrawler\Hourly;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
+use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 
@@ -55,6 +56,7 @@ class DWDStationsController
      */
     public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 200)
     {
+        DWDUtil::log(self::class, "Getting nearest stations from a list of ".count($stations).", around coordinates: (lat=".$coordinatesRequest->getLat().", long=".$coordinatesRequest->getLng().")");
         $calculator = new Vincenty();
         $nearestStation = array();
 
@@ -72,6 +74,7 @@ class DWDStationsController
                 ksort($nearestStation);
             }
         }
+        DWDUtil::log(self::class,"Got nearest stations :". count($nearestStation));
         return $nearestStation;
 
     }

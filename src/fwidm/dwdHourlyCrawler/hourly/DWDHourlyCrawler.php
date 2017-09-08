@@ -167,20 +167,20 @@ class DWDHourlyCrawler
     }
 
     /** Retrieves a file for the controller by querying the nearest station.
-     * @param AbstractHourlyService $controller
+     * @param AbstractHourlyService $service
      * @param DWDStation $nearestStation
      * @param bool $forceDownloadFile
      * @return string filePath
      */
-    public function retrieveFile(AbstractHourlyService $controller, DWDStation $nearestStation, $forceDownloadFile = false)
+    public function retrieveFile(AbstractHourlyService $service, DWDStation $nearestStation, $forceDownloadFile = false)
     {
         $config = DWDConfiguration::getConfiguration();
         $ftpConfig = $config->ftp;
 
 
-        $fileName = $controller->getFileName($nearestStation->getId());
-        $ftpPath = $controller->getFileFTPPath($nearestStation->getId());
-        $localPath = $controller->getFilePath($fileName);
+        $fileName = $service->getFileName($nearestStation->getId());
+        $ftpPath = $service->getFileFTPPath($nearestStation->getId());
+        $localPath = $service->getFilePath($fileName);
         DWDUtil::log(self::class, '$fileName=' . $fileName);
         DWDUtil::log(self::class, '$ftpPath=' . $ftpPath);
         DWDUtil::log(self::class, '$localPath=' . $localPath);
