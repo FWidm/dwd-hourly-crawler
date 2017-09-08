@@ -91,8 +91,9 @@ class DWDUtil
         return $obj;
     }
 
-    static function log($objectType, $content, $htmlOutput = true)
+    static function log($objectType, $content, $htmlOutput = false)
     {
+        //todo: replace with monolog or another framework.
         if (DWDConfiguration::isDebugEnabled()) {
             $date = new Carbon();
             if ($htmlOutput) echo "<div style=\"white-space: pre-wrap;\">";
@@ -100,7 +101,8 @@ class DWDUtil
             print($date->format(Carbon::ISO8601) . '@' . $objectType . ' msg=');
             print_r($content);
             if ($htmlOutput) echo "</div>";
-
+            else
+                echo "/n";
         }
     }
 

@@ -56,9 +56,10 @@ class DWDStationsController
      */
     public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 200)
     {
+        //todo: make radius loadable from the config.
         DWDUtil::log(self::class, "Getting nearest stations from a list of ".count($stations).", around coordinates: (lat=".$coordinatesRequest->getLat().", long=".$coordinatesRequest->getLng().")");
         $calculator = new Vincenty();
-        $nearestStation = array();
+        $nearestStations = array();
 
         foreach ($stations as $activeStation) {
             if (is_object($activeStation) && $activeStation instanceof DWDStation) {
@@ -67,15 +68,17 @@ class DWDStationsController
                 //distance in meters!
                 $diff = $calculator->getDistance($coordinatesRequest, $coordinatesStation);
                 if ($diff <= $radiusKM * DWDStationsController::kmToMeters) {
-                    $nearestStation[intval($diff)] = $activeStation;
+                    $nearestStations[intval($diff)] = $activeStation;
 
                 }
                 //sort by keys -> lowest distance first.
-                ksort($nearestStation);
+                ksort($nearestStations);
             }
         }
-        DWDUtil::log(self::class,"Got nearest stations :". count($nearestStation));
-        return $nearestStation;
+        DWDUtil::log(self::class,"Got nearest stations :". count($nearestStations));
+        if(count($nearestStations)<1)
+            throw new DWDLibException("No Stations near the given Coordinates are available inside of a 200km radius.");
+        return $nearestStations;
 
     }
 

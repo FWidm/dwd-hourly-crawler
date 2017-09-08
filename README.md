@@ -33,7 +33,10 @@ all the parameters.
 - Change code: check if query date is older or equal than last checked, else do not query
 - If older data is queried maybe disable the check if a station is active this is extremely important for Solar stuff
     - maybe rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
- 
+- Replace my shitty selfmade log function with MonoLog or another solution
+- Add option to enable logging via the constructor
+- Add option to set the radius of active stations near the given point.
+
 ## Example
 ```php
 <?php

@@ -6,7 +6,7 @@
  * Time: 11:56
  */
 return [
-    'debug' => true,
+    'debug' => false,
     //Base directory of all downloaded files - per default it's the doc root - mostly you want to point it to 'storage' or other dirs.
     'baseDirectory' => $_SERVER['DOCUMENT_ROOT'],
 
