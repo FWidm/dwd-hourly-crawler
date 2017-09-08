@@ -24,7 +24,7 @@ class DWDUtil
      */
     public static function initializeOutputFolder(string $path)
     {
-        $path = $_SERVER['DOCUMENT_ROOT'] . $path;
+        $path = DWDConfiguration::getConfiguration()->baseDirectory . $path;
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
         }

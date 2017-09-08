@@ -150,7 +150,7 @@ abstract class AbstractHourlyService
     public function getStationFTPPath(string $ftpPath)
     {
         $fileName = DWDUtil::getFileNameFromPath($ftpPath);
-        $filePath = $_SERVER['DOCUMENT_ROOT'] . DWDConfiguration::getConfiguration()->dwdHourly->localBaseFolder . '/' . $fileName;
+        $filePath = DWDConfiguration::getConfiguration()->baseDirectory . DWDConfiguration::getConfiguration()->dwdHourly->localBaseFolder . '/' . $fileName;
         return $filePath;
     }
 
