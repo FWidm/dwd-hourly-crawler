@@ -158,8 +158,12 @@ class DWDCompactParameter implements \JsonSerializable
 
     public function __toString()
     {
-        return "DWDCompactParameter: [type=".$this->type."; classification=".$this->getClassification()."; value=".$this->value."]";
+        return "DWDCompactParameter: [type=" . $this->type . "; classification=" . $this->getClassification() . "; value=" . $this->value . "]";
     }
 
+    public function getVarArray(): array
+    {
+        return get_object_vars($this);
+    }
 
 }
