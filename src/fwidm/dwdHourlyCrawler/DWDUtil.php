@@ -91,7 +91,7 @@ class DWDUtil
         return $obj;
     }
 
-    static function log($objectType, $content, $htmlOutput = false)
+    static function log($objectType, $content, $htmlOutput = true)
     {
         //todo: replace with monolog or another framework.
         if (DWDConfiguration::isDebugEnabled()) {

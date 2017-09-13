@@ -236,13 +236,12 @@ class DWDHourlyCrawler
         $filePath = $controller->getStationFTPPath($stationsFTPPath);
         //Retrieve Stations
         if (file_exists($filePath)) {
-            $lastModifiedStationFile = Carbon::createFromFormat('U', (filemtime($filePath)));
-            DWDUtil::log(self::class, "last modified? " . $lastModifiedStationFile);
-
+            $lastModifiedStationFile = Carbon::createFromTimestamp(filemtime($filePath));
+            DWDUtil::log(self::class, "last modified? " . $lastModifiedStationFile
+                ."; difference to today? ".Carbon::now()->diffInDays( Carbon::createFromTimestamp(filemtime($filePath))));
         }
-
-        if ($forceDownloadFile || !file_exists($filePath)
-            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
+        //todo: determine if this works - had a problem where this did not trigger redownloading of the file, which lead to the no active stations exception.
+        if ($forceDownloadFile || !file_exists($filePath) || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
         ) {
 //            DWDUtil::log(self::class, "Get file!");
             DWDStationsController::getStationFile($stationsFTPPath, $filePath);

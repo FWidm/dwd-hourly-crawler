@@ -15,11 +15,11 @@ function prettyPrint($obj)
     echo "</pre>";
 }
 
-$coordinatesUlm=new Coordinate(48.4391,9.9823);
+$coordinates=new Coordinate(50.398400,9.991550);
 
 $date=new DateTime();
 $date->modify("-4 days");
-prettyPrint("Checking for Coordinates: ".$coordinatesUlm->format(new GeoJSON()). ", @ ".$date->format(DateTime::ATOM));
+prettyPrint("Checking for Coordinates: ".$coordinates->format(new GeoJSON()). ", @ ".$date->format(DateTime::ATOM));
 
 
 
@@ -30,7 +30,7 @@ $vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->
 //$vars->addCloudiness();
 
 //$out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
-$out=$dwdLib->getHourlyByInterval($vars,$date,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
+$out=$dwdLib->getHourlyByInterval($vars,$date,$coordinates->getLat(),$coordinates->getLng());
 //prettyPrint("Got n=".count($out['values']['cloudiness'])." results!");
 prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
 foreach($out['values'] as $key =>  $obj) {
