@@ -15,7 +15,7 @@ function prettyPrint($obj)
     echo "</pre>";
 }
 
-$coordinates=new Coordinate(50.398400,9.991550);
+$coordinates=new Coordinate(48.398400,9.091550);
 
 $date=new DateTime();
 $date->modify("-4 days");
