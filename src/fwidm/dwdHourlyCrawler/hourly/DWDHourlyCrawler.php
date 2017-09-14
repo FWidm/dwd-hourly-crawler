@@ -13,9 +13,11 @@ use Carbon\Carbon;
 use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
+use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use FWidm\DWDHourlyCrawler\Hourly\Services\AbstractHourlyService;
 use Location\Coordinate;
+use Monolog\Logger;
 
 class DWDHourlyCrawler
 {
@@ -46,7 +48,13 @@ class DWDHourlyCrawler
 
             $stations = $this->getStations($hourlyService, true);
             if (isset($stations)) {
-                $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                $nearestStations = [];
+                try {
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                }catch (DWDLibException $exception){
+                    $stations = $this->getStations($hourlyService, true,true);
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                }
 
                 foreach ($nearestStations as $nearestStation) {
                     /* @var $nearestStation DWDStation */
@@ -96,8 +104,14 @@ class DWDHourlyCrawler
 
             if (isset($stations)) {
 
-                $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
-//                DWDStationsController::exportStations($nearestStations);
+                $nearestStations = [];
+                try {
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                }catch (DWDLibException $exception){
+                    DWDUtil::log(self::class,"Failed to retrieve any nearest active stations. Retrying after forcedownloading new station infos.",Logger::WARNING);
+                    $stations = $this->getStations($hourlyService, true,true);
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                }
 
 
                 foreach ($nearestStations as $nearestStation) {
@@ -229,7 +243,7 @@ class DWDHourlyCrawler
     public
     function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
     {
-
+        $downloadFile = false || $forceDownloadFile;
         $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;
         $stationsFTPPath = get_object_vars($stationsFTPPath)[$controller->getParameter()]->stations;
 
@@ -237,13 +251,14 @@ class DWDHourlyCrawler
         //Retrieve Stations
         if (file_exists($filePath)) {
             $lastModifiedStationFile = Carbon::createFromTimestamp(filemtime($filePath));
+            $diffInHours=Carbon::now()->diffInHours(Carbon::createFromTimestamp(filemtime($filePath)));
             DWDUtil::log(self::class, "last modified? " . $lastModifiedStationFile
-                ."; difference to today? ".Carbon::now()->diffInDays( Carbon::createFromTimestamp(filemtime($filePath))));
+                . "; difference to today (h)? " . $diffInHours);
+            $downloadFile=$diffInHours>=12; //redownload every 12h.
         }
         //todo: determine if this works - had a problem where this did not trigger redownloading of the file, which lead to the no active stations exception.
-        if ($forceDownloadFile || !file_exists($filePath) || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
-        ) {
-//            DWDUtil::log(self::class, "Get file!");
+        if ($downloadFile) {
+            DWDUtil::log(self::class,"Downloading station file=".$filePath);
             DWDStationsController::getStationFile($stationsFTPPath, $filePath);
         }
 
@@ -251,7 +266,7 @@ class DWDHourlyCrawler
         DWDUtil::log(self::class, "Got stations... " . count($stations));
 
         //todo 31.8.2017:  rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
-        if ($activeOnly) {
+        if ($activeOnly && count($stations) > 0) {
             $stations = array_filter($stations,
                 function (DWDStation $station) {
                     return $station->isActive();

@@ -7,6 +7,8 @@ use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Location\Coordinate;
 use Location\Distance\Vincenty;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use stdClass;
 use ZipArchive;
 
@@ -18,6 +20,8 @@ use ZipArchive;
  */
 class DWDUtil
 {
+
+    private static $log;
 
     /**
      * @param string $path path to the output dir.
@@ -91,18 +95,23 @@ class DWDUtil
         return $obj;
     }
 
-    static function log($objectType, $content, $htmlOutput = true)
+    static function log($class, $content, $loggingLevel = Logger::DEBUG)
     {
         //todo: replace with monolog or another framework.
         if (DWDConfiguration::isDebugEnabled()) {
-            $date = new Carbon();
-            if ($htmlOutput) echo "<div style=\"white-space: pre-wrap;\">";
+            if(!self::$log){
+                self::$log = new Logger('DWDUtil');
+                $conf=DWDConfiguration::getConfiguration();
+                $logFile=$conf->baseDirectory.$conf->dwdHourly->localBaseFolder.$conf->dwdHourly->loggingFileName;
+                $handler=new StreamHandler($logFile, Logger::DEBUG);
+                $handler->getFormatter()->ignoreEmptyContextAndExtra(true);
+                self::$log->pushHandler($handler);
+            }
 
-            print($date->format(Carbon::ISO8601) . '@' . $objectType . ' msg=');
-            print_r($content);
-            if ($htmlOutput) echo "</div>";
-            else
-                echo "/n";
+            $splitClassName=explode('\\', $class);
+            $className=array_pop($splitClassName);
+            self::$log->log($loggingLevel,$className.": msg=". print_r($content,true));
+
         }
     }
 
@@ -113,16 +122,15 @@ class DWDUtil
      * @param string $unit - default is "m" for meters, can be set to "km" for km.
      * @return float - distance in meters or km
      */
-    public static function calculateDistanceToStation(Coordinate $coordinate,DWDStation $station, $unit="m")
+    public static function calculateDistanceToStation(Coordinate $coordinate, DWDStation $station, $unit = "m")
     {
         $coordinateStation = new Coordinate($station->getLatitude(), $station->getLongitude()); // Mauna Kea Summit
 
         $calculator = new Vincenty();
         $distance_meters = $calculator->getDistance($coordinate, $coordinateStation); // in meters
-        if ($unit=="km"){
-            return $distance_meters/1000.0;
-        }
-        else
+        if ($unit == "km") {
+            return $distance_meters / 1000.0;
+        } else
             return $distance_meters;
     }
 

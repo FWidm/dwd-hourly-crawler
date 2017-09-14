@@ -29,6 +29,7 @@ return [
     'dwdHourly' => [
         'baseFTPPath' => '/pub/CDC/observations_germany/climate/hourly/',
         'localBaseFolder' => DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR . 'hourly',
+        'loggingFileName' => DIRECTORY_SEPARATOR.'dwd_hourly.log',
         //The prefix of the searched file that contains all the weather data e.g. 'produkt_sd_stunde_20160218_20170820_15444'
         'zipExtractionPrefix' => 'produkt',
 

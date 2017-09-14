@@ -1,8 +1,10 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
 use DateTime;
+use FWidm\DWDHourlyCrawler\DWDUtil;
 
 
 /**
@@ -35,7 +37,7 @@ class DWDStation implements \JsonSerializable
      * @param $name
      * @param $state
      */
-    public function __construct($id, DateTime $from, DateTime $until, $height, $latitude, $longitude, $name, $state,$activeDayThreshold)
+    public function __construct($id, DateTime $from, DateTime $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold)
     {
         $this->id = $id;
         $this->from = $from;
@@ -49,16 +51,20 @@ class DWDStation implements \JsonSerializable
 
     }
 
-    public function setActive($activeDayThreshold){
-        $now=new Carbon('now','utc');
+    public function setActive($activeDayThreshold)
+    {
+        $now = new Carbon('now', 'utc');
         $until = new Carbon($this->until);
 
-        $diffDays=$now->diffInDays($until);
+        $diffDays = $now->diffInDays($until);
 
-        if($diffDays<$activeDayThreshold)
-            $this->active=true;
-        else $this->active=false;
-//        $elapsed = $difference->format('%y years %m months %a days %h hours %i minutes %s seconds');
+        if ($diffDays < $activeDayThreshold){
+            $this->active = true;
+        }
+        else {
+            $this->active = false;
+        }
+
     }
 
     /**
@@ -88,8 +94,7 @@ class DWDStation implements \JsonSerializable
 
     function __toString()
     {
-
-        return 'DWDStation [id='.$this->id.', name='.$this->name.', until='.$this->until->format('Y-m-d').']';
+        return 'DWDStation [id=' . $this->id . ', name=' . $this->name . ', until=' . $this->until->format('Y-m-d') . ', active? ' . $this->active . ']';
     }
 
     /**
@@ -103,8 +108,8 @@ class DWDStation implements \JsonSerializable
     {
         $vars = get_object_vars($this);
         //replace standard format by ISO DateTime::ATOM Format.
-        $vars['until']=$this->until->format(DateTime::ATOM);
-        $vars['from']=$this->from->format(DateTime::ATOM);
+        $vars['until'] = $this->until->format(DateTime::ATOM);
+        $vars['from'] = $this->from->format(DateTime::ATOM);
 
 
         return $vars;
@@ -165,7 +170,6 @@ class DWDStation implements \JsonSerializable
     {
         return $this->active;
     }
-
 
 
 }

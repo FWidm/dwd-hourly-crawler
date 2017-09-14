@@ -10,6 +10,7 @@ use FWidm\DWDHourlyCrawler\Model\DWDStation;
 
 use Location\Coordinate;
 use Location\Distance\Vincenty;
+use Location\Formatter\Coordinate\DecimalDegrees;
 
 /**
  * Created by PhpStorm.
@@ -57,7 +58,7 @@ class DWDStationsController
     public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 200)
     {
         //todo: make radius loadable from the config.
-        DWDUtil::log(self::class, "Getting nearest stations from a list of ".count($stations).", around coordinates: (lat=".$coordinatesRequest->getLat().", long=".$coordinatesRequest->getLng().")");
+        DWDUtil::log(self::class, "Getting nearest stations from a list of ".count($stations).", around coordinates: ".$coordinatesRequest->format(new DecimalDegrees()));
         $calculator = new Vincenty();
         $nearestStations = array();
 
@@ -76,8 +77,9 @@ class DWDStationsController
             }
         }
         DWDUtil::log(self::class,"Got nearest stations :". count($nearestStations));
-        if(count($nearestStations)<1)
-            throw new DWDLibException("No Stations near the given Coordinates are available inside of a 200km radius.");
+        if(count($nearestStations)<1){
+            throw new DWDLibException("No Stations near the given Coordinates are available inside of a 200km radius around coordinates: ".$coordinatesRequest->format(new DecimalDegrees()));
+        }
         return $nearestStations;
 
     }
