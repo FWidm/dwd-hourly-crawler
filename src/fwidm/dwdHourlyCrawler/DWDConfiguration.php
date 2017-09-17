@@ -90,10 +90,10 @@ class DWDConfiguration
 
     public static function setBaseDir($baseDirectory)
     {
-        DWDUtil::log(self::class, "basedir=" . $baseDirectory);
         if (isset($baseDirectory) && is_string($baseDirectory) && is_dir($baseDirectory)) {
             self::getConfiguration()->baseDirectory = $baseDirectory;
         }
+        DWDUtil::log(self::class, "basedir=" . $baseDirectory);
 
     }
 

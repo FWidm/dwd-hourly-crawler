@@ -17,8 +17,7 @@ function prettyPrint($obj)
 
 $coordinates=new Coordinate(48.398400,9.091550);
 
-$date=new DateTime();
-$date->modify("-4 days");
+$date=Carbon::parse('2017-09-17 00:01:00');
 prettyPrint("Checking for Coordinates: ".$coordinates->format(new GeoJSON()). ", @ ".$date->format(DateTime::ATOM));
 
 
