@@ -51,8 +51,8 @@ class DWDHourlyCrawler
                 $nearestStations = [];
                 try {
                     $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
-                }catch (DWDLibException $exception){
-                    $stations = $this->getStations($hourlyService, true,true);
+                } catch (DWDLibException $exception) {
+                    $stations = $this->getStations($hourlyService, true, true);
                     $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
                 }
 
@@ -107,9 +107,9 @@ class DWDHourlyCrawler
                 $nearestStations = [];
                 try {
                     $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
-                }catch (DWDLibException $exception){
-                    DWDUtil::log(self::class,"Failed to retrieve any nearest active stations. Retrying after forcedownloading new station infos.",Logger::WARNING);
-                    $stations = $this->getStations($hourlyService, true,true);
+                } catch (DWDLibException $exception) {
+                    DWDUtil::log(self::class, "Failed to retrieve any nearest active stations. Retrying after forcedownloading new station infos.", Logger::WARNING);
+                    $stations = $this->getStations($hourlyService, true, true);
                     $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
                 }
 
@@ -251,14 +251,15 @@ class DWDHourlyCrawler
         //Retrieve Stations
         if (file_exists($filePath)) {
             $lastModifiedStationFile = Carbon::createFromTimestamp(filemtime($filePath));
-            $diffInHours=Carbon::now()->diffInHours(Carbon::createFromTimestamp(filemtime($filePath)));
+            $diffInHours = Carbon::now()->diffInHours(Carbon::createFromTimestamp(filemtime($filePath)));
             DWDUtil::log(self::class, "last modified? " . $lastModifiedStationFile
                 . "; difference to today (h)? " . $diffInHours);
-            $downloadFile=$diffInHours>=12; //redownload every 12h.
-        }
+            $downloadFile = $diffInHours >= 12; //redownload every 12h.
+        } else
+            $downloadFile = true;
         //todo: determine if this works - had a problem where this did not trigger redownloading of the file, which lead to the no active stations exception.
         if ($downloadFile) {
-            DWDUtil::log(self::class,"Downloading station file=".$filePath);
+            DWDUtil::log(self::class, "Downloading station file=" . $filePath);
             DWDStationsController::getStationFile($stationsFTPPath, $filePath);
         }
 
