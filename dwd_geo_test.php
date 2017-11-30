@@ -31,7 +31,7 @@ $vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->
 //$out=$dwdLib->getHourlyFailsafe($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
 $out=$dwdLib->getHourlyByInterval($vars,$date,$coordinates->getLat(),$coordinates->getLng());
 //prettyPrint("Got n=".count($out['values']['cloudiness'])." results!");
-prettyPrint(json_encode($out,JSON_PRETTY_PRINT));
+var_dump($out);
 foreach($out['values'] as $key =>  $obj) {
     print "obj=$key<br>";
     foreach ($obj as $value){
