@@ -57,7 +57,7 @@ class DWDStationsController
     public static function getNearestStations($stations, Coordinate $coordinatesRequest, int $radiusKM = 200)
     {
         //todo: make radius loadable from the config.
-        DWDUtil::log(self::class, "Getting nearest stations from a list of ".count($stations).", around coordinates: ".$coordinatesRequest->format(new DecimalDegrees()));
+        DWDUtil::log(self::class, "Getting nearest stations from a list of " . count($stations) . ", around coordinates: " . $coordinatesRequest->format(new DecimalDegrees()));
         $calculator = new Vincenty();
         $nearestStations = array();
 
@@ -75,9 +75,9 @@ class DWDStationsController
                 ksort($nearestStations);
             }
         }
-        DWDUtil::log(self::class,"Got nearest stations :". count($nearestStations));
-        if(count($nearestStations)<1){
-            throw new DWDLibException("No Stations near the given Coordinates are available inside of a 200km radius around coordinates: ".$coordinatesRequest->format(new DecimalDegrees()));
+        DWDUtil::log(self::class, "Got nearest stations :" . count($nearestStations));
+        if (count($nearestStations) < 1) {
+            throw new DWDLibException("No Stations near the given Coordinates are available inside of a 200km radius around coordinates: " . $coordinatesRequest->format(new DecimalDegrees()));
         }
         return $nearestStations;
 
@@ -95,7 +95,7 @@ class DWDStationsController
         $ftp_connection = ftp_connect($ftpConfig->url);
 
         $login_result = ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword);
-        if ($login_result && ftp_size($ftp_connection, $stationFtpPath) > -1 ) {
+        if ($login_result && ftp_size($ftp_connection, $stationFtpPath) > -1) {
             $result = ftp_get($ftp_connection, $outputPath, $stationFtpPath, FTP_BINARY);
 //            DWDUtil::log(self::class, "out=" . $outputPath);
 //            DWDUtil::log(self::class, "ftp=" . $stationFtpPath);

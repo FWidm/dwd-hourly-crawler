@@ -15,6 +15,32 @@ class DWDConfiguration
     public static $configFilePath = __DIR__ . '/../../config/configuration.php';
     private static $configuration = null;
 
+    public static function editConfiguration($keyValPairs)
+    {
+        $settings = include __DIR__ . '/../../config/configuration.php';
+
+        foreach ($keyValPairs as $key => $val) {
+            if (isset($settings[$key])) {
+                DWDUtil::log(self::class, $settings[$key]);
+                if (is_array($settings[$key])) {
+                    DWDUtil::log(self::class, "is arr, set val=" . var_dump($val));
+
+                }
+
+            } else throw new \Exception("Unkown key (k=" . $key . ").");
+        }
+    }
+
+    /**
+     * Returns the _hourly configuration to the callee
+     * @return mixed
+     */
+    public
+    static function getHourlyConfiguration()
+    {
+        return self::getConfiguration()->dwdHourly;
+    }
+
     /**
      * Returns the complete configuration file to the callee
      * @return mixed
@@ -34,33 +60,6 @@ class DWDConfiguration
         }
         return DWDConfiguration::$configuration;
 
-    }
-
-    public static function editConfiguration($keyValPairs)
-    {
-        $settings = include __DIR__ . '/../../config/configuration.php';
-
-        foreach ($keyValPairs as $key => $val) {
-            if (isset($settings[$key])) {
-                DWDUtil::log(self::class, $settings[$key]);
-                if (is_array($settings[$key])) {
-                    DWDUtil::log(self::class, "is arr, set val=" . var_dump($val));
-
-                }
-
-            } else throw new \Exception("Unkown key (k=" . $key . ").");
-        }
-    }
-
-
-    /**
-     * Returns the _hourly configuration to the callee
-     * @return mixed
-     */
-    public
-    static function getHourlyConfiguration()
-    {
-        return self::getConfiguration()->dwdHourly;
     }
 
     /**

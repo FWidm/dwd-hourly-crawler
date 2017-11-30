@@ -50,7 +50,6 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-
     function __toString()
     {
 
@@ -76,7 +75,7 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,

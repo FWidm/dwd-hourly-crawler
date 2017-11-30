@@ -35,7 +35,7 @@ class HourlyWindService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $config->baseDirectory  . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->wind->localFolder;
+        $localPath = $config->baseDirectory . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->wind->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -57,6 +57,6 @@ class HourlyWindService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date, DWDStation $nearestStation, Coordinate $coordinate): DWDAbstractParameter
     {
-       return new DWDWind($nearestStation, $coordinate, $cols[0], $date, $cols[2], $cols[3], $cols[4]);
+        return new DWDWind($nearestStation, $coordinate, $cols[0], $date, $cols[2], $cols[3], $cols[4]);
     }
 }

@@ -35,7 +35,7 @@ class HourlyPressureService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $config->baseDirectory  . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->pressure->localFolder;
+        $localPath = $config->baseDirectory . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->pressure->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;
@@ -55,7 +55,7 @@ class HourlyPressureService extends AbstractHourlyService
         return $ftpPath;
     }
 
-    public function createParameter(array $cols, DateTime $date,DWDStation $nearestStation, Coordinate $coordinate): DWDAbstractParameter
+    public function createParameter(array $cols, DateTime $date, DWDStation $nearestStation, Coordinate $coordinate): DWDAbstractParameter
     {
         return new DWDPressure($nearestStation, $coordinate, $cols[0], $date, $cols[2], $cols[3], $cols[4]);
 

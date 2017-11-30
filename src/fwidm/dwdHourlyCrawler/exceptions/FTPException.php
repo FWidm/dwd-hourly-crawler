@@ -1,4 +1,5 @@
 <?php
+
 namespace FWidm\DWDHourlyCrawler\Exceptions;
 
 use Exception;

@@ -35,7 +35,7 @@ class HourlySunService extends AbstractHourlyService
     {
         $config = DWDConfiguration::getConfiguration();
         $hourlyConfig = $config->dwdHourly;
-        $localPath = $config->baseDirectory  . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->sun->localFolder;
+        $localPath = $config->baseDirectory . $hourlyConfig->localBaseFolder . $hourlyConfig->parameters->sun->localFolder;
         $localFilePath = $localPath . '/' . $hourlyConfig->filePrefix . $fileName;
 
         return $localFilePath;

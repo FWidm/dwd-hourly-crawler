@@ -93,7 +93,6 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-
     function __toString()
     {
         return 'DWDSoilTemp [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
@@ -117,7 +116,7 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,

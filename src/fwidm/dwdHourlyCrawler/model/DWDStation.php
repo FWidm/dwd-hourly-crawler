@@ -47,22 +47,6 @@ class DWDStation implements \JsonSerializable
 
     }
 
-    public function setActive($activeDayThreshold)
-    {
-        $now = new Carbon('now', 'utc');
-        $until = new Carbon($this->until);
-
-        $diffDays = $now->diffInDays($until);
-
-        if ($diffDays < $activeDayThreshold){
-            $this->active = true;
-        }
-        else {
-            $this->active = false;
-        }
-
-    }
-
     /**
      * @return mixed
      */
@@ -78,7 +62,6 @@ class DWDStation implements \JsonSerializable
     {
         return $this->latitude;
     }
-
 
     /**
      * @return mixed
@@ -159,6 +142,21 @@ class DWDStation implements \JsonSerializable
     public function getActive()
     {
         return $this->active;
+    }
+
+    public function setActive($activeDayThreshold)
+    {
+        $now = new Carbon('now', 'utc');
+        $until = new Carbon($this->until);
+
+        $diffDays = $now->diffInDays($until);
+
+        if ($diffDays < $activeDayThreshold) {
+            $this->active = true;
+        } else {
+            $this->active = false;
+        }
+
     }
 
 

@@ -105,14 +105,6 @@ class DWDCompactParameter implements \JsonSerializable
     /**
      * @return mixed
      */
-    public function getClassification()
-    {
-        return $this->classification;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getDistance()
     {
         return $this->distance;
@@ -161,5 +153,13 @@ class DWDCompactParameter implements \JsonSerializable
     public function __toString()
     {
         return "DWDCompactParameter: [type=" . $this->type . "; classification=" . $this->getClassification() . "; value=" . $this->value . "]";
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getClassification()
+    {
+        return $this->classification;
     }
 }
