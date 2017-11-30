@@ -3,6 +3,10 @@
 use FWidm\DWDHourlyCrawler\DWDLib;
 use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyParameters;
 use FWidm\DWDHourlyCrawler\Model\DWDCompactParameter;
+use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
+use League\Fractal\Manager;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Serializer\DataArraySerializer;
 use Location\Coordinate;
 use Location\Formatter\Coordinate\GeoJSON;
 use Carbon\Carbon;
@@ -65,5 +69,12 @@ foreach($out['values'] as $key =>  $obj) {
 print "<hr>";
 $dwdCompact = new DWDCompactParameter(1,["a"=>"b"],"none",100.3,10,20,Carbon::now(),2030.45,"x");
 var_dump($dwdCompact);
-prettyPrint(json_encode([$dwdCompact],JSON_PRETTY_PRINT));
-prettyPrint($dwdCompact->getVarArray());
+
+prettyPrint(json_encode($dwdCompact));
+$resource=$dwdCompact->toResource();
+
+$manager = new Manager();
+$manager->setSerializer(new ArraySerializer());
+
+// Run all transformers
+prettyPrint($manager->createData($resource)->toJson(JSON_PRETTY_PRINT));

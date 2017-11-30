@@ -84,7 +84,7 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,
