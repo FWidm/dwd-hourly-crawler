@@ -8,7 +8,6 @@
 namespace FWidm\DWDHourlyCrawler\Transformer;
 
 
-use FWidm\DWDHourlyCrawler\Model\DWDCompactParameter;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use League\Fractal\TransformerAbstract;
 

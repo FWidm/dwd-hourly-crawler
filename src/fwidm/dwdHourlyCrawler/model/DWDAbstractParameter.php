@@ -10,6 +10,7 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 
 use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
+use FWidm\DWDHourlyCrawler\Transformer\ParameterTransformer;
 
 
 abstract class  DWDAbstractParameter
@@ -96,6 +97,19 @@ abstract class  DWDAbstractParameter
         return $this->classification;
     }
 
+
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    function jsonSerialize()
+    {
+        return $this->toArray($this->toResource(new ParameterTransformer()));
+    }
 
     /**
      * Encode the current parameter into a standardized 1 parameter per object type. This method thus encodes all DWD

@@ -14,8 +14,8 @@ use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
-use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use FWidm\DWDHourlyCrawler\Hourly\Services\AbstractHourlyService;
+use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Location\Coordinate;
 use Monolog\Logger;
 

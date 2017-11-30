@@ -7,7 +7,6 @@ use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
-
 use Location\Coordinate;
 use Location\Distance\Vincenty;
 use Location\Formatter\Coordinate\DecimalDegrees;

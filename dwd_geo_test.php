@@ -27,12 +27,13 @@ prettyPrint("Checking for Coordinates: " . $coordinates->format(new GeoJSON()) .
 $dwdLib = new DWDLib("storage");
 
 $vars = new DWDHourlyParameters();
-$vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/
-;
+$vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
 
 $out = $dwdLib->getHourlyByInterval($vars, $date, $coordinates->getLat(), $coordinates->getLng());
-//prettyPrint("Got n=".count($out['values']['cloudiness'])." results!");
-//var_dump($out);
+
+/*
+ * Print all retrieved items in the 'values' part => weather parameters as json
+ */
 foreach ($out['values'] as $key => $obj) {
     print "obj=$key<br>";
     foreach ($obj as $value) {
@@ -41,7 +42,9 @@ foreach ($out['values'] as $key => $obj) {
 
     }
 }
-
+/*
+ * Print all stations as json
+ */
 foreach ($out['stations'] as $key => $obj) {
     print "obj=$key<br>";
     /* @var $obj \FWidm\DWDHourlyCrawler\Model\DWDStation */

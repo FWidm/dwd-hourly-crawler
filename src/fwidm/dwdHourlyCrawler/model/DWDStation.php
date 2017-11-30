@@ -3,8 +3,8 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
-use DateTime;
 use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
+use FWidm\DWDHourlyCrawler\Transformer\StationTransformer;
 
 
 class DWDStation implements \JsonSerializable
@@ -102,13 +102,7 @@ class DWDStation implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['until'] = $this->until->format(DateTime::ATOM);
-        $vars['from'] = $this->from->format(DateTime::ATOM);
-
-
-        return $vars;
+        return $this->toArray($this->toResource(new StationTransformer()));
     }
 
     /**

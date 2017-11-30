@@ -2,7 +2,6 @@
 
 namespace FWidm\DWDHourlyCrawler;
 
-use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Location\Coordinate;

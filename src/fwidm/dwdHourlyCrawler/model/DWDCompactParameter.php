@@ -9,7 +9,6 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
-use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
 use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
 
