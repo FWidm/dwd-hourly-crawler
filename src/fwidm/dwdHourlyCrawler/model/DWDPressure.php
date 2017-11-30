@@ -46,6 +46,23 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPressureSeaLevelHPA()
+    {
+        return $this->pressureSeaLevel_hPA;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPressureStationLevelHPA()
+    {
+        return $this->pressureStationLevel_hPA;
+    }
+
+
     function __toString()
     {
 

@@ -10,11 +10,9 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
+use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
 use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Item;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Serializer\DataArraySerializer;
+
 
 /**
  * Class DWDCompactParameter
@@ -38,6 +36,8 @@ use League\Fractal\Serializer\DataArraySerializer;
  */
 class DWDCompactParameter implements \JsonSerializable
 {
+    use TransformableTrait;
+
     private $stationID;
     private $description;
     private $classification;
@@ -84,7 +84,7 @@ class DWDCompactParameter implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return $this->toArray();
+        return $this->toArray($this->toResource(new CompactParameterTransformer()));
     }
 
     /**
@@ -162,34 +162,5 @@ class DWDCompactParameter implements \JsonSerializable
     public function __toString()
     {
         return "DWDCompactParameter: [type=" . $this->type . "; classification=" . $this->getClassification() . "; value=" . $this->value . "]";
-    }
-
-    /**
-     * Applies the default (or given) transformer to this object, returns a fractal resource containing the values of the object.
-     * @param string $customTransformer
-     * @return Item
-     */
-    public function toResource($customTransformer = CompactParameterTransformer::class): Item
-    {
-        try {
-            $resource = new Item($this, new $customTransformer());
-            return $resource;
-
-        } catch (\Error $e) {
-            throw new DWDLibException("Specified transformer is not a class. Got transformer class=$customTransformer");
-        }
-    }
-
-    /** Uses the given serializer and transformer to transform $this into an array of the expected format.
-     * @param string $serializer
-     * @param string $transformer
-     * @return array
-     */
-    function toArray($serializer = ArraySerializer::class, $transformer = CompactParameterTransformer::class)
-    {
-        $resource = $this->toResource(new $transformer());
-        $manager = new Manager();
-        $manager->setSerializer(new $serializer());
-        return $manager->createData($resource)->toArray();
     }
 }

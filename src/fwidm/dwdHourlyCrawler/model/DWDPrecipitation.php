@@ -49,6 +49,31 @@ class DWDPrecipitation extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPrecipitationHeightMm()
+    {
+        return $this->precipitationHeight_mm;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrecipitationIndex()
+    {
+        return $this->precipitationIndex;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrecipitationWRType()
+    {
+        return $this->precipitationWRType;
+    }
+
+
     function __toString()
     {
 

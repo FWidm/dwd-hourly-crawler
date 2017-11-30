@@ -45,6 +45,23 @@ class DWDAirTemperature extends DWDAbstractParameter implements \JsonSerializabl
 
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTemperature2mDegC()
+    {
+        return $this->temperature2m_degC;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRelativeHumidityPercent()
+    {
+        return $this->relativeHumidity_percent;
+    }
+
+
     function __toString()
     {
 

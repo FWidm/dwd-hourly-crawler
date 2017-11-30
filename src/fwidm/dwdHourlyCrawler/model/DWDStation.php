@@ -4,17 +4,13 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
 use DateTime;
-use FWidm\DWDHourlyCrawler\DWDUtil;
+use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
 
 
-/**
- * Created by PhpStorm.
- * User: fabianwidmann
- * Date: 10.06.17
- * Time: 11:11
- */
 class DWDStation implements \JsonSerializable
 {
+    use TransformableTrait;
+
     private $id;
     private $from;
     private $until;
@@ -37,7 +33,7 @@ class DWDStation implements \JsonSerializable
      * @param $name
      * @param $state
      */
-    public function __construct($id, DateTime $from, DateTime $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold)
+    public function __construct($id, Carbon $from, Carbon $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold)
     {
         $this->id = $id;
         $this->from = $from;
@@ -124,17 +120,17 @@ class DWDStation implements \JsonSerializable
     }
 
     /**
-     * @return DateTime
+     * @return Carbon
      */
-    public function getFrom(): DateTime
+    public function getFrom(): Carbon
     {
         return $this->from;
     }
 
     /**
-     * @return DateTime
+     * @return Carbon
      */
-    public function getUntil(): DateTime
+    public function getUntil(): Carbon
     {
         return $this->until;
     }

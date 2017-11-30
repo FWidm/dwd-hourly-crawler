@@ -45,6 +45,24 @@ class DWDCloudiness extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getIndexObservationType()
+    {
+        return $this->indexObservationType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCloudinessEights()
+    {
+        return $this->cloudiness_eights;
+    }
+
+
     function __toString()
     {
 

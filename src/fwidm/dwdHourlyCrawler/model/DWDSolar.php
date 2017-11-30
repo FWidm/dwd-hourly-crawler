@@ -52,6 +52,46 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSumLongwaveRadiation()
+    {
+        return $this->sumLongwaveRadiation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSumDiffuseRadiation()
+    {
+        return $this->sumDiffuseRadiation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSumIncomingRadiation()
+    {
+        return $this->sumIncomingRadiation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSumSunshineDuration()
+    {
+        return $this->sumSunshineDuration;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getZenith()
+    {
+        return $this->zenith;
+    }
+
 
     /**
      * Specify data which should be serialized to JSON

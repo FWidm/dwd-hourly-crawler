@@ -41,6 +41,16 @@ class DWDSun extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSunshineDuration()
+    {
+        return $this->sunshineDuration;
+    }
+
+
+
     function __toString()
     {
 
