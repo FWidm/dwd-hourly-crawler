@@ -3,8 +3,11 @@
 use FWidm\DWDHourlyCrawler\DWDLib;
 use FWidm\DWDHourlyCrawler\Hourly\Variables\DWDHourlyParameters;
 use FWidm\DWDHourlyCrawler\Model\DWDCompactParameter;
+use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
 use FWidm\DWDHourlyCrawler\Transformer\ParameterTransformer;
 use FWidm\DWDHourlyCrawler\Transformer\StationTransformer;
+use League\Fractal\Manager;
+use League\Fractal\Serializer\ArraySerializer;
 use Location\Coordinate;
 use Location\Formatter\Coordinate\GeoJSON;
 use Carbon\Carbon;
@@ -36,10 +39,15 @@ $out = $dwdLib->getHourlyByInterval($vars, $date, $coordinates->getLat(), $coord
  */
 foreach ($out['values'] as $key => $obj) {
     print "obj=$key<br>";
-    foreach ($obj as $value) {
-        /* @var $value \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
-        prettyPrint($value->toJson($value->toResource(new ParameterTransformer()), JSON_PRETTY_PRINT));
-
+    foreach ($obj as $parameter) {
+        /* @var $parameter \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
+        $exported=$parameter->exportSingleVariables();
+        prettyPrint($parameter->toJson($parameter->toResource(new ParameterTransformer()), JSON_PRETTY_PRINT));
+        print "<hr>";
+        $collection=new \League\Fractal\Resource\Collection($parameter->exportSingleVariables(),new CompactParameterTransformer());
+        $manager = new Manager();
+        $manager->setSerializer(new ArraySerializer());
+        prettyPrint($manager->createData($collection)->toJson(JSON_PRETTY_PRINT));
     }
 }
 /*

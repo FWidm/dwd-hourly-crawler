@@ -27,112 +27,187 @@ all the parameters.
     - Can be done by specifying a param when creating the DWDLib instance.
 - Allow the user to split queried variables from the predefined groups by the dwd to single variables.
 - Add distance from station to the queried point
+- Added Fractal support to the models via the `TransformableTrait`
+
 
 ## Todo
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
 - If older data is queried maybe disable the check if a station is active this is extremely important for Solar stuff
     - maybe rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
-- Replace my shitty selfmade log function with MonoLog or another solution
 - Add option to enable logging via the constructor
 - Add option to set the radius of active stations near the given point.
 
 ## Example
 ```php
-<?php
-$coordinatesUlm=new Coordinate(48.4391,9.9823);
+$coordinates=new Coordinate(48.3751,8.9801);
 $dwdLib=new DWDLib();
 
+//output of the downloaded files is in <dir>/storage/...
+$dwdLib = new DWDLib("storage");
 
-//add variables
 $vars = new DWDHourlyParameters();
 $vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
-$date=new Carbon();
-$date->modify("-4 days");
-$out=$dwdLib->getHourlyByInterval($vars,$date ,$coordinatesUlm->getLat(),$coordinatesUlm->getLng());
+// out consists of an array with the key 'values' => weather params and 'stations' => weather stations
+$out = $dwdLib->getHourlyByInterval($vars, $date, $coordinates->getLat(), $coordinates->getLng());
 
+```
+### DWD Parameter "Groups"
+
+```php
 /*
- * json_encode($out)={
-           "precipitation": [
-               {
-                   "quality": 1,
-                   "precipitationHeight_mm": "0.0",
-                   "precipitationIndex": "0",
-                   "preciptionWRType": "-999",
-                   "paramDescription": {
-                       "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
-                       "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
-                       "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
-                       "precipitationWRType": "WRTR: WR precipitation coding."
-                   },
-                   "stationId": 15444,
-                   "date": "2017-06-15T17:00:00+02:00"
-               }
-           ]
-       }
+ * Print all retrieved items in the 'values' part => weather parameters as json
  */
-
-//retrieve the variable as single-value type output:
-foreach($out['values'] as $key =>  $obj) {
+foreach ($out['values'] as $key => $obj) {
     print "obj=$key<br>";
-    foreach ($obj as $value){
-        /* @var $value \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
-        prettyPrint(json_encode($value->exportSingleVariables(),JSON_PRETTY_PRINT));
-    }
+    foreach ($obj as $value) {
+        /* @var $value DWDAbstractParameter */
+        //Each model has a toResource method that returns Fractal's ResourceAbstract, it can be used to retrieve an array or json data
+        prettyPrint($value->toJson($value->toResource(new ParameterTransformer()), JSON_PRETTY_PRINT));
 
+    }
 }
+```
+Output:
+```json
+{
+    "station_id": 2074,
+    "description": {
+        "qualityLevel": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
+        "temperature2m": "TT_TU: temperature in 2m height - in degrees Celsius.",
+        "relativeHumidity": "RF_TU: relative humidity in percent.",
+        "temperature2mUnit": "C",
+        "relativeHumidityUnit": "%"
+    },
+    "classification": "Temperature",
+    "distance": 8.651701,
+    "lon": "8.9801",
+    "lat": "48.3751",
+    "date": "2017-09-16T22:00:00+00:00",
+    "2m_temperature": "6.5",
+    "2m_temperature_unit": "C",
+    "relative_humidity": "96.0",
+    "relative_humidity_unit": "%"
+}
+```
+### Stations
+```php
 /*
- * obj=precipitation
-   [
-       {
-           "stationID": 15444,
-           "description": {
-               "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
-               "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
-               "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
-               "precipitationWRType": "WRTR: WR precipitation coding."
-           },
-           "classification": "Precipitation",
-           "distance": 4.501092,
-           "longitude": "9.9216",
-           "latitude": "48.4418",
-           "date": "2017-08-27T15:00:00+02:00",
-           "value": 0,
-           "type": "precipitation height"
-       },
-       {
-           "stationID": 15444,
-           "description": {
-               "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
-               "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
-               "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
-               "precipitationWRType": "WRTR: WR precipitation coding."
-           },
-           "classification": "Precipitation",
-           "distance": 4.501092,
-           "longitude": "9.9216",
-           "latitude": "48.4418",
-           "date": "2017-08-27T15:00:00+02:00",
-           "value": 0,
-           "type": "precipitation index"
-       },
-       {
-           "stationID": 15444,
-           "description": {
-               "qualityLevel": "QN_8: Quality bit, see @ ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/cloudiness\/historical\/BESCHREIBUNG_test_obsgermany_climate_hourly_cloudiness_historical_de.pdf",
-               "hourlyPrecipitation": "R1: Hourly precipitation in mm.",
-               "precipitationIndex": "RS_IND: Index - 0 no precipitation, 1 precipitation.",
-               "precipitationWRType": "WRTR: WR precipitation coding."
-           },
-           "classification": "Precipitation",
-           "distance": 4.501092,
-           "longitude": "9.9216",
-           "latitude": "48.4418",
-           "date": "2017-08-27T15:00:00+02:00",
-           "value": -999,
-           "type": "precipitation wr type"
-       }
-   ]
+ * Print all stations as json
  */
+foreach ($out['stations'] as $key => $obj) {
+    print "obj=$key<br>";
+    /* @var $obj DWDStation */
+    prettyPrint($obj->toJson($obj->toResource(new StationTransformer()), JSON_PRETTY_PRINT));
+}
+```
+Output:
+```json
+{
+    "id": "02074",
+    "from": "2004-06-01T08:33:32+00:00",
+    "until": "2017-11-28T08:33:32+00:00",
+    "name": "Hechingen",
+    "state": "Baden-W\u00fcrttemberg",
+    "height": "522",
+    "lon": "8.9801",
+    "lat": "48.3751",
+    "active": true
+}
 ```
 
+### Compact Parameters
+In addition, it is possible to transform these "grouped" parameters into single variable objects:
+
+```php
+/* @var $value DWDAbstractParameter */
+$exported=$parameter->exportSingleVariables();
+foreach ($exported as $compactParam){
+    /* @var $compactParam \FWidm\DWDHourlyCrawler\Model\DWDCompactParameter */
+    prettyPrint($compactParam->toJson($compactParam->toResource(new CompactParameterTransformer()), JSON_PRETTY_PRINT));
+}
+```
+Output:
+```json
+{
+    "station_id": 2074,
+    "description": {
+        "name": "TT_TU: temperature in 2m height - in degrees Celsius.",
+        "quality": 3,
+        "qualityType": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
+        "units": "C"
+    },
+    "classification": "Temperature",
+    "distance": 8.651701,
+    "lon": "8.9801",
+    "lat": "48.3751",
+    "date": "2017-09-16T22:00:00+02:00",
+    "value": 6.5,
+    "type": "2 metre temperature"
+}
+{
+    "station_id": 2074,
+    "description": {
+        "name": "RF_TU: relative humidity in percent.",
+        "quality": 3,
+        "qualityType": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
+        "units": "%"
+    },
+    "classification": "Temperature",
+    "distance": 8.651701,
+    "lon": "8.9801",
+    "lat": "48.3751",
+    "date": "2017-09-16T22:00:00+02:00",
+    "value": 96,
+    "type": "relative humidity in percent"
+}
+```
+
+Alternatively to get a collection transformed:
+```php
+$collection=new \League\Fractal\Resource\Collection($parameter->exportSingleVariables(),new CompactParameterTransformer());
+$manager = new Manager();
+$manager->setSerializer(new ArraySerializer());
+prettyPrint($manager->createData($collection)->toJson(JSON_PRETTY_PRINT));
+```
+
+Output:
+```json
+
+{
+    "data": [
+        {
+            "station_id": 2074,
+            "description": {
+                "name": "TT_TU: temperature in 2m height - in degrees Celsius.",
+                "quality": 3,
+                "qualityType": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
+                "units": "C"
+            },
+            "classification": "Temperature",
+            "distance": 8.651701,
+            "lon": "8.9801",
+            "lat": "48.3751",
+            "date": "2017-09-16T22:00:00+02:00",
+            "value": 6.5,
+            "type": "2 metre temperature"
+        },
+        {
+            "station_id": 2074,
+            "description": {
+                "name": "RF_TU: relative humidity in percent.",
+                "quality": 3,
+                "qualityType": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
+                "units": "%"
+            },
+            "classification": "Temperature",
+            "distance": 8.651701,
+            "lon": "8.9801",
+            "lat": "48.3751",
+            "date": "2017-09-16T22:00:00+02:00",
+            "value": 96,
+            "type": "relative humidity in percent"
+        }
+    ]
+}
+```
