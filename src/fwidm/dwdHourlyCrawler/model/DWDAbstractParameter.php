@@ -10,7 +10,7 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 
 use FWidm\DWDHourlyCrawler\Transformer\ParameterTransformer;
-
+use FWidm\DWDHourlyCrawler\Util\FractalWrapper;
 
 abstract class  DWDAbstractParameter
 {
@@ -105,7 +105,8 @@ abstract class  DWDAbstractParameter
      */
     function jsonSerialize()
     {
-        return $this->toArray($this->toItem(new ParameterTransformer()));
+        $res = FractalWrapper::toResource($this, new ParameterTransformer());
+        return FractalWrapper::toArray($res);
     }
 
     /**

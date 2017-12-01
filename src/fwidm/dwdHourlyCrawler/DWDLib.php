@@ -52,9 +52,7 @@ class DWDLib
             $services = $this->createServices($hourlyParameters);
 
             $crawler = new DWDHourlyCrawler($services);
-            $data = $crawler->getDataByDay($coordinatesRequest, $day);
-
-            return $data;
+            return $crawler->getDataByDay($coordinatesRequest, $day);
         } else
             throw new DWDLibException("hourlyParameters are empty. Please create a new 'DWDHourlyParameters' object and add the needed variables.");
     }
@@ -123,9 +121,8 @@ class DWDLib
             $services = $this->createServices($hourlyParameters);
 
             $crawler = new DWDHourlyCrawler($services);
-            $data = $crawler->getDataInInterval($coordinatesRequest, $dateTime, $timeLimitMinutes);
 
-            return $data;
+            return $crawler->getDataInInterval($coordinatesRequest, $dateTime, $timeLimitMinutes);
         } else
             throw new DWDLibException("hourlyParameters are empty. Please create a new 'DWDHourlyParameters' object and add the needed variables.");
     }

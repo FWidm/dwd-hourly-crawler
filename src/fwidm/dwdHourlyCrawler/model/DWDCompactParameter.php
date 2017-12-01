@@ -10,6 +10,7 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
+use FWidm\DWDHourlyCrawler\Util\FractalWrapper;
 
 
 /**
@@ -81,7 +82,8 @@ class DWDCompactParameter implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return $this->toArray($this->toItem(new CompactParameterTransformer()));
+        $res=FractalWrapper::toResource($this,new CompactParameterTransformer());
+        return FractalWrapper::toArray($res);
     }
 
     /**
