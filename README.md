@@ -27,7 +27,7 @@ all the parameters.
     - Can be done by specifying a param when creating the DWDLib instance.
 - Allow the user to split queried variables from the predefined groups by the dwd to single variables.
 - Add distance from station to the queried point
-- Added Fractal support to the models via the `TransformableTrait`
+- Added Fractal support
 
 
 ## Todo
@@ -63,7 +63,7 @@ foreach ($out['values'] as $key => $obj) {
     foreach ($obj as $value) {
         /* @var $value DWDAbstractParameter */
         //Each model has a toResource method that returns Fractal's ResourceAbstract, it can be used to retrieve an array or json data
-        prettyPrint($value->toJson($value->toResource(new ParameterTransformer()), JSON_PRETTY_PRINT));
+        prettyPrint(FractalWrapper::toJson(FractalWrapper::toResource($parameter,new ParameterTransformer()),JSON_PRETTY_PRINT));
 
     }
 }
@@ -71,23 +71,25 @@ foreach ($out['values'] as $key => $obj) {
 Output:
 ```json
 {
-    "station_id": 2074,
-    "description": {
-        "qualityLevel": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
-        "temperature2m": "TT_TU: temperature in 2m height - in degrees Celsius.",
-        "relativeHumidity": "RF_TU: relative humidity in percent.",
-        "temperature2mUnit": "C",
-        "relativeHumidityUnit": "%"
-    },
-    "classification": "Temperature",
-    "distance": 8.651701,
-    "lon": "8.9801",
-    "lat": "48.3751",
-    "date": "2017-09-16T22:00:00+00:00",
-    "2m_temperature": "6.5",
-    "2m_temperature_unit": "C",
-    "relative_humidity": "96.0",
-    "relative_humidity_unit": "%"
+    "data": {
+        "station_id": 2074,
+        "description": {
+            "qualityLevel": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
+            "temperature2m": "TT_TU: temperature in 2m height - in degrees Celsius.",
+            "relativeHumidity": "RF_TU: relative humidity in percent.",
+            "temperature2mUnit": "C",
+            "relativeHumidityUnit": "%"
+        },
+        "classification": "Temperature",
+        "distance": 8.651701,
+        "lon": "8.9801",
+        "lat": "48.3751",
+        "date": "2017-09-16T22:00:00+00:00",
+        "2m_temperature": "6.5",
+        "2m_temperature_unit": "C",
+        "relative_humidity": "96.0",
+        "relative_humidity_unit": "%"
+    }
 }
 ```
 ### Stations
@@ -97,78 +99,34 @@ Output:
  */
 foreach ($out['stations'] as $key => $obj) {
     print "obj=$key<br>";
-    /* @var $obj DWDStation */
-    prettyPrint($obj->toJson($obj->toResource(new StationTransformer()), JSON_PRETTY_PRINT));
+    /* @var $obj \FWidm\DWDHourlyCrawler\Model\DWDStation */
+    prettyPrint(FractalWrapper::toJson(FractalWrapper::toResource($obj,new StationTransformer()),JSON_PRETTY_PRINT));
 }
 ```
 Output:
 ```json
 {
-    "id": "02074",
-    "from": "2004-06-01T08:33:32+00:00",
-    "until": "2017-11-28T08:33:32+00:00",
-    "name": "Hechingen",
-    "state": "Baden-W\u00fcrttemberg",
-    "height": "522",
-    "lon": "8.9801",
-    "lat": "48.3751",
-    "active": true
+    "data": {
+        "id": "02074",
+        "from": "2004-06-01T09:27:45+00:00",
+        "until": "2017-11-28T09:27:45+00:00",
+        "name": "Hechingen",
+        "state": "Baden-W\u00fcrttemberg",
+        "height": "522",
+        "lon": "8.9801",
+        "lat": "48.3751",
+        "active": true
+    }
 }
+
 ```
 
 ### Compact Parameters
 In addition, it is possible to transform these "grouped" parameters into single variable objects:
 
 ```php
-/* @var $value DWDAbstractParameter */
-$exported=$parameter->exportSingleVariables();
-foreach ($exported as $compactParam){
-    /* @var $compactParam \FWidm\DWDHourlyCrawler\Model\DWDCompactParameter */
-    prettyPrint($compactParam->toJson($compactParam->toResource(new CompactParameterTransformer()), JSON_PRETTY_PRINT));
-}
-```
-Output:
-```json
-{
-    "station_id": 2074,
-    "description": {
-        "name": "TT_TU: temperature in 2m height - in degrees Celsius.",
-        "quality": 3,
-        "qualityType": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
-        "units": "C"
-    },
-    "classification": "Temperature",
-    "distance": 8.651701,
-    "lon": "8.9801",
-    "lat": "48.3751",
-    "date": "2017-09-16T22:00:00+02:00",
-    "value": 6.5,
-    "type": "2 metre temperature"
-}
-{
-    "station_id": 2074,
-    "description": {
-        "name": "RF_TU: relative humidity in percent.",
-        "quality": 3,
-        "qualityType": "QN_9: quality level - refer to ftp:\/\/ftp-cdc.dwd.de\/pub\/CDC\/observations_germany\/climate\/hourly\/air_temperature\/recent\/DESCRIPTION_obsgermany_climate_hourly_tu_recent_en.pdf",
-        "units": "%"
-    },
-    "classification": "Temperature",
-    "distance": 8.651701,
-    "lon": "8.9801",
-    "lat": "48.3751",
-    "date": "2017-09-16T22:00:00+02:00",
-    "value": 96,
-    "type": "relative humidity in percent"
-}
-```
-
-Alternatively to get a collection transformed:
-```php
-$collection=new \League\Fractal\Resource\Collection($parameter->exportSingleVariables(),new CompactParameterTransformer());
-$manager = new Manager();
-$manager->setSerializer(new ArraySerializer());
-prettyPrint($manager->createData($collection)->toJson(JSON_PRETTY_PRINT));
+$collection=FractalWrapper::toResource($exported,new CompactParameterTransformer());
+prettyPrint(FractalWrapper::toJson($collection,JSON_PRETTY_PRINT));
 ```
 
 Output:

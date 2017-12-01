@@ -3,13 +3,11 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
-use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
 use FWidm\DWDHourlyCrawler\Transformer\StationTransformer;
 
 
 class DWDStation implements \JsonSerializable
 {
-    use TransformableTrait;
 
     private $id;
     private $from;
@@ -85,7 +83,7 @@ class DWDStation implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return $this->toArray($this->toResource(new StationTransformer()));
+        return $this->toArray($this->toItem(new StationTransformer()));
     }
 
     /**

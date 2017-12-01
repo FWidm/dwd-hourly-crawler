@@ -9,13 +9,11 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 
-use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
 use FWidm\DWDHourlyCrawler\Transformer\ParameterTransformer;
 
 
 abstract class  DWDAbstractParameter
 {
-    use TransformableTrait;
 //    protected $id;
     protected $stationId;
 
@@ -107,7 +105,7 @@ abstract class  DWDAbstractParameter
      */
     function jsonSerialize()
     {
-        return $this->toArray($this->toResource(new ParameterTransformer()));
+        return $this->toArray($this->toItem(new ParameterTransformer()));
     }
 
     /**

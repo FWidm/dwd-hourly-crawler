@@ -9,7 +9,6 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
-use FWidm\DWDHourlyCrawler\Traits\TransformableTrait;
 use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
 
 
@@ -35,7 +34,6 @@ use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
  */
 class DWDCompactParameter implements \JsonSerializable
 {
-    use TransformableTrait;
 
     private $stationID;
     private $description;
@@ -83,7 +81,7 @@ class DWDCompactParameter implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return $this->toArray($this->toResource(new CompactParameterTransformer()));
+        return $this->toArray($this->toItem(new CompactParameterTransformer()));
     }
 
     /**
