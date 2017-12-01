@@ -156,15 +156,12 @@ abstract class AbstractHourlyService
         $lines = explode(";eor", $content);
         $data = [];
         $startIndex = $this->binarySearch($start, $lines);
-        print "go station=$nearestStation<br>";
         for ($i = (int)$startIndex; $i < count($lines); $i++) {
             $cols = explode(';', $lines[$i]);
             $date = Carbon::createFromFormat($this->getTimeFormat(), $cols[1], 'utc');
 
-            print $i . ": " . $date->toIso8601String() . ">>> DIFF=" . $endDate->diff($date)->h . "<br>";
 
             if ($date <= $endDate && $date >= $startDate) {
-                print "1.=".(int)($date <= $endDate)."    2.=".(int)($date >= $startDate)."<br>";
                 $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
                 $data[] = $temp;
             } else
