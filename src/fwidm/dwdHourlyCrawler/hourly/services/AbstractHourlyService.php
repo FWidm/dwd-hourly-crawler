@@ -55,6 +55,13 @@ abstract class AbstractHourlyService
         $lines = explode('eor', $content);
         $data = array();
 
+        /**
+         * steps to refactor:
+         *  1. get latest date from the last line, parse it
+         *  2. from this day, calculate the hour difference between requested and $start+$end
+         *  3. jump to the specific lines
+         *  4. parse
+         */
         for ($i = sizeof($lines) - 1; $i > 0; $i--) {
             $lines[$i] = str_replace(' ', '', $lines[$i]);
 
@@ -66,8 +73,8 @@ abstract class AbstractHourlyService
             if ($date) {
                 //todo: optimize search for values - currently i only parse from new to old values, find the window and add to the return list - something akin to a binary search might work.
                 switch (func_num_args()) {
-                    //After is set
-                    case 24: {
+                    //$start is set
+                    case 4: {
                         if ($date >= $start) {
                             $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
 
@@ -78,7 +85,7 @@ abstract class AbstractHourlyService
 
                         break;
                     }
-                    //After & Before are set
+                    //$start & $end are set
                     case 5: {
                         if ($date <= $end && $date >= $start) {
                             $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);

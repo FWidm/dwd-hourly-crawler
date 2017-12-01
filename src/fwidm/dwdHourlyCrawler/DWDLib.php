@@ -35,6 +35,42 @@ class DWDLib
     }
 
 
+    /** Retrieve all stations for the parameters
+     * @param DWDHourlyParameters $hourlyParameters
+     * @param bool $active get active stations
+     * @return array
+     */
+    public function getAllStations(DWDHourlyParameters $hourlyParameters,bool $active=false){
+        $services = $this->createServices($hourlyParameters);
+        $crawler = new DWDHourlyCrawler($services);
+        return $crawler->getAllStations($active);
+    }
+
+    /**
+     * Retrieve values for the parameters in a time frame between detetime +- timeLimitMinutes (default: 30) for the specific location.
+     * @param DWDHourlyParameters $hourlyParameters
+     * @param DateTime $dateTime
+     * @param $latitude
+     * @param $longitude
+     * @param int $timeLimitMinutes - optional parameter that limit
+     * @return array - returns an array that contains measurements ('values') and the station ('stations')information
+     * @throws DWDLibException - if no parameters ar specified
+     */
+    public function getHourlyInInterval(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
+    {
+        $coordinatesRequest = new Coordinate($latitude, $longitude);
+        if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
+
+            $services = $this->createServices($hourlyParameters);
+
+            $crawler = new DWDHourlyCrawler($services);
+
+            return $crawler->getDataInInterval($coordinatesRequest, $dateTime, $timeLimitMinutes);
+        } else
+            throw new DWDLibException("hourlyParameters are empty. Please create a new 'DWDHourlyParameters' object and add the needed variables.");
+    }
+
+
     /**
      * Retrieve values for the parameters in a time frame between detetime +- timeLimitMinutes (default: 30) for the specific location.
      * @param DWDHourlyParameters $hourlyParameters
@@ -101,30 +137,6 @@ class DWDLib
             }
         }
         return $controllers;
-    }
-
-    /**
-     * Retrieve values for the parameters in a time frame between detetime +- timeLimitMinutes (default: 30) for the specific location.
-     * @param DWDHourlyParameters $hourlyParameters
-     * @param DateTime $dateTime
-     * @param $latitude
-     * @param $longitude
-     * @param int $timeLimitMinutes - optional parameter that limit
-     * @return array - returns an array that contains measurements ('values') and the station ('stations')information
-     * @throws DWDLibException - if no parameters ar specified
-     */
-    public function getHourlyInInterval(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
-    {
-        $coordinatesRequest = new Coordinate($latitude, $longitude);
-        if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
-
-            $services = $this->createServices($hourlyParameters);
-
-            $crawler = new DWDHourlyCrawler($services);
-
-            return $crawler->getDataInInterval($coordinatesRequest, $dateTime, $timeLimitMinutes);
-        } else
-            throw new DWDLibException("hourlyParameters are empty. Please create a new 'DWDHourlyParameters' object and add the needed variables.");
     }
 
 

@@ -33,6 +33,19 @@ class DWDHourlyCrawler
         DWDUtil::initializeOutputFolder(DWDConfiguration::getHourlyConfiguration()->localBaseFolder);
     }
 
+    /**
+     * Retrieve all (active) Stations for a service.
+     * @param bool $active
+     * @return array
+     */
+    public function getAllStations(bool $active=false)
+    {
+        $stationsPerService = [];
+        foreach ($this->services as $var => $hourlyService) {
+            $stationsPerService[$var] = $this->getStations($hourlyService, $active);
+        }
+        return $stationsPerService;
+    }
 
     /** Retrieve data from one of the nearest stations. This method retrieves all stations in a specific diameter around
      * the location. It then queries the stations one by one until one station's results could be found.
@@ -290,4 +303,5 @@ class DWDHourlyCrawler
     {
         $this->services = $hourlyControllers;
     }
+
 }
