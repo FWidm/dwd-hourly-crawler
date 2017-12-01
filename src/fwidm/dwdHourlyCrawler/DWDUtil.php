@@ -2,7 +2,6 @@
 
 namespace FWidm\DWDHourlyCrawler;
 
-use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Location\Coordinate;
@@ -76,6 +75,26 @@ class DWDUtil
         return null;
     }
 
+    static function log($class, $content, $loggingLevel = Logger::DEBUG)
+    {
+        //todo: replace with monolog or another framework.
+        if (DWDConfiguration::isDebugEnabled()) {
+            if (!self::$log) {
+                self::$log = new Logger('DWDUtil');
+                $conf = DWDConfiguration::getConfiguration();
+                $logFile = $conf->baseDirectory . $conf->dwdHourly->localBaseFolder . $conf->dwdHourly->loggingFileName;
+                $handler = new StreamHandler($logFile, Logger::DEBUG);
+                $handler->getFormatter()->ignoreEmptyContextAndExtra(true);
+                self::$log->pushHandler($handler);
+            }
+
+            $splitClassName = explode('\\', $class);
+            $className = array_pop($splitClassName);
+            self::$log->log($loggingLevel, $className . ": msg=" . print_r($content, true));
+
+        }
+    }
+
     /** Converts an array recursively to obj - taken from Jacob Relkin @ https://stackoverflow.com/a/4790485
      * @param $array
      * @return stdClass
@@ -93,26 +112,6 @@ class DWDUtil
             }
         }
         return $obj;
-    }
-
-    static function log($class, $content, $loggingLevel = Logger::DEBUG)
-    {
-        //todo: replace with monolog or another framework.
-        if (DWDConfiguration::isDebugEnabled()) {
-            if(!self::$log){
-                self::$log = new Logger('DWDUtil');
-                $conf=DWDConfiguration::getConfiguration();
-                $logFile=$conf->baseDirectory.$conf->dwdHourly->localBaseFolder.$conf->dwdHourly->loggingFileName;
-                $handler=new StreamHandler($logFile, Logger::DEBUG);
-                $handler->getFormatter()->ignoreEmptyContextAndExtra(true);
-                self::$log->pushHandler($handler);
-            }
-
-            $splitClassName=explode('\\', $class);
-            $className=array_pop($splitClassName);
-            self::$log->log($loggingLevel,$className.": msg=". print_r($content,true));
-
-        }
     }
 
     /**

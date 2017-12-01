@@ -107,6 +107,15 @@ abstract class AbstractHourlyService
     }
 
     /**
+     * Get the dateformat. default is in dwdHourly->parserSettings->dateFormat. Override as needed (ex. solar).
+     * @return string
+     */
+    public function getTimeFormat(): string
+    {
+        return DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat;
+    }
+
+    /**
      * Instantiate one parameter by the columns and date
      * @param array $cols
      * @param DateTime $date
@@ -115,15 +124,6 @@ abstract class AbstractHourlyService
      * @return DWDAbstractParameter - concrete object of the needed type
      */
     public abstract function createParameter(array $cols, DateTime $date, DWDStation $station, Coordinate $coordinate): DWDAbstractParameter;
-
-    /**
-     * Get the dateformat. default is in dwdHourly->parserSettings->dateFormat. Override as needed (ex. solar).
-     * @return string
-     */
-    public function getTimeFormat(): string
-    {
-        return DWDConfiguration::getHourlyConfiguration()->parserSettings->dateFormat;
-    }
 
     /**Get the FTP file path
      * @param string $stationId

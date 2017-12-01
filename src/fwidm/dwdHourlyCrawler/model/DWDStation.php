@@ -3,18 +3,12 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
-use DateTime;
-use FWidm\DWDHourlyCrawler\DWDUtil;
+use FWidm\DWDHourlyCrawler\Transformer\StationTransformer;
 
 
-/**
- * Created by PhpStorm.
- * User: fabianwidmann
- * Date: 10.06.17
- * Time: 11:11
- */
 class DWDStation implements \JsonSerializable
 {
+
     private $id;
     private $from;
     private $until;
@@ -37,7 +31,7 @@ class DWDStation implements \JsonSerializable
      * @param $name
      * @param $state
      */
-    public function __construct($id, DateTime $from, DateTime $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold)
+    public function __construct($id, Carbon $from, Carbon $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold)
     {
         $this->id = $id;
         $this->from = $from;
@@ -48,22 +42,6 @@ class DWDStation implements \JsonSerializable
         $this->name = $name;
         $this->state = $state;
         $this->setActive($activeDayThreshold);
-
-    }
-
-    public function setActive($activeDayThreshold)
-    {
-        $now = new Carbon('now', 'utc');
-        $until = new Carbon($this->until);
-
-        $diffDays = $now->diffInDays($until);
-
-        if ($diffDays < $activeDayThreshold){
-            $this->active = true;
-        }
-        else {
-            $this->active = false;
-        }
 
     }
 
@@ -82,7 +60,6 @@ class DWDStation implements \JsonSerializable
     {
         return $this->latitude;
     }
-
 
     /**
      * @return mixed
@@ -106,13 +83,7 @@ class DWDStation implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['until'] = $this->until->format(DateTime::ATOM);
-        $vars['from'] = $this->from->format(DateTime::ATOM);
-
-
-        return $vars;
+        return $this->toArray($this->toItem(new StationTransformer()));
     }
 
     /**
@@ -124,17 +95,17 @@ class DWDStation implements \JsonSerializable
     }
 
     /**
-     * @return DateTime
+     * @return Carbon
      */
-    public function getFrom(): DateTime
+    public function getFrom(): Carbon
     {
         return $this->from;
     }
 
     /**
-     * @return DateTime
+     * @return Carbon
      */
-    public function getUntil(): DateTime
+    public function getUntil(): Carbon
     {
         return $this->until;
     }
@@ -169,6 +140,21 @@ class DWDStation implements \JsonSerializable
     public function getActive()
     {
         return $this->active;
+    }
+
+    public function setActive($activeDayThreshold)
+    {
+        $now = new Carbon('now', 'utc');
+        $until = new Carbon($this->until);
+
+        $diffDays = $now->diffInDays($until);
+
+        if ($diffDays < $activeDayThreshold) {
+            $this->active = true;
+        } else {
+            $this->active = false;
+        }
+
     }
 
 

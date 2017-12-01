@@ -14,8 +14,8 @@ use DateTime;
 use FWidm\DWDHourlyCrawler\DWDConfiguration;
 use FWidm\DWDHourlyCrawler\DWDUtil;
 use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
-use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use FWidm\DWDHourlyCrawler\Hourly\Services\AbstractHourlyService;
+use FWidm\DWDHourlyCrawler\Model\DWDStation;
 use Location\Coordinate;
 use Monolog\Logger;
 
@@ -86,6 +86,104 @@ class DWDHourlyCrawler
         return $data;
     }
 
+    /**
+     * Retrieves the correct stations file, can be filtered to only show stations that are flagges as active. Conditions
+     * for this can be
+     * @param bool $activeOnly
+     * @return array
+     */
+    public
+    function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
+    {
+        $downloadFile = false || $forceDownloadFile;
+        $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;
+        $stationsFTPPath = get_object_vars($stationsFTPPath)[$controller->getParameter()]->stations;
+
+        $filePath = $controller->getStationFTPPath($stationsFTPPath);
+        //Retrieve Stations
+        if (file_exists($filePath)) {
+            $lastModifiedStationFile = Carbon::createFromTimestamp(filemtime($filePath));
+            $diffInHours = Carbon::now()->diffInHours(Carbon::createFromTimestamp(filemtime($filePath)));
+            DWDUtil::log(self::class, "last modified? " . $lastModifiedStationFile
+                . "; difference to today (h)? " . $diffInHours);
+            $downloadFile = $diffInHours >= 12; //redownload every 12h.
+        } else
+            $downloadFile = true;
+        //todo: determine if this works - had a problem where this did not trigger redownloading of the file, which lead to the no active stations exception.
+        if ($downloadFile) {
+            DWDUtil::log(self::class, "Downloading station file=" . $filePath);
+            DWDStationsController::getStationFile($stationsFTPPath, $filePath);
+        }
+
+        $stations = DWDStationsController::parseStations($filePath);
+        DWDUtil::log(self::class, "Got stations... " . count($stations));
+
+        //todo 31.8.2017:  rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
+        if ($activeOnly && count($stations) > 0) {
+            $stations = array_filter($stations,
+                function (DWDStation $station) {
+                    return $station->isActive();
+                });
+        }
+        DWDUtil::log(self::class, "Got stations after filtering... " . count($stations));
+
+        return $stations;
+    }
+
+    /** Retrieves a file for the controller by querying the nearest station.
+     * @param AbstractHourlyService $service
+     * @param DWDStation $nearestStation
+     * @param bool $forceDownloadFile
+     * @return string filePath
+     */
+    public function retrieveFile(AbstractHourlyService $service, DWDStation $nearestStation, $forceDownloadFile = false)
+    {
+        $config = DWDConfiguration::getConfiguration();
+        $ftpConfig = $config->ftp;
+
+
+        $fileName = $service->getFileName($nearestStation->getId());
+        $ftpPath = $service->getFileFTPPath($nearestStation->getId());
+        $localPath = $service->getFilePath($fileName);
+        DWDUtil::log(self::class, '$fileName=' . $fileName);
+        DWDUtil::log(self::class, '$ftpPath=' . $ftpPath);
+        DWDUtil::log(self::class, '$localPath=' . $localPath);
+
+        //get file.
+        $ftp_connection = ftp_connect($ftpConfig->url);
+        //ftp_set_option($ftp_connection, FTP_TIMEOUT_SEC, 9000);
+        $files = array();
+        if (file_exists($localPath)) {
+            $lastModifiedStationFile = Carbon::createFromFormat('U', (filemtime($localPath)));
+        }
+        //check if the date on the old file is older than 1 day, else return the old path.
+        // download can be forced with the optional parameter.
+        if ($forceDownloadFile || !file_exists($localPath)
+            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
+        ) {
+            //echo "<p>Controller::retrieveFile >> load new zip!</p>";
+            $path = pathinfo($localPath);
+            if (!is_dir($path['dirname'])) {
+
+                mkdir($path['dirname'], 0755, true);
+            }
+
+            if (ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword)) {
+//                DWDUtil::log(self::class, 'File "' . $ftpPath . '"exists on server? ' . ftp_size($ftp_connection, $ftpPath));
+                if (ftp_size($ftp_connection, $ftpPath) > -1 && ftp_get($ftp_connection, $localPath, $ftpPath, FTP_BINARY)) {
+                    $files[] = $localPath;
+                } else {
+                    return null;
+                }
+
+                ftp_close($ftp_connection);
+                return $localPath;
+            }
+        }
+
+        return $localPath;
+    }
+
     /** Retrieve data from one of the nearest stations. This method retrieves all stations in a specific diameter around
      * the location. It then queries the stations one by one until one station's results could be found.
      *
@@ -146,7 +244,6 @@ class DWDHourlyCrawler
         return $data;
     }
 
-
     /**
      * DWD Hourly data is not really hourly, as such first try to query with the specified limit, then, if the limit is smaller than +-1.5h or +-3.5h
      * Query those values and return them.
@@ -179,105 +276,6 @@ class DWDHourlyCrawler
 
         return $data;
     }
-
-    /** Retrieves a file for the controller by querying the nearest station.
-     * @param AbstractHourlyService $service
-     * @param DWDStation $nearestStation
-     * @param bool $forceDownloadFile
-     * @return string filePath
-     */
-    public function retrieveFile(AbstractHourlyService $service, DWDStation $nearestStation, $forceDownloadFile = false)
-    {
-        $config = DWDConfiguration::getConfiguration();
-        $ftpConfig = $config->ftp;
-
-
-        $fileName = $service->getFileName($nearestStation->getId());
-        $ftpPath = $service->getFileFTPPath($nearestStation->getId());
-        $localPath = $service->getFilePath($fileName);
-        DWDUtil::log(self::class, '$fileName=' . $fileName);
-        DWDUtil::log(self::class, '$ftpPath=' . $ftpPath);
-        DWDUtil::log(self::class, '$localPath=' . $localPath);
-
-        //get file.
-        $ftp_connection = ftp_connect($ftpConfig->url);
-        //ftp_set_option($ftp_connection, FTP_TIMEOUT_SEC, 9000);
-        $files = array();
-        if (file_exists($localPath)) {
-            $lastModifiedStationFile = Carbon::createFromFormat('U', (filemtime($localPath)));
-        }
-        //check if the date on the old file is older than 1 day, else return the old path.
-        // download can be forced with the optional parameter.
-        if ($forceDownloadFile || !file_exists($localPath)
-            || (isset($lastModifiedStationFile) && $lastModifiedStationFile->diffInDays(Carbon::now()) >= 1)
-        ) {
-            //echo "<p>Controller::retrieveFile >> load new zip!</p>";
-            $path = pathinfo($localPath);
-            if (!is_dir($path['dirname'])) {
-
-                mkdir($path['dirname'], 0755, true);
-            }
-
-            if (ftp_login($ftp_connection, $ftpConfig->userName, $ftpConfig->userPassword)) {
-//                DWDUtil::log(self::class, 'File "' . $ftpPath . '"exists on server? ' . ftp_size($ftp_connection, $ftpPath));
-                if (ftp_size($ftp_connection, $ftpPath) > -1 && ftp_get($ftp_connection, $localPath, $ftpPath, FTP_BINARY)) {
-                    $files[] = $localPath;
-                } else {
-                    return null;
-                }
-
-                ftp_close($ftp_connection);
-                return $localPath;
-            }
-        }
-
-        return $localPath;
-    }
-
-    /**
-     * Retrieves the correct stations file, can be filtered to only show stations that are flagges as active. Conditions
-     * for this can be
-     * @param bool $activeOnly
-     * @return array
-     */
-    public
-    function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
-    {
-        $downloadFile = false || $forceDownloadFile;
-        $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;
-        $stationsFTPPath = get_object_vars($stationsFTPPath)[$controller->getParameter()]->stations;
-
-        $filePath = $controller->getStationFTPPath($stationsFTPPath);
-        //Retrieve Stations
-        if (file_exists($filePath)) {
-            $lastModifiedStationFile = Carbon::createFromTimestamp(filemtime($filePath));
-            $diffInHours = Carbon::now()->diffInHours(Carbon::createFromTimestamp(filemtime($filePath)));
-            DWDUtil::log(self::class, "last modified? " . $lastModifiedStationFile
-                . "; difference to today (h)? " . $diffInHours);
-            $downloadFile = $diffInHours >= 12; //redownload every 12h.
-        } else
-            $downloadFile = true;
-        //todo: determine if this works - had a problem where this did not trigger redownloading of the file, which lead to the no active stations exception.
-        if ($downloadFile) {
-            DWDUtil::log(self::class, "Downloading station file=" . $filePath);
-            DWDStationsController::getStationFile($stationsFTPPath, $filePath);
-        }
-
-        $stations = DWDStationsController::parseStations($filePath);
-        DWDUtil::log(self::class, "Got stations... " . count($stations));
-
-        //todo 31.8.2017:  rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
-        if ($activeOnly && count($stations) > 0) {
-            $stations = array_filter($stations,
-                function (DWDStation $station) {
-                    return $station->isActive();
-                });
-        }
-        DWDUtil::log(self::class, "Got stations after filtering... " . count($stations));
-
-        return $stations;
-    }
-
 
     public
     function addController(AbstractHourlyService $controller)

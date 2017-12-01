@@ -43,24 +43,26 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
-    private function calculateU($speed, $directionDeg)
+    /**
+     * @return mixed
+     */
+    public function getMeanWindSpeed()
     {
-        // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
-        return -1 * $speed * sin(deg2rad($directionDeg));
+        return $this->meanWindSpeed;
     }
 
-    private function calculateV($speed, $directionDeg)
+    /**
+     * @return mixed
+     */
+    public function getMeanWindDirection()
     {
-        // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
-        return -1 * $speed * cos(deg2rad($directionDeg));
+        return $this->meanWindDirection;
     }
 
     function __toString()
     {
-
         return get_class($this) . ' [stationId=' . $this->stationId . ', date=' . $this->date->format('Y-m-d') . ']';
     }
-
 
     /**
      * @return int
@@ -71,24 +73,6 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
     }
 
     /**
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4.0
-     */
-    function jsonSerialize()
-    {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date'] = $this->date->format(DateTime::ATOM);
-        $vars['u'] = $this->calculateU($this->meanWindSpeed, $this->meanWindDirection);
-        $vars['v'] = $this->calculateV($this->meanWindSpeed, $this->meanWindDirection);
-
-        return $vars;
-    }
-
-    /**
      * @return DateTime
      */
     public function getDate(): DateTime
@@ -96,8 +80,7 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
         return $this->date;
     }
 
-
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,
@@ -129,7 +112,7 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
                 ],
                 $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
-                $this->calculateU($this->meanWindSpeed, $this->meanWindDirection), "mean calculated wind U vector"),
+                $this->calculateU(), "mean calculated wind U vector"),
             new DWDCompactParameter($this->stationId,
                 [
                     "name" => $this->description->v,
@@ -139,7 +122,19 @@ class DWDWind extends DWDAbstractParameter implements \JsonSerializable
                 ],
                 $this->classification,
                 $this->distance, $this->longitude, $this->latitude, new Carbon($this->date),
-                $this->calculateV($this->meanWindSpeed, $this->meanWindDirection), "mean calculated wind V vector"),
+                $this->calculateV(), "mean calculated wind V vector"),
         ];
+    }
+
+    public function calculateU()
+    {
+        // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
+        return -1 * $this->meanWindSpeed * sin(deg2rad($this->meanWindDirection));
+    }
+
+    public function calculateV()
+    {
+        // see: https://www.eol.ucar.edu/content/wind-direction-quick-reference
+        return -1 * $this->meanWindSpeed * cos(deg2rad($this->meanWindDirection));
     }
 }

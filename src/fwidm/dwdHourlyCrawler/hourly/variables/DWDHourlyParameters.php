@@ -24,6 +24,18 @@ class DWDHourlyParameters
         $this->variables = [];
     }
 
+    public static function getValidValues(): array
+    {
+        $conf = DWDConfiguration::getHourlyConfiguration()->parameters;
+
+        $validVals = array();
+        foreach ($conf as $item) {
+            $validVals[] = $item->name;
+        }
+
+        return $validVals;
+    }
+
     /**
      * @return array
      */
@@ -31,7 +43,6 @@ class DWDHourlyParameters
     {
         return $this->variables;
     }
-
 
     public function addPressure()
     {
@@ -52,17 +63,6 @@ class DWDHourlyParameters
     public function getVariableCount()
     {
         return count($this->variables);
-    }
-
-    public static function getValidValues():array {
-        $conf=DWDConfiguration::getHourlyConfiguration()->parameters;
-
-        $validVals= array();
-        foreach ($conf as $item) {
-            $validVals[]=$item->name;
-        }
-
-        return $validVals;
     }
 
     public function addCloudiness()

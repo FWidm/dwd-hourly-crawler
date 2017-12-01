@@ -18,6 +18,6 @@ class DWDLibException extends \Exception
      */
     public function __construct($string)
     {
-        $this->message=$string;
+        $this->message = $string;
     }
 }

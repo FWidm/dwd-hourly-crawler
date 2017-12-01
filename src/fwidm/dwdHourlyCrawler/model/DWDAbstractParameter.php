@@ -9,6 +9,9 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 
+use FWidm\DWDHourlyCrawler\Transformer\ParameterTransformer;
+
+
 abstract class  DWDAbstractParameter
 {
 //    protected $id;
@@ -45,10 +48,71 @@ abstract class  DWDAbstractParameter
     }
 
     /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQuality()
+    {
+        return $this->quality;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getClassification()
+    {
+        return $this->classification;
+    }
+
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    function jsonSerialize()
+    {
+        return $this->toArray($this->toItem(new ParameterTransformer()));
+    }
+
+    /**
      * Encode the current parameter into a standardized 1 parameter per object type. This method thus encodes all DWD
      * params from their multi param per object variant to an array of single objects per parameter
      * @return array
      */
-    public abstract function exportSingleVariables():array;
+    public abstract function exportSingleVariables(): array;
 
 }

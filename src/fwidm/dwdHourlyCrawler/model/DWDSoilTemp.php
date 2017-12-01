@@ -44,6 +44,54 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSoilTemp2cmDeg()
+    {
+        return $this->soilTemp_2cm_deg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSoilTemp5cmDeg()
+    {
+        return $this->soilTemp_5cm_deg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSoilTemp10cmDeg()
+    {
+        return $this->soilTemp_10cm_deg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSoilTemp20cmDeg()
+    {
+        return $this->soilTemp_20cm_deg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSoilTemp50cmDeg()
+    {
+        return $this->soilTemp_50cm_deg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSoilTemp100cmDeg()
+    {
+        return $this->soilTemp_100cm_deg;
+    }
+
 
     function __toString()
     {
@@ -60,23 +108,6 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     }
 
     /**
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4.0
-     */
-    function jsonSerialize()
-    {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date'] = $this->date->format(DateTime::ATOM);
-
-
-        return $vars;
-    }
-
-    /**
      * @return DateTime
      */
     public function getDate(): DateTime
@@ -85,7 +116,7 @@ class DWDSoilTemp extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,

@@ -52,22 +52,44 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSumLongwaveRadiation()
+    {
+        return $this->sumLongwaveRadiation;
+    }
 
     /**
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4.0
+     * @return mixed
      */
-    function jsonSerialize()
+    public function getSumDiffuseRadiation()
     {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date'] = $this->date->format(DateTime::ATOM);
+        return $this->sumDiffuseRadiation;
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getSumIncomingRadiation()
+    {
+        return $this->sumIncomingRadiation;
+    }
 
-        return $vars;
+    /**
+     * @return mixed
+     */
+    public function getSumSunshineDuration()
+    {
+        return $this->sumSunshineDuration;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getZenith()
+    {
+        return $this->zenith;
     }
 
     function __toString()
@@ -92,7 +114,7 @@ class DWDSolar extends DWDAbstractParameter implements \JsonSerializable
         return $this->date;
     }
 
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,

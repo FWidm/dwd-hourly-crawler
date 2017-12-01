@@ -58,7 +58,7 @@ class HourlyCloudinessService extends AbstractHourlyService
 
     public function createParameter(array $cols, DateTime $date, DWDStation $nearestStation, Coordinate $coordinate): DWDAbstractParameter
     {
-        $lineData = new DWDCloudiness($nearestStation,$coordinate,$cols[0], $date, $cols[2], $cols[3], $cols[4]);
+        $lineData = new DWDCloudiness($nearestStation, $coordinate, $cols[0], $date, $cols[2], $cols[3], $cols[4]);
         return $lineData;
     }
 }

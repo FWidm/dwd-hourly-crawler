@@ -9,11 +9,13 @@
 namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
+use FWidm\DWDHourlyCrawler\Transformer\CompactParameterTransformer;
+
 
 /**
  * Class DWDCompactParameter
  * @package FWidm\DWDHourlyCrawler\fwidm\dwdHourlyCrawler\model
- * @author Fabian Widmann <fabian.widmann@uni-ulm.de>
+ * @author Fabian Widmann <fabian.widmann@gmail.com>
  * target: json
  * "$variable": [
  * {
@@ -32,6 +34,7 @@ use Carbon\Carbon;
  */
 class DWDCompactParameter implements \JsonSerializable
 {
+
     private $stationID;
     private $description;
     private $classification;
@@ -78,10 +81,7 @@ class DWDCompactParameter implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date'] = $this->date->toIso8601String();
-        return $vars;
+        return $this->toArray($this->toItem(new CompactParameterTransformer()));
     }
 
     /**
@@ -98,14 +98,6 @@ class DWDCompactParameter implements \JsonSerializable
     public function getDescription()
     {
         return $this->description;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getClassification()
-    {
-        return $this->classification;
     }
 
     /**
@@ -161,9 +153,11 @@ class DWDCompactParameter implements \JsonSerializable
         return "DWDCompactParameter: [type=" . $this->type . "; classification=" . $this->getClassification() . "; value=" . $this->value . "]";
     }
 
-    public function getVarArray(): array
+    /**
+     * @return mixed
+     */
+    public function getClassification()
     {
-        return get_object_vars($this);
+        return $this->classification;
     }
-
 }

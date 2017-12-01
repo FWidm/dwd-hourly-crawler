@@ -46,6 +46,23 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
         $this->distance = DWDUtil::calculateDistanceToStation($coordinate, $station, "km");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPressureSeaLevelHPA()
+    {
+        return $this->pressureSeaLevel_hPA;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPressureStationLevelHPA()
+    {
+        return $this->pressureStationLevel_hPA;
+    }
+
+
     function __toString()
     {
 
@@ -61,22 +78,6 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
         return $this->stationId;
     }
 
-    /**
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4.0
-     */
-    function jsonSerialize()
-    {
-        $vars = get_object_vars($this);
-        //replace standard format by ISO DateTime::ATOM Format.
-        $vars['date'] = $this->date->format(DateTime::ATOM);
-
-
-        return $vars;
-    }
 
     /**
      * @return DateTime
@@ -87,7 +88,7 @@ class DWDPressure extends DWDAbstractParameter implements \JsonSerializable
     }
 
 
-    public function exportSingleVariables():array
+    public function exportSingleVariables(): array
     {
         return [
             new DWDCompactParameter($this->stationId,
