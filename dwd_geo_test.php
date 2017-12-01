@@ -30,24 +30,18 @@ prettyPrint("Checking for Coordinates: " . $coordinates->format(new GeoJSON()) .
 
 $dwdLib = new DWDLib("storage");
 
-$vars = new DWDHourlyParameters();
-$vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
+$requestParams = new DWDHourlyParameters();
+$requestParams->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
 
-$out = $dwdLib->getHourlyByInterval($vars, $date, $coordinates->getLat(), $coordinates->getLng());
+$out = $dwdLib->getHourlyInInterval($requestParams, $date, $coordinates->getLat(), $coordinates->getLng());
 
 /*
  * Print all retrieved items in the 'values' part => weather parameters as json
  */
 foreach ($out['values'] as $key => $obj) {
-    print "obj=$key<br>";
-    foreach ($obj as $parameter) {
-        /* @var $parameter \FWidm\DWDHourlyCrawler\Model\DWDAbstractParameter */
-        $exported=$parameter->exportSingleVariables();
-        prettyPrint(FractalWrapper::toJson(FractalWrapper::toResource($parameter,new ParameterTransformer()),JSON_PRETTY_PRINT));
-        print "<hr>";
-        $collection=FractalWrapper::toResource($exported,new CompactParameterTransformer());
-        prettyPrint(FractalWrapper::toJson($collection,JSON_PRETTY_PRINT));
-    }
+    print "obj=$key - ".count($obj)."<br>";
+    $collection=FractalWrapper::toResource($obj,new ParameterTransformer());
+    prettyPrint(FractalWrapper::toJson($collection,JSON_PRETTY_PRINT));
 }
 /*
  * Print all stations as json

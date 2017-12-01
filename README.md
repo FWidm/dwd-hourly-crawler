@@ -39,32 +39,42 @@ all the parameters.
 - Add option to set the radius of active stations near the given point.
 
 ## Example
+Usage of the library is quite simple:
 ```php
+//Coordinates we want to query
 $coordinates=new Coordinate(48.3751,8.9801);
+//Use default folders
 $dwdLib=new DWDLib();
 
-//output of the downloaded files is in <dir>/storage/...
+//OR: set output of the downloaded files to <dir>/storage/...
 $dwdLib = new DWDLib("storage");
 
-$vars = new DWDHourlyParameters();
-$vars->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
-// out consists of an array with the key 'values' => weather params and 'stations' => weather stations
-$out = $dwdLib->getHourlyByInterval($vars, $date, $coordinates->getLat(), $coordinates->getLng());
+//set up which parameters you need
+$param = new DWDHourlyParameters();
+$param->addAirTemperature()->addCloudiness()->addPrecipitation()->addPressure()->addSoilTemperature()->addSun()->addWind()/*->add...*/;
+// EITHER:
+$out = $dwdLib->getHourlyByInterval($param, $date, $coordinates->getLat(), $coordinates->getLng());
+// OR: to get all data for one day
+$out = $dwdLib->getHourlyDataByDay($vars, $date, $coordinates->getLat(), $coordinates->getLng());
 
 ```
+out consists of an array with the key ` values` => weather params and `stations` => weather stations.
 ### DWD Parameter "Groups"
-
+Get Parameter JSON:
 ```php
 /*
  * Print all retrieved items in the 'values' part => weather parameters as json
  */
 foreach ($out['values'] as $key => $obj) {
     print "obj=$key<br>";
+    //either iterate to convert single items
     foreach ($obj as $value) {
         /* @var $value DWDAbstractParameter */
         //Each model has a toResource method that returns Fractal's ResourceAbstract, it can be used to retrieve an array or json data
         prettyPrint(FractalWrapper::toJson(FractalWrapper::toResource($parameter,new ParameterTransformer()),JSON_PRETTY_PRINT));
-
+    //or use fractal wrapper if you want to convert everything
+    $collection=FractalWrapper::toResource($obj,new ParameterTransformer());
+    prettyPrint(FractalWrapper::toJson($collection,JSON_PRETTY_PRINT));
     }
 }
 ```
@@ -93,6 +103,7 @@ Output:
 }
 ```
 ### Stations
+Get Station JSON:
 ```php
 /*
  * Print all stations as json
@@ -101,7 +112,11 @@ foreach ($out['stations'] as $key => $obj) {
     print "obj=$key<br>";
     /* @var $obj \FWidm\DWDHourlyCrawler\Model\DWDStation */
     prettyPrint(FractalWrapper::toJson(FractalWrapper::toResource($obj,new StationTransformer()),JSON_PRETTY_PRINT));
+    
 }
+//or use fractal wrapper if you want to convert everything
+$collection=FractalWrapper::toResource($out['stations'] ,new StationTransformer());
+prettyPrint(FractalWrapper::toJson($collection,JSON_PRETTY_PRINT));
 ```
 Output:
 ```json

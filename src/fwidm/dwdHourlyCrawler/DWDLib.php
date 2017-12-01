@@ -36,15 +36,15 @@ class DWDLib
 
 
     /**
-     * Retrieve all values for the parameters between the interval timeAfter and timeBefore for a specific location.
+     * Retrieve values for the parameters in a time frame between detetime +- timeLimitMinutes (default: 30) for the specific location.
      * @param DWDHourlyParameters $hourlyParameters
-     * @param DateTime $dateFrom
-     * @param DateTime $dateUntil
+     * @param DateTime $dateTime
      * @param $latitude
      * @param $longitude
-     * @return array
+     * @return array - returns an array that contains measurements ('values') and the station ('stations')information
+     * @throws DWDLibException - if no parameters ar specified
      */
-    public function getHourlyDataByDay(DWDHourlyParameters $hourlyParameters, DateTime $day, $latitude, $longitude)
+    public function getHourlyDataInDay(DWDHourlyParameters $hourlyParameters, DateTime $day, $latitude, $longitude)
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
@@ -112,10 +112,10 @@ class DWDLib
      * @param $latitude
      * @param $longitude
      * @param int $timeLimitMinutes - optional parameter that limit
-     * @return array - returns an array that contains measurements and the station information
+     * @return array - returns an array that contains measurements ('values') and the station ('stations')information
      * @throws DWDLibException - if no parameters ar specified
      */
-    public function getHourlyByInterval(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
+    public function getHourlyInInterval(DWDHourlyParameters $hourlyParameters, DateTime $dateTime, $latitude, $longitude, $timeLimitMinutes = 30): array
     {
         $coordinatesRequest = new Coordinate($latitude, $longitude);
         if (!empty($hourlyParameters) && $hourlyParameters->getVariableCount() > 0) {
