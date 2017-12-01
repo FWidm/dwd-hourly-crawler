@@ -52,15 +52,17 @@ class DWDHourlyCrawler
      *
      * This is important if a station's files are missing on the ftp.
      * @param array $nearestStations
-     * @param DateTime $dateTime
+     * @param DateTime $date
      * @param int $timeMinuteLimit
      * @return array [params, stations]
      */
-    public function getDataInInterval($coordinatesRequest, DateTime $dateTime, $timeMinuteLimit = 30, $sorted = true)
+    public function getDataInInterval($coordinatesRequest, DateTime $date, $timeMinuteLimit = 30, $sorted = true)
     {
 
         $parameters = [];
         $queriedStations = [];
+
+        $date = Carbon::instance($date)->setTimezone('utc');
         foreach ($this->services as $var => $hourlyService) {
             $stations = $this->getStations($hourlyService, true);
 
@@ -88,14 +90,14 @@ class DWDHourlyCrawler
                         continue;
                     }
 
-                    $parameters[$var] = $this->retrieveData($content, $nearestStation, $coordinatesRequest, $hourlyService, $dateTime, $timeMinuteLimit);
+                    $parameters[$var] = $this->retrieveData($content, $nearestStation, $coordinatesRequest, $hourlyService, $date, $timeMinuteLimit);
 
                     //addStation
                     if (count($parameters[$var]) > 0 && !isset($queriedStations['station-' . $nearestStation->getId()])) {
                         $queriedStations['station-' . $nearestStation->getId()] = $nearestStation;
                     }
 
-                    if (isset($parameters[$var]))
+                    if (count($parameters[$var])>0)
                         break;
                 }
             }
@@ -163,8 +165,7 @@ class DWDHourlyCrawler
      * @param bool $activeOnly
      * @return array
      */
-    public
-    function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
+    public function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
     {
         $downloadFile = false || $forceDownloadFile;
         $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;

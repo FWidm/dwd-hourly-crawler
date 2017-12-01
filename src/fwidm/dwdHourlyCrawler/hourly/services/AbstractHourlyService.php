@@ -44,14 +44,16 @@ abstract class AbstractHourlyService
      * Parse the textual representation of DWD Data, can be filtered by specifying before and after.
      * This means if you specify after - you will get timestamps after the specified team
      * If you also specify before you can pinpoint values.
+     * @deprecated
      * @param String $content - Textual representation of a DWD Hourly/Recent pressure file.
-     * @param DateTime|null $start - returns all values after the specific time
-     * @param DateTime|null $end - returns all values after $after AND after if set.
+     * @param Carbon|null $startDate - returns all values after the specific time
+     * @param Carbon|null $endDate - returns all values after $after AND after if set.
      * @return array of parameters
      * @throws ParseError
      */
-    public function parseHourlyData(String $content, DWDStation $nearestStation, Coordinate $coordinate, DateTime $start = null, DateTime $end = null): array
+    public function parseHourlyDataOld(String $content, DWDStation $nearestStation, Coordinate $coordinate, Carbon $startDate = null, Carbon $endDate = null): array
     {
+        $time = microtime(true);
         $lines = explode('eor', $content);
         $data = array();
 
@@ -61,7 +63,35 @@ abstract class AbstractHourlyService
          *  2. from this day, calculate the hour difference between requested and $start+$end
          *  3. jump to the specific lines
          *  4. parse
+         *  DOES NOT PROVIDE CORRECT DATA - the dwd files do skip missing data instead of providing "-999" as value, as such the optimization will not work.
          */
+
+//        $newestDate = null;
+//        //retrieve the latest line that contains a valid date
+//        for ($i = count($lines) - 1; !isset($newestDate); $i++) {
+//            $newestData = str_replace(' ', '', $lines[count($lines) - $i]);
+//            $cols = explode(';', $newestData);
+//            if (sizeof($cols) > 3){
+//                $newestDate = Carbon::createFromFormat($this->getTimeFormat(), $cols[1], 'utc');
+//                break;
+//            }
+//        }
+//        /* @var $newestDate Carbon */
+//        $start = min($newestDate->diffInHours($startDate), $newestDate->diffInHours($endDate));
+//        $end = max($newestDate->diffInHours($startDate), $newestDate->diffInHours($endDate));
+//        DWDUtil::log("MAXMIN", "start=" .$start."; end=".$end. "available Lines=".count($lines));
+//        //Retrieve the rest of the data that is found between start and end.
+//        for ($i = $start; $i<count($lines) && $i < $end; $i++) {
+//            $lines[$i] = str_replace(' ', '', $lines[$i]);
+//            $cols = explode(';', $lines[$i]);
+//            $date = Carbon::createFromFormat($this->getTimeFormat(), $cols[1], 'utc');
+//            if (isset($date)) {
+//                $data[] = $this->createParameter($cols, $date, $nearestStation, $coordinate);
+//            } else
+//                throw new ParseError(self::class . " - Error while parsing date: col=" . $cols[1] . " | date=" . $date);
+//        }
+
+        DWDUtil::log("PARSER", "DATE=[" . $endDate->toIso8601String() . "," . $startDate->toIso8601String() . "]");
         for ($i = sizeof($lines) - 1; $i > 0; $i--) {
             $lines[$i] = str_replace(' ', '', $lines[$i]);
 
@@ -75,7 +105,7 @@ abstract class AbstractHourlyService
                 switch (func_num_args()) {
                     //$start is set
                     case 4: {
-                        if ($date >= $start) {
+                        if ($date >= $startDate) {
                             $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
 
                             $data[] = $temp;
@@ -87,12 +117,12 @@ abstract class AbstractHourlyService
                     }
                     //$start & $end are set
                     case 5: {
-                        if ($date <= $end && $date >= $start) {
+                        if ($date <= $endDate && $date >= $startDate) {
                             $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
 
                             $data[] = $temp;
                         } else
-                            if ($date <= $start) {
+                            if ($date <= $startDate) {
                                 //break from loop and switch
                                 break 2;
                             }
@@ -109,8 +139,62 @@ abstract class AbstractHourlyService
             } else
                 throw new ParseError(self::class . " - Error while parsing date: col=" . $cols[1] . " | date=" . $date);
         }
+        DWDUtil::log("PARSER", "RetCount=" . count($data));
+
+        DWDUtil::log("TIMER", "Duration=" . (microtime(true) - $time));
 
         return $data;
+    }
+
+
+    public function parseHourlyData(String $content, DWDStation $nearestStation, Coordinate $coordinate, Carbon $startDate, Carbon $endDate): array
+    {
+        $start = $startDate->format($this->getTimeFormat());
+        $end = $endDate->format($this->getTimeFormat());
+
+        $content = str_replace([" ", PHP_EOL], "", $content);
+        $lines = explode(";eor", $content);
+        $data = [];
+        $startIndex = $this->binarySearch($start, $lines);
+        print "go station=$nearestStation<br>";
+        for ($i = (int)$startIndex; $i < count($lines); $i++) {
+            $cols = explode(';', $lines[$i]);
+            $date = Carbon::createFromFormat($this->getTimeFormat(), $cols[1], 'utc');
+
+            print $i . ": " . $date->toIso8601String() . ">>> DIFF=" . $endDate->diff($date)->h . "<br>";
+
+            if ($date <= $endDate && $date >= $startDate) {
+                print "1.=".(int)($date <= $endDate)."    2.=".(int)($date >= $startDate)."<br>";
+                $temp = $this->createParameter($cols, $date, $nearestStation, $coordinate);
+                $data[] = $temp;
+            } else
+                break;            //break if we exceed our end point
+
+        }
+        return $data;
+    }
+
+    /** Finds the position of $item in $array
+     * @param $item
+     * @param $array
+     * @return int
+     */
+    private function binarySearch($item, $array)
+    {
+        $low = 0;
+        $high = count($array);
+        while ($high - $low > 1) {
+            $center = ($high + $low) / 2;
+//            print("high=$high, low=$low, center=$center -- val=".(int)explode(';', $array[$center])[1]."<br>");
+            if ((int)explode(';', $array[$center])[1] < (int)$item) {
+                $low = $center;
+            } else
+                $high = $center;
+        }
+        if ($high == count($array))
+            throw new ParseError(self::class . " - Error while searching for position of item=" . $item . "high=" . $high . "; val=" . $array[$high]);
+        else
+            return $high + 1;
     }
 
     /**

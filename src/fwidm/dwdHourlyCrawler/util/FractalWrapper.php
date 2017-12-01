@@ -12,6 +12,8 @@ use FWidm\DWDHourlyCrawler\Exceptions\DWDLibException;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
+use League\Fractal\Resource\NullResource;
+use League\Fractal\Resource\ResourceAbstract;
 use League\Fractal\Resource\ResourceInterface;
 use League\Fractal\Serializer\DataArraySerializer;
 
@@ -28,11 +30,13 @@ class FractalWrapper
     /** Transform the given object or array with the given transformer to a Resource.
      * @param $obj
      * @param $transformer
-     * @return ResourceInterface
+     * @return ResourceAbstract
      * @throws DWDLibException
      */
-    public static function toResource($obj, $transformer): ResourceInterface
+    public static function toResource($obj, $transformer): ResourceAbstract
     {
+        if (!$obj)
+            return new NullResource();
         $resource = null;
         try {
             if (is_array($obj)) {
@@ -51,7 +55,7 @@ class FractalWrapper
      * @param string $transformer
      * @return array
      */
-    public static function toArray(ResourceInterface $resource, $serializer = DataArraySerializer::class)
+    public static function toArray(ResourceAbstract $resource, $serializer = DataArraySerializer::class)
     {
         $manager = new Manager();
         $manager->setSerializer(new $serializer());
@@ -63,7 +67,7 @@ class FractalWrapper
      * @param string $serializer
      * @return string
      */
-    public static function toJson(ResourceInterface $resource, $options = 0, $serializer = DataArraySerializer::class)
+    public static function toJson(ResourceAbstract $resource, $options = 0, $serializer = DataArraySerializer::class)
     {
         $manager = new Manager();
         $manager->setSerializer(new $serializer());
