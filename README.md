@@ -28,7 +28,7 @@ all the parameters.
 - Allow the user to split queried variables from the predefined groups by the dwd to single variables.
 - Add distance from station to the queried point
 - Added Fractal support
-
+- Added experimental support to find data faster
 
 ## Todo
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)

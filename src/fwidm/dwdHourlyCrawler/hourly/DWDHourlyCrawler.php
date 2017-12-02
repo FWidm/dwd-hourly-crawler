@@ -33,22 +33,95 @@ class DWDHourlyCrawler
         DWDUtil::initializeOutputFolder(DWDConfiguration::getHourlyConfiguration()->localBaseFolder);
     }
 
+    /**
+     * Retrieve all (active) Stations for a service.
+     * @param bool $active
+     * @return array
+     */
+    public function getAllStations(bool $active=false)
+    {
+        $stationsPerService = [];
+        foreach ($this->services as $var => $hourlyService) {
+            $stationsPerService[$var] = $this->getStations($hourlyService, $active);
+        }
+        return $stationsPerService;
+    }
+
+    /** Retrieve data from one of the nearest stations. This method retrieves all stations in a specific diameter around
+     * the location. It then queries the stations one by one until one station's results could be found.
+     *
+     * This is important if a station's files are missing on the ftp.
+     * @param array $nearestStations
+     * @param DateTime $date
+     * @param int $timeMinuteLimit
+     * @return array [params, stations]
+     */
+    public function getDataInInterval($coordinatesRequest, DateTime $date, $timeMinuteLimit = 30, $sorted = true)
+    {
+
+        $parameters = [];
+        $queriedStations = [];
+
+        $date = Carbon::instance($date)->setTimezone('utc');
+        foreach ($this->services as $var => $hourlyService) {
+            $stations = $this->getStations($hourlyService, true);
+
+            if (isset($stations)) {
+
+                try {
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                } catch (DWDLibException $exception) {
+                    DWDUtil::log(self::class, "Failed to retrieve any nearest active stations. Retrying after forcedownloading new station infos.", Logger::WARNING);
+                    $stations = $this->getStations($hourlyService, true, true);
+                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
+                }
+
+
+                foreach ($nearestStations as $nearestStation) {
+                    /* @var $nearestStation DWDStation */
+                    $zipFilePath = $this->retrieveFile($hourlyService, $nearestStation);
+                    $content = isset($zipFilePath)
+                        ? DWDUtil::getDataFromZip($zipFilePath, DWDConfiguration::getHourlyConfiguration()->zipExtractionPrefix)
+                        : null;
+
+                    //content can only be null if a station is listed as active but is not anymore.
+                    if ($content == null) {
+                        DWDUtil::log(self::class, 'file for station=' . $nearestStation . ' could not be loaded, trying next station');
+                        continue;
+                    }
+
+                    $parameters[$var] = $this->retrieveData($content, $nearestStation, $coordinatesRequest, $hourlyService, $date, $timeMinuteLimit);
+
+                    //addStation
+                    if (count($parameters[$var]) > 0 && !isset($queriedStations['station-' . $nearestStation->getId()])) {
+                        $queriedStations['station-' . $nearestStation->getId()] = $nearestStation;
+                    }
+
+                    if (count($parameters[$var])>0)
+                        break;
+                }
+            }
+        }
+        if ($sorted && isset($parameters))
+            ksort($parameters);
+        return [$parameters, $queriedStations];
+    }
 
     /**Get all data for the given day. The parameter day is converted to UTC!
      * @param Coordinate $coordinatesRequest
      * @param DateTime $day
-     * @return array
+     * @return array [params, stations]
      */
     public function getDataByDay(Coordinate $coordinatesRequest, DateTime $day)
     {
-        $data = array();
+        $parameters = [];
+        $queriedStations = [];
         $day = Carbon::instance($day)->setTimezone('utc');
         foreach ($this->services as $var => $hourlyService) {
             /* @var AbstractHourlyService $hourlyService */
 
             $stations = $this->getStations($hourlyService, true);
             if (isset($stations)) {
-                $nearestStations = [];
                 try {
                     $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
                 } catch (DWDLibException $exception) {
@@ -71,19 +144,19 @@ class DWDHourlyCrawler
 
                     $start = Carbon::instance($day)->startOfDay();
                     $end = Carbon::instance($day)->endOfDay();
-                    $data['values'][$var] = $hourlyService->parseHourlyData($content, $nearestStation, $coordinatesRequest, $start, $end);//$this->retrieveData2($content, $hourlyService, $start, $end);
+                    $parameters[$var] = $hourlyService->parseHourlyData($content, $nearestStation, $coordinatesRequest, $start, $end);//$this->retrieveData2($content, $hourlyService, $start, $end);
 
                     //addStation
-                    if (count($data['values'][$var]) > 0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
-                        $data['stations']['station-' . $nearestStation->getId()] = $nearestStation;
+                    if (count($parameters[$var]) > 0 && !isset($queriedStations['station-' . $nearestStation->getId()])) {
+                        $queriedStations['station-' . $nearestStation->getId()] = $nearestStation;
 
                     }
-                    if (isset($data))
+                    if (isset($parameters[$var]))
                         break;
                 }
             }
         }
-        return $data;
+        return [$parameters,$queriedStations];
     }
 
     /**
@@ -92,8 +165,7 @@ class DWDHourlyCrawler
      * @param bool $activeOnly
      * @return array
      */
-    public
-    function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
+    public function getStations(AbstractHourlyService $controller, bool $activeOnly = false, bool $forceDownloadFile = false)
     {
         $downloadFile = false || $forceDownloadFile;
         $stationsFTPPath = DWDConfiguration::getHourlyConfiguration()->parameters;
@@ -184,65 +256,6 @@ class DWDHourlyCrawler
         return $localPath;
     }
 
-    /** Retrieve data from one of the nearest stations. This method retrieves all stations in a specific diameter around
-     * the location. It then queries the stations one by one until one station's results could be found.
-     *
-     * This is important if a station's files are missing on the ftp.
-     * @param array $nearestStations
-     * @param DateTime $dateTime
-     * @param int $timeMinuteLimit
-     * @return array|null
-     */
-    public function getDataInInterval($coordinatesRequest, DateTime $dateTime, $timeMinuteLimit = 30, $sorted = true)
-    {
-
-        $data = array();
-        foreach ($this->services as $var => $hourlyService) {
-            $stations = $this->getStations($hourlyService, true);
-
-            if (isset($stations)) {
-
-                $nearestStations = [];
-                try {
-                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
-                } catch (DWDLibException $exception) {
-                    DWDUtil::log(self::class, "Failed to retrieve any nearest active stations. Retrying after forcedownloading new station infos.", Logger::WARNING);
-                    $stations = $this->getStations($hourlyService, true, true);
-                    $nearestStations = DWDStationsController::getNearestStations($stations, $coordinatesRequest);
-                }
-
-
-                foreach ($nearestStations as $nearestStation) {
-                    /* @var $nearestStation DWDStation */
-                    $zipFilePath = $this->retrieveFile($hourlyService, $nearestStation);
-                    $content = isset($zipFilePath)
-                        ? DWDUtil::getDataFromZip($zipFilePath, DWDConfiguration::getHourlyConfiguration()->zipExtractionPrefix)
-                        : null;
-
-                    //content can only be null if a station is listed as active but is not anymore.
-                    if ($content == null) {
-                        DWDUtil::log(self::class, 'file for station=' . $nearestStation . ' could not be loaded, trying next station');
-                        continue;
-                    }
-
-                    $data['values'][$var] = $this->retrieveData($content, $nearestStation, $coordinatesRequest, $hourlyService, $dateTime, $timeMinuteLimit);
-
-                    //addStation
-                    if (count($data['values'][$var]) > 0 && !isset($data['stations']['station-' . $nearestStation->getId()])) {
-                        $data['stations']['station-' . $nearestStation->getId()] = $nearestStation;
-
-                    }
-                    if (isset($data))
-                        break;
-                }
-            }
-        }
-
-        //print_r(json_encode($data));
-        if ($sorted && isset($data['values']))
-            ksort($data['values']);
-        return $data;
-    }
 
     /**
      * DWD Hourly data is not really hourly, as such first try to query with the specified limit, then, if the limit is smaller than +-1.5h or +-3.5h
@@ -277,21 +290,19 @@ class DWDHourlyCrawler
         return $data;
     }
 
-    public
-    function addController(AbstractHourlyService $controller)
+    public function addController(AbstractHourlyService $controller)
     {
         $this->services[] = $controller;
     }
 
-    public
-    function clearControllers()
+    public function clearControllers()
     {
         $this->services = array();
     }
 
-    public
-    function replaceControllers(array $hourlyControllers)
+    public function replaceControllers(array $hourlyControllers)
     {
         $this->services = $hourlyControllers;
     }
+
 }

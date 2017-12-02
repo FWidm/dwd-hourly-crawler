@@ -4,6 +4,7 @@ namespace FWidm\DWDHourlyCrawler\Model;
 
 use Carbon\Carbon;
 use FWidm\DWDHourlyCrawler\Transformer\StationTransformer;
+use FWidm\DWDHourlyCrawler\Util\FractalWrapper;
 
 
 class DWDStation implements \JsonSerializable
@@ -83,7 +84,8 @@ class DWDStation implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return $this->toArray($this->toItem(new StationTransformer()));
+        $res = FractalWrapper::toResource($this, new StationTransformer());
+        return FractalWrapper::toArray($res);
     }
 
     /**
