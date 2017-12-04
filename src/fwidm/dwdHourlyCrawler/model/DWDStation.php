@@ -32,7 +32,7 @@ class DWDStation implements \JsonSerializable
      * @param $name
      * @param $state
      */
-    public function __construct($id, Carbon $from, Carbon $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold)
+    public function __construct($id, Carbon $from, Carbon $until, $height, $latitude, $longitude, $name, $state, $activeDayThreshold,$date=null)
     {
         $this->id = $id;
         $this->from = $from;
@@ -42,7 +42,7 @@ class DWDStation implements \JsonSerializable
         $this->latitude = $latitude;
         $this->name = $name;
         $this->state = $state;
-        $this->setActive($activeDayThreshold);
+        $this->setActive($activeDayThreshold,$date);
 
     }
 
@@ -144,14 +144,16 @@ class DWDStation implements \JsonSerializable
         return $this->active;
     }
 
-    public function setActive($activeDayThreshold)
+    public function setActive($activeDayThreshold,Carbon $date = null)
     {
-        $now = new Carbon('now', 'utc');
-        $until = new Carbon($this->until);
 
-        $diffDays = $now->diffInDays($until);
+        $now = isset($date) ? $date : new Carbon('now', 'utc');
 
-        if ($diffDays < $activeDayThreshold) {
+        //get non absolute values for diff in days.
+        $diffDays = $now->diffInDays($this->until,false);
+
+        //check if diffDays is bigger than out threshold for activity
+        if ($diffDays > $activeDayThreshold) {
             $this->active = true;
         } else {
             $this->active = false;

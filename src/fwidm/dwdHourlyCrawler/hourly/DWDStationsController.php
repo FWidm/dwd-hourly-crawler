@@ -114,7 +114,7 @@ class DWDStationsController
      * @return array - of stations
      * @throws DWDLibException - if zip opening fails or  zip does not exist
      */
-    public static function parseStations($filePath)
+    public static function parseStations($filePath,$date=null)
     {
         if (DIRECTORY_SEPARATOR == '\\')
             $filePath = str_replace('/', '\\', $filePath);
@@ -154,7 +154,7 @@ class DWDStationsController
 
                     $station = new DWDStation($split[0], $from, $until,
                         $split[3], $split[4], $split[5], $name, $county,
-                        $stationConf->activeRequirementDays);
+                        $stationConf->activeRequirementDays,$date);
                     $stations[] = $station;
 
                 }

@@ -31,13 +31,15 @@ all the parameters.
 - Added experimental support to find data faster
 
 ## Todo
+- Station activity needs to be determined by queried date, not current date(!)
+- rework downloads:
+    - check if querieddate < file_date, if yes do not trigger download.
 - Cache nearest station for one crawler task (can't be done as of now, as each variable may have other active controllers.)
 - Change code: check if query date is older or equal than last checked, else do not query
 - If older data is queried maybe disable the check if a station is active this is extremely important for Solar stuff
     - maybe rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
 - Add option to enable logging via the constructor
 - Add option to set the radius of active stations near the given point.
-
 ## Example
 Usage of the library is quite simple:
 ```php
