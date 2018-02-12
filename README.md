@@ -40,6 +40,8 @@ all the parameters.
     - maybe rewrite the "active" part in a way that checks if the queried date is inside the "active" period of stations
 - Add option to enable logging via the constructor
 - Add option to set the radius of active stations near the given point.
+- If a given parameter has a value of -999 try the next station.
+
 ## Example
 Usage of the library is quite simple:
 ```php
